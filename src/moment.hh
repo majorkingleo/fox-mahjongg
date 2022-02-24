@@ -1,6 +1,7 @@
 #ifndef MOMENT_HH
 #define MOMENT_HH
-#include <X11/Xos.h>
+
+#include <sys/time.h>
 
 class Moment {
   

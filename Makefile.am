@@ -2,6 +2,7 @@ bin_PROGRAMS=fox-mahjongg
 
 fox_mahjongg_SOURCES=\
 		src/colored_output.cc\
+		src/main.h\
 		src/main.cc\
 		src/OutDebug.cc\
 		src/DetectLocale.cc \
@@ -14,6 +15,8 @@ fox_mahjongg_SOURCES=\
 		src/board.cc \
 		src/button.hh \
 		src/button.cc \
+		src/images.h \
+		src/images.cc \
 		src/counter.hh \
 		src/counter.cc \
 		src/game.hh \
@@ -47,8 +50,15 @@ fox_mahjongg_SOURCES=\
 		src/traverse.hh \
 		src/traverse.cc \
 		src/xmj3ts.hh \
-		src/xmj3ts.cc 
+		src/xmj3ts.cc  \
+		src/random.cc 		
+		
+##TODO
+		
+##BUILT_SOURCES=src/images.cc
 
+##src/images.cc: images/digits.gif images/buttons.gif
+##	reswrap -o src/images.cc --suffix _gif images/digits.gif images/buttons.gif
 
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \
@@ -136,4 +146,6 @@ LIBS= \
 
 if MINGW
 AM_LDFLAGS = -mwindows
+else
+AM_LDFLAGS = -lX11
 endif

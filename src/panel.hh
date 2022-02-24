@@ -12,6 +12,7 @@ class MatchCount;
 class FancyCounter;
 class SolutionDisplay;
 class Traversal;
+class MahjonggWindow;
 
 class Panel: public SwClippedWindow {
 
@@ -26,6 +27,7 @@ class Panel: public SwClippedWindow {
   MatchCount *_match_count;
   SolutionDisplay *_solution;
   Traversal *_traversal;
+  MahjonggWindow *parent;
   
   short _scan_mark_x;
   short _scan_mark_y;
@@ -62,7 +64,7 @@ class Panel: public SwClippedWindow {
   
  public:
   
-  Panel(Display *, Window);
+  Panel(Display *, Window, MahjonggWindow *parent );
   
   Board *board() const				{ return _board; }
   void set_board(Board *);

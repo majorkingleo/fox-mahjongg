@@ -3,101 +3,17 @@
  *                         Main Window                                           *
  *                                                                               *
  ********************************************************************************/
-#if defined WIN32 || defined _WIN32
-#  include <windows.h>
-#else
-#  include <X11/Xlib.h>
-#endif
-
-#include "fx.h"
 #include <vector>
-#include "panel.hh"
-#include "tileset.hh"
 #include <errno.h>
 #include <format.h>
-#include <xmj3ts.hh>
-#include <gmjts.hh>
-#include <kdets.hh>
-#include <kmjts.hh>
+#include <main.h>
 
 using namespace Tools;
 
 const int LEVEL_START = 0;
 const unsigned TIMEOUT_VALUE = 20;
 
-// Main Window
-class MahjonggWindow : public FXMainWindow {
 
-	// Macro for class hierarchy declarations
-	FXDECLARE(MahjonggWindow)
-
-private:
-
-	FXHorizontalFrame *contents;                // Content frame
-	FXVerticalFrame   *canvasFrame;             // Canvas frame
-	FXVerticalFrame   *buttonFrame;             // Button frame
-	FXCanvas          *canvas;                  // Canvas to draw into
-	int                mdflag;                  // Mouse button down?
-	FXColor            drawColor;               // Color for the line
-	// Ref<Level>         level;
-	int                running;
-	int                level_count;
-	int                retry_count;
-	FXLabel          *level_label;
-	FXLabel          *retry_label;
-
-	int               move_mode;
-
-	Gif_XContext *gifx;
-
-protected:
-	MahjonggWindow(){}
-
-public:
-
-	// Message handlers
-	long onPaint(FXObject*,FXSelector,void*);
-	long onMouseDown(FXObject*,FXSelector,void*);
-	long onMouseMove(FXObject*,FXSelector,void*);
-	long onCmdClear(FXObject*,FXSelector,void*);
-	long onTimeout(FXObject*,FXSelector,void*);
-	long openurl(FXObject*,FXSelector,void*);
-	long onkeypress(FXObject*,FXSelector,void*);
-	long onkeyrelease(FXObject*,FXSelector,void*);
-	long onClose(FXObject*,FXSelector,void*);
-
-	// void pause() { level->pause(); running = 0; move_mode = 0; }
-	// void cont() { level->run(); running = 1; }
-	// Ref<Level> get_next_level( bool force = false );
-
-	// void autoRepeat(int state);
-
-public:
-
-	// Messages for our class
-	enum{
-		ID_CANVAS=FXMainWindow::ID_LAST,
-		ID_CLEAR,
-		ID_TIMER,
-		ID_TITLE,
-		ID_QUIT,
-		ID_LAST
-	};
-
-public:
-
-	// MahjonggWindow's constructor
-	MahjonggWindow(FXApp* a);
-
-	// Initialize
-	virtual void create();
-
-private:
-	Tileset *load_tileset(const char *tileset_name, const char *config_dir);
-
-	void error( const std::string & error );
-	void config_error( const std::string & error );
-};
 
 
 
@@ -180,6 +96,8 @@ MahjonggWindow::MahjonggWindow(FXApp *a):FXMainWindow(a,"austromobil.at Breakout
 	level_count = LEVEL_START;
 	move_mode = 0;
 
+	solveable_boards = true;
+
 	Display *display  = (Display*)getApp()->getDisplay();
 	int screen 		  = DefaultScreen(display);
 	int depth 		  = DefaultDepth(display, screen );
@@ -192,6 +110,10 @@ MahjonggWindow::MahjonggWindow(FXApp *a):FXMainWindow(a,"austromobil.at Breakout
 									  depth,
 									  colormap);
 
+	const char* config_dir = "share";
+
+	tileset = load_tileset("thick", config_dir);
+	background = load_background("default", config_dir, gifx);
 }
 
 
@@ -507,6 +429,57 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 	}
 
 	return tileset;
+}
+
+Pixmap MahjonggWindow::load_background(const char *background_name, const char *config_dir,
+		Gif_XContext *gfx)
+{
+	int len = strlen(background_name) + strlen(config_dir) + 21;
+	char *buf = new char[len];
+	Gif_Stream *gfs;
+
+	sprintf(buf, "%s/backgrounds/%s.gif", config_dir, background_name);
+	FILE *normal_f = fopen(buf, "rb");
+	if (!normal_f)
+		normal_f = fopen(background_name, "rb");
+	if (!normal_f) {
+		gfs = 0;
+		error(format("bad background `%s': %s", background_name, strerror(errno)));
+	} else {
+		gfs = Gif_ReadFile(normal_f);
+		fclose(normal_f);
+	}
+
+	delete[] buf;
+
+	// What if that's not a valid background?
+	if (gfs && Gif_ImageCount(gfs) == 0) {
+		Gif_DeleteStream(gfs);
+		gfs = 0;
+	}
+	if (!gfs) {
+		if (strcmp(background_name, "default") == 0)
+			config_error("can't load default background!");
+		else if (normal_f != 0)
+			error(format("background `%s' is invalid", background_name));
+		error("using default background");
+		return load_background("default", config_dir, gfx);
+	}
+
+	Pixmap background = Gif_XImage(gfx, gfs, 0);
+	Gif_DeleteStream(gfs);
+	return background;
+}
+
+void
+fatal_error(const char *message, ...)
+{
+  va_list val;
+  va_start(val, message);
+  fprintf(stderr, "%s: ", "TODO");
+  vfprintf(stderr, message, val);
+  fputc('\n', stderr);
+  exit(1);
 }
 
 

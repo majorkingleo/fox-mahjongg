@@ -12,18 +12,18 @@
 #include "traverse.hh"
 #include "counter.hh"
 #include <X11/keysym.h>
+#include "main.h"
 
 extern bool solvable_boards;
-extern Moment last_new_board;
 
-
-Panel::Panel(Display *d, Window w)
+Panel::Panel(Display *d, Window w, MahjonggWindow *parent_ )
   : SwClippedWindow(d, w),
     _visible(false),
     _window_width(-1), _window_height(-1),
     _board(0), _background(None),
     _tile_count(0), _match_count(0), _solution(0),
-    _traversal(0), _need_redraw(false)
+    _traversal(0), _need_redraw(false),
+    parent( parent_ )
 {
 }
 
@@ -275,11 +275,11 @@ Panel::command(Game *g, Command com, Button *button, bool keyboard, Time when)
    case comNew: {
      // randomize next board number by factoring in time between news
      // (don't want the next board after # K0 to always be # K1)
-     int diff = (Moment::now() - last_new_board).usec() / 100;
-     last_new_board = Moment::now();
+     int diff = (Moment::now() - parent->getLastNewBoard()).usec() / 100;
+     parent->setLastNewBoard( Moment::now() );
      for (int i = 0; i < diff % 16; i++)
        zrand();
-     g->start(zrand(), solvable_boards);
+     g->start(zrand(), parent->getSolveableBoards());
      break;
    }
     

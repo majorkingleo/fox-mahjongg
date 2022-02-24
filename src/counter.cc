@@ -1,9 +1,6 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "counter.hh"
+#include "images.h"
 
-extern Gif_Record digits_gif;
 static Pixmap digits[10];
 static Pixmap masks[10];
 static int digit_width, digit_height;
