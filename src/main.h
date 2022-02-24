@@ -23,6 +23,11 @@
 #include "tileset.hh"
 #include <string>
 
+class Panel;
+class Gif_Stream;
+class MatchCount;
+class Button;
+
 // Main Window
 class MahjonggWindow : public FXMainWindow {
 
@@ -52,6 +57,11 @@ private:
 	Game *game;
 	Moment last_new_board;
 	bool solveable_boards;
+	Panel *panel;
+	Gif_Stream *gifbuttons;
+	MatchCount *matches;
+	char *layout_name;
+	std::string config_dir;
 
 protected:
 	MahjonggWindow(){}
@@ -117,6 +127,9 @@ private:
 
 	void error( const std::string & error );
 	void config_error( const std::string & error );
+
+	void make_panel_images(Panel *p);
+	Button* new_button(Panel *panel, const char *name);
 };
 
 

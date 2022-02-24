@@ -7,6 +7,13 @@
 #include <errno.h>
 #include <format.h>
 #include <main.h>
+#include "panel.hh"
+#include "images.h"
+#include "matches.hh"
+#include "button.hh"
+#include "board.hh"
+#include "solution.hh"
+#include "counter.hh"
 
 using namespace Tools;
 
@@ -110,10 +117,12 @@ MahjonggWindow::MahjonggWindow(FXApp *a):FXMainWindow(a,"austromobil.at Breakout
 									  depth,
 									  colormap);
 
-	const char* config_dir = "share";
+	config_dir = "share";
+	layout_name = 0;
 
-	tileset = load_tileset("thick", config_dir);
-	background = load_background("default", config_dir, gifx);
+	tileset = load_tileset("thick", config_dir.c_str());
+	background = load_background("default", config_dir.c_str(), gifx);
+	game = new Game(tileset);
 }
 
 
@@ -129,6 +138,51 @@ void MahjonggWindow::create(){
 	running = 1;
 	level->run();
 	*/
+
+	Display *display  = (Display*)getApp()->getDisplay();
+	panel = new Panel(display, canvas->id(), this);
+
+	make_panel_images(panel);
+	matches->set_game(game);
+	Board *board = new Board(panel, game, tileset);
+	panel->set_board(board);
+	panel->set_background(background);
+	panel->set_solution(new SolutionDisplay(game, board));
+
+	FancyTileCounter *tile_counter = new FancyTileCounter(panel);
+	game->add_hook(tile_counter);
+	panel->set_tile_count(tile_counter);
+
+
+	// Lay out game.
+	if (!layout_name) {
+		game->layout_default();
+	} else {
+		int ok = game->layout_file(layout_name);
+		if (ok < 0) {
+			int len = strlen(layout_name) + strlen(config_dir.c_str()) + 10;
+			char *buf = new char[len];
+			sprintf(buf, "%s/layouts/%s", config_dir, layout_name);
+			ok = game->layout_file(buf);
+			delete[] buf;
+		}
+		if (ok < 0)
+			fatal_error("layout %s: %s", layout_name, strerror(errno));
+		else if (ok == 0)
+			fatal_error("layout %s corrupted", layout_name);
+	}
+
+    int wid, hgt;
+    board->tile_layout_size(&wid, &hgt);
+
+    canvas->resize(wid, hgt);
+
+    board->set_size(wid, hgt);
+    board->center_layout();
+
+    game->start(time(0), solveable_boards );
+    last_new_board = Moment::now();
+    panel->set_visible( true );
 
 	// Make the main window appear
 	show(PLACEMENT_SCREEN);
@@ -173,6 +227,7 @@ long MahjonggWindow::onMouseMove(FXObject*, FXSelector, void* ptr){
 long MahjonggWindow::onPaint(FXObject*,FXSelector,void* ptr){
 
 	// level->paint();
+	panel->redraw();
 
 	return 1;
 }
@@ -471,6 +526,32 @@ Pixmap MahjonggWindow::load_background(const char *background_name, const char *
 	return background;
 }
 
+
+void MahjonggWindow::make_panel_images(Panel *p)
+{
+  gifbuttons = Gif_ReadRecord(&buttons_gif);
+
+  matches = new MatchCount(p, gifbuttons, "rock");
+  p->set_match_count(matches);
+
+  p->new_but = new_button(p, "new");
+  p->undo_but = new_button(p, "undo");
+  p->quit_but = new_button(p, "quit");
+  p->hint_but = new_button(p, "hint");
+  p->clean_but = new_button(p, "clean");
+}
+
+Button *MahjonggWindow::new_button(Panel *panel, const char *name)
+{
+  char buf[100];
+  Button *but = new Button(panel);
+  but->set_normal(gifbuttons, name);
+  sprintf(buf, "%s-lit", name);
+  but->set_lit(gifbuttons, buf);
+  return but;
+}
+
+
 void
 fatal_error(const char *message, ...)
 {
@@ -481,6 +562,7 @@ fatal_error(const char *message, ...)
   fputc('\n', stderr);
   exit(1);
 }
+
 
 
 // Here we begin

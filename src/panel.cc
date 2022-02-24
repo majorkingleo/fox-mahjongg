@@ -14,8 +14,6 @@
 #include <X11/keysym.h>
 #include "main.h"
 
-extern bool solvable_boards;
-
 Panel::Panel(Display *d, Window w, MahjonggWindow *parent_ )
   : SwClippedWindow(d, w),
     _visible(false),

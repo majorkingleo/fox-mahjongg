@@ -93,6 +93,10 @@ class Panel: public SwClippedWindow {
   void key_press(Game *, KeySym, unsigned);
   void click(Game *, int, int, unsigned, Time);
   
+  void set_visible( bool state ) {
+	  _visible = state;
+  }
+
 };
 
 #endif
