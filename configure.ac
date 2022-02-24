@@ -16,7 +16,7 @@ AC_DEFUN([CXX_FLAGS_CHECK],
 ])
 
 
-AC_INIT(replace, 0.33)
+AC_INIT(fox-mahjongg, 0.33)
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
 AC_PROG_CC
 AC_CONFIG_FILES([
@@ -28,5 +28,7 @@ AC_PROG_CXX
 AC_LANG(C++)
 AC_PROG_INSTALL
 CXX_FLAGS_CHECK([-std=c++11])
+
+PKG_CHECK_MODULES([AUXLIBS], [fox17])
 
 AC_OUTPUT

@@ -14,7 +14,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared/cpputilsformat \
 	-I$(top_srcdir)/src  \
 	-DNOWAMAS \
-	-std=c++11
+	-std=c++11 \
+	$(AUXLIBS_CFLAGS) 
 
 noinst_LIBRARIES=tools/libtools.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
@@ -35,9 +36,7 @@ tools_libtools_a_SOURCES= \
 
 
 cpputils_cpputilsshared_libcpputilsshared_a_SOURCES= \
-		cpputils/cpputilsshared/aes_crypt_util.cc \
 		cpputils/cpputilsshared/backtrace.cc \
-		cpputils/cpputilsshared/blockupdate.cc \
 		cpputils/cpputilsshared/cppdir.cc \
 		cpputils/cpputilsshared/leoini.cc \
 		cpputils/cpputilsshared/logtool2.cc \
@@ -66,3 +65,6 @@ cpputils_cpputilsshared_cpputilsformat_libcpputilsformat_a_SOURCES= \
 	cpputils/cpputilsshared/cpputilsformat/cwformat.cc
 
 fox_mahjongg_LDADD = tools/libtools.a cpputils/cpputilsshared/libcpputilsshared.a cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a
+
+LIBS= \
+	$(AUXLIBS_LIBS)
