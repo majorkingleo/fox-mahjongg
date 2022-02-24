@@ -14,6 +14,9 @@
 #include "board.hh"
 #include "solution.hh"
 #include "counter.hh"
+#include <colored_output.h>
+#include <OutDebug.h>
+#include <arg.h>
 
 using namespace Tools;
 
@@ -563,10 +566,71 @@ fatal_error(const char *message, ...)
   exit(1);
 }
 
+static void usage( const std::string & prog )
+{
+    std::cerr << "usage: "
+              << prog << " [URL] [clock.png]\n";
+}
 
 
 // Here we begin
 int main(int argc,char *argv[]){
+
+	ColoredOutput colored_output;
+
+    Arg::Arg arg( argc, argv );
+
+    arg.addPrefix( "-" );
+    arg.addPrefix( "--" );
+
+    Arg::OptionChain oc_info;
+    arg.addChainR( &oc_info );
+    oc_info.setMinMatch( 1 );
+    oc_info.setContinueOnMatch( false );
+    oc_info.setContinueOnFail( true );
+
+    Arg::FlagOption o_help( "h" );
+    o_help.addName( "help" );
+    o_help.setDescription( "Show this page" );
+    oc_info.addOptionR( &o_help );
+
+    Arg::FlagOption o_version( "v" );
+    o_version.addName( "version" );
+    o_version.setDescription( "Show replace version number" );
+    oc_info.addOptionR( &o_version );
+
+    Arg::FlagOption o_debug("debug");
+    o_debug.setDescription("print debugging messages");
+    o_debug.setRequired(false);
+    arg.addOptionR( &o_debug );
+
+    const unsigned int console_width = 80;
+
+    if( !arg.parse() )
+    {
+        if( o_version.getState() )
+        {
+            std::cout << format("%s version %s\n", argv[0], VERSION);
+            return 0;
+        } else {
+            usage(argv[0]);
+            std::cout << arg.getHelp(5,20,30, console_width ) << std::endl;
+            return 1;
+        }
+    }
+
+    if( o_help.getState() )
+    {
+        // usage(argv[0]);
+        std::cout << arg.getHelp(5,20,30, console_width ) << std::endl;
+        return 0;
+    }
+
+    if( o_debug.getState() )
+    {
+        Tools::x_debug = new OutDebug();
+    }
+
 
 	// Make application
 	FXApp application("FOX-Mahjongg","majorleo");
