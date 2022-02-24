@@ -82,8 +82,8 @@ MahjonggWindow::MahjonggWindow()
 // Construct a MahjonggWindow
 MahjonggWindow::MahjonggWindow(FXApp *a)
 : FXMainWindow(a,"austromobil.at Breakout",NULL,NULL,
-		DECOR_TITLE | DECOR_CLOSE | DECOR_MINIMIZE,
-		0,0,810,600),
+		DECOR_TITLE | DECOR_CLOSE | DECOR_ALL, // DECOR_MINIMIZE,
+		0,0,1050,600),
   contents(0),
   canvasFrame(0),
   buttonFrame(0),
@@ -232,10 +232,12 @@ void MahjonggWindow::create(){
     int wid, hgt;
     board->tile_layout_size(&wid, &hgt);
 
+    DEBUG( format( "Board size: %dx%d", wid, hgt ) );
     canvas->resize(wid, hgt);
 
-    board->set_size(wid, hgt);
-    board->center_layout();
+    // board->set_size(wid, hgt);
+    // board->center_layout();
+    panel->resize(wid,hgt);
 
     game->start(time(0), solveable_boards );
     last_new_board = Moment::now();

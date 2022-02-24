@@ -87,10 +87,7 @@ class SwClippedWindow: public SwWindow {
 //
 
 class SwImage {
-/*
-  SwImage(const SwImage &);
-  SwImage &operator=(const SwImage &);
-  */
+
  protected:
 
   Display *_display;

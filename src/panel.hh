@@ -38,8 +38,6 @@ class Panel: public SwClippedWindow {
   int _redraw_bottom;
   bool _need_redraw;
   
-  void resize(int, int);
-  
   enum Command {
     comNone, comHint, comUndo, comRedo, comNew, comQuit, comClean, comSolve,
     comDeselect, comCheckSolve,
@@ -99,6 +97,8 @@ class Panel: public SwClippedWindow {
   void set_visible( bool state ) {
 	  _visible = state;
   }
+
+  void resize(int, int);
 
 };
 
