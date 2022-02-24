@@ -68,3 +68,7 @@ fox_mahjongg_LDADD = tools/libtools.a cpputils/cpputilsshared/libcpputilsshared.
 
 LIBS= \
 	$(AUXLIBS_LIBS)
+
+if MINGW
+AM_LDFLAGS = -mwindows
+endif

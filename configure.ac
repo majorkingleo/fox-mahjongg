@@ -16,8 +16,20 @@ AC_DEFUN([CXX_FLAGS_CHECK],
 ])
 
 
+
+
 AC_INIT(fox-mahjongg, 0.1)
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
+
+
+AC_CANONICAL_HOST
+case $host_os in
+  *mingw*) mingw=true ;;
+  *) mingw=false ;;
+esac
+AM_CONDITIONAL([MINGW], [test x$mingw = xtrue])
+
+
 AC_PROG_CC
 AC_CONFIG_FILES([
 Makefile
