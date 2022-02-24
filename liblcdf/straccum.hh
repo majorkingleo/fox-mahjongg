@@ -3,9 +3,9 @@
 #define LCDF_STRACCUM_HH
 #include <string.h>
 #include <assert.h>
-#include <lcdf/string.hh>
+#include <liblcdf/string.hh>
 #ifdef HAVE_PERMSTRING
-# include <lcdf/permstr.hh>
+# include <liblcdf/permstr.hh>
 #endif
 template<class T> class Vector;
 

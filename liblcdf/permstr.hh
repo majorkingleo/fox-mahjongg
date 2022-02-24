@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdarg.h>
-#include <lcdf/inttypes.h>
+#include <liblcdf/inttypes.h>
 class PermString;
 inline bool operator==(PermString, PermString);
 inline bool operator!=(PermString, PermString);

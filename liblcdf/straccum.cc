@@ -20,8 +20,8 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
-#include <lcdf/straccum.hh>
-#include <lcdf/vector.hh>
+#include <liblcdf/straccum.hh>
+#include <liblcdf/vector.hh>
 #include <stdarg.h>
 #include <stdio.h>
 #include <ctype.h>

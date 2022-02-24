@@ -20,12 +20,12 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
-#include <lcdf/string.hh>
-#include <lcdf/straccum.hh>
+#include <liblcdf/string.hh>
+#include <liblcdf/straccum.hh>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <lcdf/inttypes.h>
+#include <liblcdf/inttypes.h>
 
 static String::Initializer initializer;
 String::Memo *String::null_memo = 0;

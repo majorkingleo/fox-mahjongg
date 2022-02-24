@@ -2,7 +2,7 @@
 #ifndef LCDF_STRING_HH
 #define LCDF_STRING_HH
 #ifdef HAVE_PERMSTRING
-# include <lcdf/permstr.hh>
+# include <liblcdf/permstr.hh>
 #endif
 #include <assert.h>
 class StringAccum;

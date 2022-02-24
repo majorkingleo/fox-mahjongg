@@ -15,11 +15,13 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/src  \
 	-DNOWAMAS \
 	-std=c++11 \
+	-I$(top_srcdir)/liblcdf \
 	$(AUXLIBS_CFLAGS) 
 
 noinst_LIBRARIES=tools/libtools.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
-	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a
+	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a \
+	liblcdf/liblcdf.a	
 
 tools_libtools_a_SOURCES= \
 	tools/arg.cpp \
@@ -64,7 +66,29 @@ cpputils_cpputilsshared_cpputilsformat_libcpputilsformat_a_SOURCES= \
 	cpputils/cpputilsshared/cpputilsformat/cwformat.h \
 	cpputils/cpputilsshared/cpputilsformat/cwformat.cc
 
-fox_mahjongg_LDADD = tools/libtools.a cpputils/cpputilsshared/libcpputilsshared.a cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a
+liblcdf_liblcdf_a_SOURCES= \
+	liblcdf/clp.c \
+    liblcdf/fmalloc.c \
+    liblcdf/giffunc.c \
+	liblcdf/gifread.c \
+	liblcdf/gifx.c \
+    liblcdf/permstr.hh \
+    liblcdf/permstr.cc \
+    liblcdf/straccum.hh \
+    liblcdf/straccum.cc \
+    liblcdf/string.hh \
+    liblcdf/string.cc \
+    liblcdf/vector.hh \
+    liblcdf/vectorv.cc \
+	liblcdf/gif.h \
+	liblcdf/gifx.h 
+	
+
+fox_mahjongg_LDADD = \
+	tools/libtools.a \
+	cpputils/cpputilsshared/libcpputilsshared.a \
+	cpputils/cpputilsshared/cpputilsformat/libcpputilsformat.a \
+	liblcdf/liblcdf.a
 
 LIBS= \
 	$(AUXLIBS_LIBS)

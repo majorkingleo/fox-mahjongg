@@ -1,6 +1,6 @@
 #ifndef LCDF_GIFX_H
 #define LCDF_GIFX_H
-#include <lcdfgif/gif.h>
+#include <liblcdf/gif.h>
 #ifdef __cplusplus
 extern "C" {
 #endif

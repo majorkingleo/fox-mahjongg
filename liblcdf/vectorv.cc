@@ -18,7 +18,7 @@
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
-#include <lcdf/vector.hh>
+#include <liblcdf/vector.hh>
 #include <string.h>
 
 Vector<void*>::Vector(const Vector<void*> &o)
