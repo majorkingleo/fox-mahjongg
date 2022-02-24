@@ -8,6 +8,8 @@
 
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 
+#if 0
+
 Xmj3Tileset::Xmj3Tileset(Gif_Stream *gfs, Gif_XContext *gifx)
   : Tileset("ivory"),
     _gfs(gfs),
@@ -38,8 +40,13 @@ Xmj3Tileset::~Xmj3Tileset()
   Display *display = _gifx->display;
   if (_gfs && _images.size())
     for (int i = 0; i < Gif_ImageCount(_gfs); i++) {
-      if (_images[i]) XFreePixmap(display, _images[i]);
-      if (_masks[i]) XFreePixmap(display, _masks[i]);
+      if (_images[i]) {
+    	  delete  _images[i];
+      }
+
+      if (_masks[i]) {
+    	  delete _masks[i];
+      }
     }
   
   Gif_DeleteStream(_gfs);
@@ -321,3 +328,5 @@ Xmj3Tileset::draw_obscured(const Tile *t, SwDrawable *drawable,
   assert(which >= 0 && which < NPICTURES);
   draw(drawable, x, y, _obscured_ref[which], -1);
 }
+
+#endif

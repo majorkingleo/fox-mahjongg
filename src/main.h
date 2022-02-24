@@ -22,6 +22,7 @@
 #include <kmjts.hh>
 #include "tileset.hh"
 #include <string>
+#include <map>
 
 class Panel;
 class Gif_Stream;
@@ -53,7 +54,7 @@ private:
 
 	Gif_XContext *gifx;
 	Tileset *tileset;
-	Pixmap background;
+	FXImage* background;
 	Game *game;
 	Moment last_new_board;
 	bool solveable_boards;
@@ -62,6 +63,9 @@ private:
 	MatchCount *matches;
 	char *layout_name;
 	std::string config_dir;
+
+	std::map<std::string,FXImage *> imageByName;
+	std::map<std::string,FXBitmap *> bitmapMaskByName;
 
 protected:
 	MahjonggWindow();
@@ -124,9 +128,12 @@ public:
 		solveable_boards = value;
 	}
 
+	FXImage *getImageByName( const std::string & image );
+	FXBitmap *getBitmapMaskByName( const std::string & image );
+
 private:
 	Tileset *load_tileset(const char *tileset_name, const char *config_dir);
-	Pixmap load_background(const char *background_name, const char *config_dir,Gif_XContext *gfx);
+	FXImage* load_background(const char *background_name, const char *config_dir );
 
 	void error( const std::string & error );
 	void config_error( const std::string & error );

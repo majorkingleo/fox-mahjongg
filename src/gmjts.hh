@@ -1,8 +1,10 @@
 #ifndef GMJTS_HH
 #define GMJTS_HH
-#include <liblcdf/gif.h>
-#include <liblcdf/gifx.h>
+#include "fx.h"
 #include "tileset.hh"
+
+#if 0
+class MahjonggWindow;
 
 class GnomeMjTileset: public Tileset {
   
@@ -12,13 +14,10 @@ class GnomeMjTileset: public Tileset {
     ieBadSize,
   };
   
-  Gif_Stream *_gfs;
-  Gif_XContext *_gifx;
-  Gif_Colormap *_colormap;
   int _image_error;
   
-  Vector<Pixmap> _images;
-  Vector<Pixmap> _masks;
+  Vector<FXImage*> _images;
+  Vector<FXImage*> _masks;
   
   void initialize_images();
   void check_images();
@@ -29,18 +28,18 @@ class GnomeMjTileset: public Tileset {
   
  public:
   
-  GnomeMjTileset(Gif_Stream *, Gif_XContext *);
+  GnomeMjTileset( MahjonggWindow *root );
   ~GnomeMjTileset();
   
   GnomeMjTileset( const GnomeMjTileset & other ) = delete;
   GnomeMjTileset & operator=( const GnomeMjTileset & other ) = delete;
 
-  bool ok() const				{ return _gfs; }
-  
+  bool ok() const override { return true; }
+
   void draw_normal(const Tile *, SwDrawable *, short x, short y);
   void draw_lit(const Tile *, SwDrawable *, short x, short y);
   void draw_obscured(const Tile *, SwDrawable *, short x, short y);
   
 };
-
+#endif
 #endif

@@ -28,28 +28,28 @@ class Board: public GameHooks, public SwWidget {
   Vector<short> _tile_flags;
   
   bool _buffering;
-  Pixmap _buffer;
+  FXImage *_buffer;
   int _buffer_w;
   int _buffer_h;
   int _buffer_x;
   int _buffer_y;
 
   static const int NMASK = 10;
-  Pixmap _mask[NMASK];
+  FXImage *_mask[NMASK];
   int _mask_tile[NMASK];
   int _mask_next_mru[NMASK];
   int _mask_prev_mru[NMASK];
   int _mask_mru;
   int _masking;
-  GC _masking_gc;
+  FXDCWindow *_masking_gc;
   Tile *_masking_tile;
   
-  GC _copygc;
-  GC _orgc;
-  GC _erasegc;
-  GC _maskgc;
-  GC _mask_one_gc;
-  GC _mask_zero_gc;
+  FXDCWindow *_copygc;
+  FXDCWindow *_orgc;
+  FXDCWindow *_erasegc;
+  FXDCWindow *_maskgc;
+  FXDCWindow *_mask_one_gc;
+  FXDCWindow *_mask_zero_gc;
   
   Tile *_selected;
   
@@ -88,7 +88,7 @@ class Board: public GameHooks, public SwWidget {
   void tile_layout_size(int *, int *) const;
     
   void set_tileset(Tileset *);
-  void set_background(Pixmap);
+  void set_background(FXImage *background);
   void center_layout();
   
   void position(Tile *, short *x, short *y) const;
@@ -110,7 +110,7 @@ class Board: public GameHooks, public SwWidget {
   void draw_area(short rowtop, short colleft, short rowbot, short colright);
   void draw_marked();
   
-  void draw_subimage(Pixmap, Pixmap, int, int, int, int, int, int);
+  void draw_subimage(FXImage *source, FXBitmap *mask, int, int, int, int, int, int) override;
   
   void bell()					{ _panel->bell(); }
   void flush()					{ _panel->flush(); }

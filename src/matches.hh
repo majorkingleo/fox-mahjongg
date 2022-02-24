@@ -7,8 +7,8 @@ class MatchCount: public SwWidget, public GameHooks {
 
   Game *_game;
   
-  Pixmap _one_image;
-  Pixmap _one_mask;
+  FXImage* _one_image;
+  FXBitmap* _one_mask;
   int _one_width;
   int _one_height;
 
@@ -18,7 +18,7 @@ class MatchCount: public SwWidget, public GameHooks {
   
  public:
   
-  MatchCount(SwWindow *, Gif_Stream *, const char *);
+  MatchCount(SwWindow *, const char *);
   
   MatchCount( const MatchCount & other ) = delete;
   MatchCount & operator=( const MatchCount & other ) = delete;

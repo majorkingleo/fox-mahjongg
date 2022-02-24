@@ -17,6 +17,7 @@
 #include <colored_output.h>
 #include <OutDebug.h>
 #include <arg.h>
+#include <cpp_util.h>
 
 using namespace Tools;
 
@@ -76,7 +77,9 @@ MahjonggWindow::MahjonggWindow()
   gifbuttons(0),
   matches(0),
   layout_name(0),
-  config_dir()
+  config_dir(),
+  imageByName(),
+  bitmapMaskByName()
 {}
 
 // Construct a MahjonggWindow
@@ -162,24 +165,9 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
 	solveable_boards = true;
 
-	Display *display  = (Display*)getApp()->getDisplay();
-	int screen 		  = DefaultScreen(display);
-	int depth 		  = DefaultDepth(display, screen );
-	Colormap colormap = DefaultColormap(display, screen );
-	Visual *visual    = DefaultVisual(display, screen );
-
-	gifx = Gif_NewXContextFromVisual( display,
-									  screen,
-									  visual,
-									  depth,
-									  colormap);
 
 	config_dir = "share";
 	layout_name = 0;
-
-	tileset = load_tileset("thick", config_dir.c_str());
-	background = load_background("default", config_dir.c_str(), gifx);
-	game = new Game(tileset);
 }
 
 
@@ -196,8 +184,14 @@ void MahjonggWindow::create(){
 	level->run();
 	*/
 
-	Display *display  = (Display*)getApp()->getDisplay();
-	panel = new Panel(display, canvas->id(), this);
+	tileset = load_tileset("thick", config_dir.c_str());
+	background = load_background("default", config_dir.c_str());
+	game = new Game(tileset);
+
+	background->create();
+
+
+	panel = new Panel(getApp(), canvas, this);
 
 	make_panel_images(panel);
 	matches->set_game(game);
@@ -496,11 +490,12 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 	}
 
 	Tileset *tileset = 0;
-
+#if 0
 	// Xmahjongg tileset?
 	if (gfs && !tileset && Gif_ImageCount(gfs) > 1)
 		tileset = new Xmj3Tileset(gfs, gifx);
-
+#endif
+#if 0
 	// Otherwise, check dimensions.
 	int width = 0, height = 0;
 	if (gfs && !tileset) {
@@ -511,7 +506,7 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 
 	// Gnome tileset?
 	if (gfs && !tileset && width > 2*height)
-		tileset = new GnomeMjTileset(gfs, gifx);
+		tileset = new GnomeMjTileset(this);
 
 	// KDE tileset?
 	if (gfs && !tileset && width == 360 && height == 280) {
@@ -535,6 +530,7 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 	delete[] buf;
 	if (gfs && !gfs->refcount)
 		Gif_DeleteStream(gfs);
+#endif
 
 	// What if that's not a valid tileset?
 	if (!tileset) {
@@ -549,43 +545,25 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 	return tileset;
 }
 
-Pixmap MahjonggWindow::load_background(const char *background_name, const char *config_dir,
-		Gif_XContext *gfx)
+FXImage* MahjonggWindow::load_background(const char *background_name, const char *config_dir )
 {
+
 	int len = strlen(background_name) + strlen(config_dir) + 21;
 	char *buf = new char[len];
-	Gif_Stream *gfs;
 
 	sprintf(buf, "%s/backgrounds/%s.gif", config_dir, background_name);
-	FILE *normal_f = fopen(buf, "rb");
-	if (!normal_f)
-		normal_f = fopen(background_name, "rb");
-	if (!normal_f) {
-		gfs = 0;
-		error(format("bad background `%s': %s", background_name, strerror(errno)));
-	} else {
-		gfs = Gif_ReadFile(normal_f);
-		fclose(normal_f);
+
+	FXImage *img = new FXGIFImage(getApp(),nullptr,IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+
+	FXFileStream stream;
+
+	if(stream.open(buf,FXStreamLoad)){
+		getApp()->beginWaitCursor();
+		img->loadPixels(stream);
+		stream.close();
+		getApp()->endWaitCursor();
 	}
 
-	delete[] buf;
-
-	// What if that's not a valid background?
-	if (gfs && Gif_ImageCount(gfs) == 0) {
-		Gif_DeleteStream(gfs);
-		gfs = 0;
-	}
-	if (!gfs) {
-		if (strcmp(background_name, "default") == 0)
-			config_error("can't load default background!");
-		else if (normal_f != 0)
-			error(format("background `%s' is invalid", background_name));
-		error("using default background");
-		return load_background("default", config_dir, gfx);
-	}
-
-	Pixmap background = Gif_XImage(gfx, gfs, 0);
-	Gif_DeleteStream(gfs);
 	return background;
 }
 
@@ -594,7 +572,7 @@ void MahjonggWindow::make_panel_images(Panel *p)
 {
   gifbuttons = Gif_ReadRecord(&buttons_gif);
 
-  matches = new MatchCount(p, gifbuttons, "rock");
+  matches = new MatchCount(p, "rock");
   p->set_match_count(matches);
 
   p->new_but = new_button(p, "new");
@@ -608,12 +586,33 @@ Button *MahjonggWindow::new_button(Panel *panel, const char *name)
 {
   char buf[100];
   Button *but = new Button(panel);
-  but->set_normal(gifbuttons, name);
+  but->set_normal(name);
   sprintf(buf, "%s-lit", name);
-  but->set_lit(gifbuttons, buf);
+  but->set_lit(buf);
   return but;
 }
 
+FXImage *MahjonggWindow::getImageByName( const std::string & image_name )
+{
+	auto it = imageByName.find( image_name );
+
+	if( it == imageByName.end() ) {
+		throw REPORT_EXCEPTION( format( "no Button named %s", image_name ) );
+	}
+
+	return it->second;
+}
+
+FXBitmap *MahjonggWindow::getBitmapMaskByName( const std::string & image_name )
+{
+	auto it = bitmapMaskByName.find( image_name );
+
+	if( it == bitmapMaskByName.end() ) {
+		throw REPORT_EXCEPTION( format( "no Button named %s", image_name ) );
+	}
+
+	return it->second;
+}
 
 void
 fatal_error(const char *message, ...)

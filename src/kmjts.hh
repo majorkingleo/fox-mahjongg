@@ -4,6 +4,7 @@
 #include <liblcdf/gifx.h>
 #include "tileset.hh"
 
+#if 0
 class KyodaiTileset: public Tileset {
   
   enum ImageError {
@@ -45,5 +46,5 @@ class KyodaiTileset: public Tileset {
   void draw_obscured(const Tile *, SwDrawable *, short x, short y);
   
 };
-
+#endif
 #endif

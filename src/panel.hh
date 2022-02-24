@@ -22,12 +22,11 @@ class Panel: public SwClippedWindow {
   short _window_height;
   
   Board *_board;
-  Pixmap _background;
+  FXImage *_background;
   FancyCounter *_tile_count;
   MatchCount *_match_count;
   SolutionDisplay *_solution;
   Traversal *_traversal;
-  MahjonggWindow *_parent;
   
   short _scan_mark_x;
   short _scan_mark_y;
@@ -62,14 +61,14 @@ class Panel: public SwClippedWindow {
   
  public:
   
-  Panel(Display *, Window, MahjonggWindow *parent );
+  Panel(FXApp *app, FXWindow *window, MahjonggWindow *parent );
   
   Panel( const Panel & other ) = delete;
   Panel & operator=( const Panel & other ) = delete;
 
   Board *board() const				{ return _board; }
   void set_board(Board *);
-  void set_background(Pixmap);
+  void set_background(FXImage *background);
   void set_tile_count(FancyCounter *);
   void set_match_count(MatchCount *);
   void set_solution(SolutionDisplay *);
@@ -86,8 +85,8 @@ class Panel: public SwClippedWindow {
   
   void draw_controls();
   
-  void bell() const				{ XBell(display(), 0); }
-  void flush() const				{ XFlush(display()); }
+  void bell() const				{ display()->beep(); }
+  void flush() const				{ display()->flush(); }
   
   // events
   void handle(Game *, XEvent *);

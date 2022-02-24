@@ -1,25 +1,20 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "matches.hh"
+#include "main.h"
 
-MatchCount::MatchCount(SwWindow *window, Gif_Stream *gfs, const char *name)
+MatchCount::MatchCount(SwWindow *window, const char *name)
   : SwWidget(window),
     _game(0),
-    _one_image(None),
-    _one_mask(None),
+    _one_image(0),
+    _one_mask(0),
     _one_width(0),
     _one_height(0),
     _count(0)
 {
-  Gif_Image *gfi = Gif_GetNamedImage(gfs, name);
-  if (gfi) {
-    Gif_XContext *gifx = get_gif_x_context();
-    _one_image = Gif_XImage(gifx, gfs, gfi);
-    _one_mask = Gif_XMask(gifx, gfs, gfi);
-    _one_width = Gif_ImageWidth(gfi);
-    _one_height = Gif_ImageHeight(gfi);
-  }
+#warning TODOO
+	_one_image  = root()->getImageByName( name );
+	_one_mask   = root()->getBitmapMaskByName( name );
+    _one_width  = _one_image->getWidth();
+    _one_height = _one_image->getHeight();
 }
 
 void

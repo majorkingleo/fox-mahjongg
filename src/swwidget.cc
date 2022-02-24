@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "swwidget.hh"
 
 
@@ -16,14 +13,8 @@ SwWidget::SwWidget(SwWindow *swwindow)
 {
 }
 
-Gif_XContext *
-SwWidget::get_gif_x_context()
-{
-  return _swwindow->get_gif_x_context();
-}
-
 void
-SwWidget::draw_subimage(Pixmap src, Pixmap mask, int src_x, int src_y,
+SwWidget::draw_subimage(FXImage *src, FXBitmap *mask, int src_x, int src_y,
 			int w, int h, int x, int y)
 {
   if (x < 0) {

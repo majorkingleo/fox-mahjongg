@@ -15,8 +15,8 @@
 #include "main.h"
 #include "debug.h"
 
-Panel::Panel(Display *d, Window w, MahjonggWindow *parent )
-  : SwClippedWindow(d, w),
+Panel::Panel(FXApp *app, FXWindow *window, MahjonggWindow *root )
+  : SwClippedWindow(app, window, root ),
     _visible(false),
 
     _window_width(-1),
@@ -28,7 +28,6 @@ Panel::Panel(Display *d, Window w, MahjonggWindow *parent )
     _match_count(0),
     _solution(0),
     _traversal(0),
-    _parent( parent ),
 
     _scan_mark_x( 0 ),
     _scan_mark_y( 0 ),
@@ -79,10 +78,11 @@ Panel::set_board(Board *b)
 }
 
 void
-Panel::set_background(Pixmap background)
+Panel::set_background(FXImage *background)
 {
   _background = background;
-  XSetWindowBackgroundPixmap(display(), window(), _background);
+#warning TODOOO?
+  // XSetWindowBackgroundPixmap(display(), window(), _background);
   _board->set_background(_background);
 }
 
@@ -300,11 +300,11 @@ Panel::command(Game *g, Command com, Button *button, bool keyboard, Time when)
    case comNew: {
      // randomize next board number by factoring in time between news
      // (don't want the next board after # K0 to always be # K1)
-     int diff = (Moment::now() - _parent->getLastNewBoard()).usec() / 100;
-     _parent->setLastNewBoard( Moment::now() );
+     int diff = (Moment::now() - root()->getLastNewBoard()).usec() / 100;
+     root()->setLastNewBoard( Moment::now() );
      for (int i = 0; i < diff % 16; i++)
        zrand();
-     g->start(zrand(), _parent->getSolveableBoards());
+     g->start(zrand(), root()->getSolveableBoards());
      break;
    }
     
@@ -468,6 +468,7 @@ Panel::key_press(Game *g, KeySym key, unsigned state)
 void
 Panel::handle(Game *game, XEvent *e)
 {
+#if 0
   switch (e->type) {
     
    case Expose:
@@ -510,4 +511,5 @@ Panel::handle(Game *game, XEvent *e)
     break;
     
   }
+#endif
 }

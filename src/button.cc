@@ -1,9 +1,9 @@
 #include "button.hh"
-
+#include "main.h"
+#include "debug.h"
 
 Button::Button(SwWindow *window)
   : SwWidget(window),
-    _gifx(0),
     _normal(0),
     _normal_mask(0),
     _lit(0),
@@ -15,26 +15,22 @@ Button::Button(SwWindow *window)
 }
 
 
-bool
-Button::set_normal(Gif_Stream *gfs, const char *name)
+bool Button::set_normal( const char *name )
 {
-  Gif_Image *gfi = Gif_GetNamedImage(gfs, name);
-  if (!gfi) return 0;
-  Gif_XContext *gifx = get_gif_x_context();
-  _normal = Gif_XImage(gifx, gfs, gfi);
-  _normal_mask = Gif_XMask(gifx, gfs, gfi);
-  set_size(Gif_ImageWidth(gfi), Gif_ImageHeight(gfi));
+  _normal = root()->getImageByName( name );
+#warning TODOO
+  DEBUG( "TODO: create masked bitmap" );
+  _normal_mask = root()->getBitmapMaskByName( name );
+  set_size(_normal->getWidth(), _normal->getHeight());
   return 1;
 }
 
-bool
-Button::set_lit(Gif_Stream *gfs, const char *name)
+bool Button::set_lit(const char *name)
 {
-  Gif_Image *gfi = Gif_GetNamedImage(gfs, name);
-  if (!gfi) return 0;
-  Gif_XContext *gifx = get_gif_x_context();
-  _lit = Gif_XImage(gifx, gfs, gfi);
-  _lit_mask = Gif_XMask(gifx, gfs, gfi);
+#warning TODOO
+  DEBUG( "TODO: create masked bitmap" );
+  _lit =  root()->getImageByName( name );
+  _lit_mask = root()->getBitmapMaskByName( name );
   return 1;
 }
 
@@ -60,7 +56,8 @@ Button::handle_track_event(XEvent *e)
    case MotionNotify:
      {
        int x1 = x(), x2 = x() + width(), y1 = y(), y2 = y() + height();
-       while (XCheckTypedEvent(display(), MotionNotify, e))
+#warning TODOOO
+       // while (XCheckTypedEvent(display(), MotionNotify, e))
 	 /* nada */;
        int xm = e->xmotion.x;
        int ym = e->xmotion.y;
@@ -81,6 +78,8 @@ Button::handle_track_event(XEvent *e)
 bool
 Button::track(Time time)
 {
+#warning TODOOOO
+#if 0
   if (XGrabPointer(display(), window(), False,
 		   ButtonMotionMask | ButtonReleaseMask | OwnerGrabButtonMask,
 		   GrabModeAsync, GrabModeSync, None, None, time)
@@ -104,8 +103,10 @@ Button::track(Time time)
   XFlush(display());
   while (XCheckMaskEvent(display(), ButtonReleaseMask | ButtonPressMask, &e))
     /* nada */;
-  
+
   return was_lit;
+#endif
+  return false;
 }
 
 

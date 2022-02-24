@@ -21,9 +21,9 @@ class SwWidget: public SwDrawable {
   SwWidget( const SwWidget & other ) = delete;
   SwWidget & operator=( const SwWidget & other ) = delete;
 
-  Display *display() const		{ return _swwindow->display(); }
-  Window window() const			{ return _swwindow->window(); }
-  int depth() const			{ return _swwindow->depth(); }
+  FXApp *display() const		{ return _swwindow->display(); }
+  FXWindow* window() const			{ return _swwindow->window(); }
+  MahjonggWindow* root() const { return _swwindow->root(); }
   
   int x() const				{ return _x; }
   int y() const				{ return _y; }
@@ -37,10 +37,8 @@ class SwWidget: public SwDrawable {
   
   void set_position(int x, int y)	{ _x = x; _y = y; }
   void set_size(int w, int h)		{ _width = w; _height = h; }
-
-  Gif_XContext *get_gif_x_context();
   
-  void draw_subimage(Pixmap, Pixmap, int, int, int, int, int, int);
+  void draw_subimage(FXImage *source , FXBitmap *mask, int, int, int, int, int, int) override;
   void clear_area(int, int, int, int);
   
   void invalidate()			{ invalidate(0, 0, _width, _height); }

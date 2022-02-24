@@ -7,6 +7,7 @@
 #include "swgeneral.hh"
 #include <cstring>
 
+#if 0
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 #define NIMAGES		(2*NPICTURES + 1)
 
@@ -221,3 +222,4 @@ KyodaiTileset::draw_obscured(const Tile *, SwDrawable *drawable,
 {
   draw(drawable, x, y, NIMAGES - 1);
 }
+#endif

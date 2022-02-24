@@ -1,8 +1,10 @@
 #ifndef XMJ3TS_HH
 #define XMJ3TS_HH
-#include <liblcdf/gif.h>
-#include <liblcdf/gifx.h>
 #include "tileset.hh"
+#include "fx.h"
+#include <liblcdf/gifx.h>
+
+#if 0
 
 class Xmj3Tileset: public Tileset {
   
@@ -30,8 +32,8 @@ class Xmj3Tileset: public Tileset {
   Vector<short> _selected_ref;
   Vector<short> _obscured_ref;
   
-  Vector<Pixmap> _images;
-  Vector<Pixmap> _masks;
+  Vector<FXImage*> _images;
+  Vector<FXBitmap*> _masks;
   
   void map_one_image(const char *, int, ImageType, Vector<short> &);
   void initialize_images();
@@ -56,5 +58,5 @@ class Xmj3Tileset: public Tileset {
   void draw_obscured(const Tile *, SwDrawable *, short x, short y);
   
 };
-
+#endif
 #endif

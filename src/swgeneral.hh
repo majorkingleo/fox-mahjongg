@@ -1,8 +1,10 @@
 #ifndef SWGENERAL_HH
 #define SWGENERAL_HH
-#include <liblcdf/gifx.h>
-#include <X11/Xlib.h>
 
+#include <liblcdf/gif.h>
+#include "fx.h"
+
+class MahjonggWindow;
 
 class SwDrawable {
   
@@ -13,12 +15,10 @@ class SwDrawable {
   
   SwDrawable()					{ }
   virtual ~SwDrawable();
-  
-  virtual Gif_XContext *get_gif_x_context() = 0;
-  
-  void draw_image(Pixmap src, int w, int h, int x, int y);
-  void draw_image(Pixmap src, Pixmap mask, int w, int h, int x, int y);  
-  virtual void draw_subimage(Pixmap src, Pixmap mask, int src_x, int src_y,
+
+  void draw_image(FXImage *src, int w, int h, int x, int y);
+  void draw_image(FXImage *src, FXBitmap *mask, int w, int h, int x, int y);
+  virtual void draw_subimage(FXImage *src, FXBitmap *mask, int src_x, int src_y,
 			     int w, int h, int x, int y) = 0;
   
   virtual void clear_area(int x, int y, int w, int h);
@@ -28,30 +28,27 @@ class SwDrawable {
 
 class SwWindow: public SwDrawable {
   
-  Display *_display;
-  Window _window;
-  int _depth;
-  
-  GC _copy_gc;
-  GC _masked_image_gc;
-  
-  Gif_XContext *_gifx;
+
+  FXApp    *_display;
+  FXWindow *_window;
+  MahjonggWindow *_root;
+
+  FXDCWindow *_copy_gc;
+  FXDCWindow *_masked_image_gc;
   
  public:
   
-  SwWindow(Display *, Window, int = -1);
+  SwWindow( FXApp *app, FXWindow *window, MahjonggWindow *root );
   ~SwWindow();
   
   SwWindow( const SwWindow & other ) = delete;
   SwWindow & operator=( const SwWindow & other ) = delete;
 
-  Display *display() const			{ return _display; }
-  Window window() const				{ return _window; }
-  int depth() const				{ return _depth; }
+  FXApp *display() const	{ return _display; }
+  FXWindow* window() const	{ return _window; }
+  MahjonggWindow* root() const { return _root; }
   
-  Gif_XContext *get_gif_x_context();
-  
-  void draw_subimage(Pixmap, Pixmap, int, int, int, int, int, int);
+  void draw_subimage(FXImage *source, FXBitmap *mask, int, int, int, int, int, int) override;
   void clear_area(int, int, int, int);
   
 };
@@ -68,7 +65,7 @@ class SwClippedWindow: public SwWindow {
   
  public:
   
-  SwClippedWindow(Display *, Window, int = -1);
+  SwClippedWindow(FXApp *app, FXWindow *window, MahjonggWindow *root );
   
   SwClippedWindow( const SwClippedWindow & other ) = delete;
   SwClippedWindow & operator=( const SwClippedWindow & other ) = delete;
@@ -78,7 +75,7 @@ class SwClippedWindow: public SwWindow {
   void intersect_clip(int x, int y, int w, int h);
   void union_clip(int x, int y, int w, int h);
   
-  void draw_subimage(Pixmap, Pixmap, int, int, int, int, int, int);
+  void draw_subimage(FXImage *source, FXBitmap *mask, int, int, int, int, int, int);
   void clear_area(int, int, int, int);
   void invalidate(int, int, int, int);
   
@@ -90,16 +87,16 @@ class SwImage {
 
  protected:
 
-  Display *_display;
-  Pixmap _source;
-  Pixmap _mask;
+  FXApp *_display;
+  FXImage *_source;
+  FXBitmap *_mask;
   int _width;
   int _height;
   
  public:
   
-  SwImage(Display *d, Pixmap s, int w, int h)
-  : _display(d),
+  SwImage(FXApp *app, FXImage *s, int w, int h)
+  : _display(app),
     _source(s),
     _mask(0),
     _width(w),
@@ -107,10 +104,10 @@ class SwImage {
   {
   }
 
-  SwImage(Display *d, Pixmap s, Pixmap m, int w, int h)
-  : _display(d),
-    _source(s),
-    _mask(m),
+  SwImage(FXApp *app, FXImage *source, FXBitmap *mask, int w, int h)
+  : _display(app),
+    _source(source),
+    _mask(mask),
     _width(w),
     _height(h)
   {
@@ -130,15 +127,15 @@ class SwImage {
   SwImage( const SwImage & other ) = delete;
   SwImage & operator=( const SwImage & other ) = delete;
 
-  void set_image(Display *d, Pixmap s, Pixmap m, int w, int h) {
-    _display = d; _source = s; _mask = m; _width = w; _height = h;
+  void set_image(FXApp *app, FXImage *source, FXBitmap *mask, int w, int h) {
+    _display = app; _source = source; _mask = mask; _width = w; _height = h;
   }
   
   virtual void draw(SwDrawable *, int x, int y);
   
 };
 
-
+#if 0
 class SwGifImage: public SwImage {
 
   Gif_Stream *_gfs;
@@ -166,27 +163,18 @@ class SwGifImage: public SwImage {
 
   void draw(SwDrawable *, int x, int y);
 };
-
+#endif
 
 inline void
-SwDrawable::draw_image(Pixmap src, int w, int h, int x, int y)
+SwDrawable::draw_image(FXImage *src, int w, int h, int x, int y)
 {
   draw_subimage(src, 0, 0, 0, w, h, x, y);
 }
 
 inline void
-SwDrawable::draw_image(Pixmap src, Pixmap mask, int w, int h, int x, int y)
+SwDrawable::draw_image(FXImage *src, FXBitmap *mask, int w, int h, int x, int y)
 {
   draw_subimage(src, mask, 0, 0, w, h, x, y);
-}
-
-inline
-SwGifImage::SwGifImage(Gif_Stream *gfs, int image_number)
-: _gfs(0),
-  _gfi(0),
-  _made(false)
-{
-  initialize(gfs, Gif_GetImage(gfs, image_number));
 }
 
 #endif

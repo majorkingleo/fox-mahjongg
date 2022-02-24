@@ -6,11 +6,10 @@
 
 class Button: public AlarmHooks, public SwWidget {
   
-  Gif_XContext *_gifx;
-  Pixmap _normal;
-  Pixmap _normal_mask;
-  Pixmap _lit;
-  Pixmap _lit_mask;
+  FXImage  *_normal;
+  FXBitmap *_normal_mask;
+  FXImage  *_lit;
+  FXBitmap *_lit_mask;
   
   int _state;				// 0 off, 1 lit, 2 flashing
   Alarm _flash_alarm;
@@ -25,8 +24,8 @@ class Button: public AlarmHooks, public SwWidget {
   Button( const Button & other ) = delete;
   Button & operator=( const Button & other ) = delete;
 
-  bool set_normal(Gif_Stream *, const char *);
-  bool set_lit(Gif_Stream *, const char *);
+  bool set_normal( const char * name );
+  bool set_lit( const char * name );
   
   void draw();
   

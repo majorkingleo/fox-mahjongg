@@ -21,68 +21,63 @@ SwDrawable::invalidate(int, int, int, int)
 
 //
 
-SwWindow::SwWindow(Display *display, Window window, int depth)
+SwWindow::SwWindow(FXApp *display, FXWindow *window, MahjonggWindow *root )
   : _display(display),
     _window(window),
-    _depth(depth),
-
+    _root( root ),
     _copy_gc(0),
-    _masked_image_gc(0),
-
-    _gifx(0)
+    _masked_image_gc(0)
 {
-  if (_depth <= 0) {
-    XWindowAttributes attr;
-    XGetWindowAttributes(_display, _window, &attr);
-    _depth = attr.depth;
-  }
-  _copy_gc = XCreateGC(_display, _window, 0, NULL);
-  _masked_image_gc = XCreateGC(_display, _window, 0, NULL);
+  _copy_gc = new FXDCWindow(_window);
+  _masked_image_gc = new FXDCWindow(_window);
 }
 
 SwWindow::~SwWindow()
 {
-  XFreeGC(_display, _copy_gc);
-  XFreeGC(_display, _masked_image_gc);
-  delete _gifx;
-}
-
-Gif_XContext *
-SwWindow::get_gif_x_context()
-{
-  if (!_gifx) _gifx = Gif_NewXContext(_display, _window);
-  return _gifx;
+  delete _copy_gc;
+  delete _masked_image_gc;
 }
 
 void
-SwWindow::draw_subimage(Pixmap source, Pixmap mask,
+SwWindow::draw_subimage(FXImage *source, FXBitmap *mask,
 			int src_x, int src_y, int width, int height,
 			int x, int y)
 {
   if (source && width > 0 && height > 0) {
-    GC image_gc;
+    FXDCWindow *image_gc = 0;
     if (mask) {
       image_gc = _masked_image_gc;
-      XSetClipMask(_display, image_gc, mask);
-      XSetClipOrigin(_display, image_gc, x - src_x, y - src_y);
+
+      // XSetClipMask(_display, image_gc, mask);
+      image_gc->setClipMask( mask );
+
+      // TODO ?
+      // XSetClipOrigin(_display, image_gc, x - src_x, y - src_y);
     } else
       image_gc = _copy_gc;
-    XCopyArea(_display, source, _window, image_gc, src_x, src_y,
-	      width, height, x, y);
+      image_gc->setClipRectangle( x, y, width, height );
+	  image_gc->drawImage( source, x, y);
+
+	  // image_gc->clearClipRectangle();
+    // XCopyArea(_display, source, _window, image_gc, src_x, src_y,
+	//      width, height, x, y);
   }
 }
 
 void
 SwWindow::clear_area(int x, int y, int width, int height)
 {
-  if (width > 0 && height > 0)
-    XClearArea(_display, _window, x, y, width, height, False);
+  if (width > 0 && height > 0) {
+	  _copy_gc->clearClipMask();
+	  _copy_gc->clearClipRectangle();
+   // XClearArea(_display, _window, x, y, width, height, False);
+  }
 }
 
 //
 
-SwClippedWindow::SwClippedWindow(Display *display, Window window, int depth)
-  : SwWindow(display, window, depth),
+SwClippedWindow::SwClippedWindow(FXApp *app, FXWindow *window, MahjonggWindow *root )
+  : SwWindow(app, window, root ),
     _clipping(false),
     _clip_left(0),
     _clip_top(0),
@@ -147,7 +142,7 @@ SwClippedWindow::do_clip(int &x, int &y, int &width, int &height) const
 }
 
 void
-SwClippedWindow::draw_subimage(Pixmap source, Pixmap mask,
+SwClippedWindow::draw_subimage(FXImage *source, FXBitmap *mask,
 		       int src_x, int src_y, int width, int height,
 		       int x, int y)
 {
@@ -180,8 +175,8 @@ SwClippedWindow::invalidate(int x, int y, int width, int height)
 
 SwImage::~SwImage()
 {
-  if (_source) XFreePixmap(_display, _source);
-  if (_mask) XFreePixmap(_display, _mask);
+  delete _source;
+  delete _mask;
 }
 
 void
@@ -191,6 +186,14 @@ SwImage::draw(SwDrawable *drawable, int x, int y)
     drawable->draw_subimage(_source, _mask, 0, 0, _width, _height, x, y);
 }
 
+#if 0
+SwGifImage::SwGifImage(Gif_Stream *gfs, int image_number)
+: _gfs(0),
+  _gfi(0),
+  _made(false)
+{
+  initialize(gfs, Gif_GetImage(gfs, image_number));
+}
 
 SwGifImage::~SwGifImage()
 {
@@ -232,3 +235,6 @@ SwGifImage::draw(SwDrawable *drawable, int x, int y)
   if (_source)
     drawable->draw_subimage(_source, _mask, 0, 0, _width, _height, x, y);
 }
+
+#endif
+

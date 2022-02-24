@@ -1,11 +1,9 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "board.hh"
 #include "panel.hh"
 #include "tileset.hh"
 #include "tile.hh"
 #include "hint.hh"
+#include "debug.h"
 
 Board::Board(Panel *panel, Game *game, Tileset *tileset)
   : SwWidget(panel),
@@ -70,15 +68,18 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
   set_tileset(tileset);
   _game->add_hook(this);
   
-  _copygc = XCreateGC(display(), window(), 0, NULL);
+  _copygc = new FXDCWindow(window());
   
+#warning TODOOO
+#if 0
   XGCValues gcv;
   gcv.function = GXor;
   _orgc = XCreateGC(display(), window(), GCFunction, &gcv);
-  
+
   gcv.foreground = 97;
-  _erasegc = XCreateGC(display(), window(), GCForeground, &gcv);
-  
+#endif
+  _erasegc = new FXDCWindow(window());
+#if 0
   gcv.foreground = 0UL;
   gcv.background = ~0UL;
   gcv.function = GXand;
@@ -92,6 +93,7 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
   gcv.function = GXor;
   gcv.foreground = ~0UL;
   _mask_one_gc = XCreateGC(display(), _mask[0], GCFunction | GCForeground, &gcv);
+#endif
 
   _hint = new Hint(this);
 }
@@ -102,17 +104,18 @@ Board::~Board()
 
   // free mask info
   for (int i = 0; i < NMASK; i++) {
-    if (_mask[i])
-      XFreePixmap(display(), _mask[i]);
-    _mask[i] = 0;
+    if (_mask[i]) {
+      delete _mask[i];
+      _mask[i] = 0;
+    }
   }
   
-  XFreeGC(display(), _copygc);
-  XFreeGC(display(), _orgc);
-  XFreeGC(display(), _erasegc);
-  XFreeGC(display(), _maskgc);
-  XFreeGC(display(), _mask_one_gc);
-  XFreeGC(display(), _mask_zero_gc);
+  delete _copygc;
+  delete _orgc;
+  delete _erasegc;
+  delete _maskgc;
+  delete _mask_one_gc;
+  delete _mask_zero_gc;
 }
 
 void
@@ -129,23 +132,29 @@ Board::set_tileset(Tileset *ts)
   assert(!_buffering);
   _buffer_w = _tile_width + _tile_xborder;
   _buffer_h = _tile_height + _tile_yborder;
-  if (_buffer) XFreePixmap(display(), _buffer);
-  _buffer = XCreatePixmap(display(), window(), _buffer_w, _buffer_h,
-			  _panel->depth());
+  if (_buffer) {
+	  delete _buffer;
+  }
+
+  _buffer = new FXImage(display(), 0, IMAGE_DITHER|IMAGE_SHMI|IMAGE_SHMP, _buffer_w, _buffer_h );
 
   // create new masks
   for (int i = 0; i < NMASK; i++) {
-    if (_mask[i]) XFreePixmap(display(), _mask[i]);
-    _mask[i] = XCreatePixmap(display(), window(), _buffer_w, _buffer_h, 1);
+    if (_mask[i]) {
+    	delete _mask[i];
+    }
+
+    _mask[i] = new FXImage(display(), 0, IMAGE_DITHER|IMAGE_SHMI|IMAGE_SHMP, _buffer_w, _buffer_h );
+    ///_mask[i] = XCreatePixmap(display(), window(), _buffer_w, _buffer_h, 1);
   }
 }
 
 
 void
-Board::set_background(Pixmap background)
+Board::set_background(FXImage *background)
 {
-  XSetTile(display(), _erasegc, background);
-  XSetFillStyle(display(), _erasegc, FillTiled);
+  _erasegc->setFillStyle( FILL_TILED );
+  _erasegc->setTile(background);
 }
 
 
@@ -410,7 +419,7 @@ Board::lru_mask() const
 
 
 void
-Board::draw_subimage(Pixmap image, Pixmap mask, int src_x, int src_y,
+Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 		     int w, int h, int x, int y)
 {
   if (_masking < 0 && !_buffering) {
@@ -420,16 +429,27 @@ Board::draw_subimage(Pixmap image, Pixmap mask, int src_x, int src_y,
 
   x -= _buffer_x;
   y -= _buffer_y;
-  if (_masking >= 0 && mask)
+  if (_masking >= 0 && mask) {
+	DEBUG( "TODO: XCopyArea" );
+#warning TODOOO
+	/*
     XCopyArea(display(), mask, _mask[_masking], _masking_gc,
 	      src_x, src_y, w, h, x, y);
-  else if (_masking >= 0)
-    XFillRectangle(display(), _mask[_masking], _masking_gc, x, y, w, h);
-  else if (_buffering && mask) {
-    XCopyPlane(display(), mask, _buffer, _maskgc, src_x, src_y, w, h, x, y, 1);
-    XCopyArea(display(), image, _buffer, _orgc, src_x, src_y, w, h, x, y);
-  } else
-    XCopyArea(display(), image, _buffer, _copygc, src_x, src_y, w, h, x, y);
+	*/
+  } else if (_masking >= 0) {
+#warning TODOOO
+	  DEBUG( "TODO: XFillRectangle" );
+	  // XFillRectangle(display(), _mask[_masking], _masking_gc, x, y, w, h);
+  } else if (_buffering && mask) {
+#warning TODOOO
+	  DEBUG( "TODO: XCopyPlane" );
+    // XCopyPlane(display(), mask, _buffer, _maskgc, src_x, src_y, w, h, x, y, 1);
+    // XCopyArea(display(), image, _buffer, _orgc, src_x, src_y, w, h, x, y);
+  } else {
+#warning TODOOO
+	  DEBUG( "TODO: XCopyArea" );
+    // XCopyArea(display(), image, _buffer, _copygc, src_x, src_y, w, h, x, y);
+  }
 }
 
 
@@ -509,8 +529,12 @@ Board::draw_neighborhood(Tile *t, int erase)
   switch (erase) {
 
    case 0: {			// drawing new tile
+#warning TODOOO
+	 DEBUG( "TODO: XCopyArea");
+	 /*
      XCopyArea(display(), _panel->window(), _buffer, _copygc,
 	       _buffer_x, _buffer_y, _buffer_w, _buffer_h, 0, 0);
+	       */
      mark_around(t, true, false);
      draw_marked();
      copy_buffer();
@@ -518,8 +542,10 @@ Board::draw_neighborhood(Tile *t, int erase)
    }
 
    case 1: {			// erasing tile
-     XSetTSOrigin(display(), _erasegc, -_buffer_x, -_buffer_y);
-     XFillRectangle(display(), _buffer, _erasegc, 0, 0, _buffer_w, _buffer_h);
+#warning TODOOO
+	 DEBUG( "TODO: XSetTSOrigin");
+     // XSetTSOrigin(display(), _erasegc, -_buffer_x, -_buffer_y);
+     // XFillRectangle(display(), _buffer, _erasegc, 0, 0, _buffer_w, _buffer_h);
      mark_around(t, true, true);
      draw_marked();
      copy_buffer();
@@ -537,8 +563,12 @@ Board::draw_neighborhood(Tile *t, int erase)
      if (themask < 0) {
        // couldn't find a prepared mask for this tile; create one
        _masking = themask = lru_mask();
+       DEBUG( "TODO: XFillRectangle");
+#warning TODOOO
+       /*
        XFillRectangle(display(), _mask[themask], _mask_zero_gc,
 		      0, 0, _buffer_w, _buffer_h);
+		      */
        _masking_tile = t;
        
        mark_around(t, true, false);
@@ -549,13 +579,15 @@ Board::draw_neighborhood(Tile *t, int erase)
      
      // now have correct mask; use it
      draw(t);
-     
+#warning TODOOO
+     DEBUG( "TODO: XSetClipMask");
+     /*
      XSetClipMask(display(), _copygc, _mask[themask]);
      XSetClipOrigin(display(), _copygc, _buffer_x, _buffer_y);
      XCopyArea(display(), _buffer, _panel->window(), _copygc,
 	       0, 0, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
      XSetClipMask(display(), _copygc, None);
-     
+     */
      mark_mask_used(themask);
      _mask_tile[themask] = t->number();
      break;

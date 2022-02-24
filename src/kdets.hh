@@ -4,6 +4,7 @@
 #include <liblcdf/gifx.h>
 #include "tileset.hh"
 
+#if 0
 class KDETileset: public Tileset {
   
   enum ImageError {
@@ -48,4 +49,5 @@ class KDETileset: public Tileset {
   
 };
 
+#endif
 #endif

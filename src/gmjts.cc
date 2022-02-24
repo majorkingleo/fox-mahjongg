@@ -1,11 +1,10 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "gmjts.hh"
 #include "tile.hh"
 #include "swgeneral.hh"
 #include <cstring>
+#include "main.h"
 
+#if 0
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 #define NIMAGES		(2*NPICTURES + 1)
 
@@ -157,3 +156,4 @@ GnomeMjTileset::draw_obscured(const Tile *t, SwDrawable *drawable,
 {
   draw(drawable, x, y, 2*NPICTURES);
 }
+#endif

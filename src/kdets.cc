@@ -7,6 +7,7 @@
 #include "swgeneral.hh"
 #include <cstring>
 
+#if 0
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 #define NIMAGES		(2*NPICTURES)
 
@@ -208,3 +209,4 @@ KDETileset::draw_obscured(const Tile *, SwDrawable *drawable,
   drawable->draw_image(_background, _background_mask,
 		       _width + _xborder, _height + _yborder, x, y);
 }
+#endif

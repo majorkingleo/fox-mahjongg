@@ -1,32 +1,35 @@
 #include "counter.hh"
 #include "images.h"
 #include "debug.h"
+#include "main.h"
+#include <format.h>
 
-static Pixmap digits[10];
-static Pixmap masks[10];
+using namespace Tools;
+
+static FXImage* digits[10];
+static FXBitmap* masks[10];
 static int digit_width, digit_height;
 
-static void
-setup_digits(Gif_XContext *gifx)
+static void setup_digits( MahjonggWindow *root )
 {
-  if (digits[0]) return;
-  Gif_Stream *gfs = Gif_ReadRecord(&digits_gif);
-  assert(gfs->nimages == 10);
-  digit_width = Gif_ImageWidth(Gif_GetImage(gfs, 0));
-  digit_height = Gif_ImageHeight(Gif_GetImage(gfs, 0));
-  for (int i = 0; i < 10; i++) {
-    Gif_Image *gfi = Gif_GetImage(gfs, i);
-    digits[i] = Gif_XImage(gifx, gfs, gfi);
-    masks[i] = Gif_XMask(gifx, gfs, gfi);
+  if (digits[0]) {
+	  return;
   }
-  Gif_DeleteStream(gfs);
+
+  for( unsigned i = 0; i < 10; i++ ) {
+	  digits[i] = root->getImageByName( format( "%d", i ) );
+#warning TODOOOO
+	  masks[i] = root->getBitmapMaskByName( format( "%d", i ) );
+  }
+  digit_width = digits[0]->getWidth();
+  digit_height = digits[0]->getHeight();
 }
 
 
 FancyCounter::FancyCounter(SwWindow *parent, int num_digits)
   : SwWidget(parent), _digits(num_digits), _value(0)
 {
-  setup_digits(get_gif_x_context());
+  setup_digits(parent->root());
   set_size(digit_width * num_digits, digit_height);
 }
 
