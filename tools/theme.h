@@ -5,6 +5,10 @@
 
 #ifdef TOOLS_USE_GUI
 
+#if defined WIN32 || defined _WIN32
+# include <windows.h>
+#endif
+
 #include <fx.h>
 
 namespace Tools {
