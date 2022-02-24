@@ -9,4 +9,6 @@
 
 // #define TOOLS_USE_GLOBAL_COUNT
 
+#define TOOLS_USE_GUI
+
 #endif
