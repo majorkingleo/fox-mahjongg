@@ -1,6 +1,6 @@
 #ifndef TILESET_HH
 #define TILESET_HH
-#include <lcdf/vector.hh>
+#include <liblcdf/vector.hh>
 class Tile;
 class SwDrawable;
 

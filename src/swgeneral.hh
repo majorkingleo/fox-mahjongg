@@ -1,6 +1,6 @@
 #ifndef SWGENERAL_HH
 #define SWGENERAL_HH
-#include <lcdfgif/gifx.h>
+#include <liblcdf/gifx.h>
 #include <X11/Xlib.h>
 
 

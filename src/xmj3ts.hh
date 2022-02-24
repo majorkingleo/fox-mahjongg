@@ -1,7 +1,7 @@
 #ifndef XMJ3TS_HH
 #define XMJ3TS_HH
-#include <lcdfgif/gif.h>
-#include <lcdfgif/gifx.h>
+#include <liblcdf/gif.h>
+#include <liblcdf/gifx.h>
 #include "tileset.hh"
 
 class Xmj3Tileset: public Tileset {

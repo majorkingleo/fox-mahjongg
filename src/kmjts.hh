@@ -1,7 +1,7 @@
 #ifndef KMJTS_HH
 #define KMJTS_HH
-#include <lcdfgif/gif.h>
-#include <lcdfgif/gifx.h>
+#include <liblcdf/gif.h>
+#include <liblcdf/gifx.h>
 #include "tileset.hh"
 
 class KyodaiTileset: public Tileset {

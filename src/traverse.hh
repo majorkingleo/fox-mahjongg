@@ -2,7 +2,7 @@
 #define TRAVERSE_HH
 #include "alarm.hh"
 #include "game.hh"
-#include <lcdf/vector.hh>
+#include <liblcdf/vector.hh>
 class Board;
 class Hint;
 

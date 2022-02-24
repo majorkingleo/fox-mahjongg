@@ -1,7 +1,7 @@
 #ifndef HINT_HH
 #define HINT_HH
 #include "alarm.hh"
-#include <lcdf/vector.hh>
+#include <liblcdf/vector.hh>
 #include "game.hh"
 class Board;
 class Tile;

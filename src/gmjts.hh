@@ -1,7 +1,7 @@
 #ifndef GMJTS_HH
 #define GMJTS_HH
-#include <lcdfgif/gif.h>
-#include <lcdfgif/gifx.h>
+#include <liblcdf/gif.h>
+#include <liblcdf/gifx.h>
 #include "tileset.hh"
 
 class GnomeMjTileset: public Tileset {

@@ -1,7 +1,7 @@
 #ifndef KDETS_HH
 #define KDETS_HH
-#include <lcdfgif/gif.h>
-#include <lcdfgif/gifx.h>
+#include <liblcdf/gif.h>
+#include <liblcdf/gifx.h>
 #include "tileset.hh"
 
 class KDETileset: public Tileset {

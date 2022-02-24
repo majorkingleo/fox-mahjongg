@@ -7,7 +7,48 @@ fox_mahjongg_SOURCES=\
 		src/DetectLocale.cc \
 		src/DetectLocale.h \
 		src/read_file.h \
-		src/read_file.cc 
+		src/read_file.cc \
+		src/alarm.cc \
+		src/alarm.hh \
+		src/board.hh \
+		src/board.cc \
+		src/button.hh \
+		src/button.cc \
+		src/counter.hh \
+		src/counter.cc \
+		src/game.hh \
+		src/game.cc \
+		src/gmjts.hh \
+		src/gmjts.cc \
+		src/hint.hh \
+		src/hint.cc \
+		src/kdets.hh \
+		src/kdets.cc \
+		src/kmjts.hh \
+		src/kmjts.cc \
+		src/matches.hh \
+		src/matches.cc \
+		src/moment.hh \
+		src/moment.cc \
+		src/panel.hh \
+		src/panel.cc \
+		src/solution.hh \
+		src/solution.cc \
+		src/solvable.hh \
+		src/solvable.cc \
+		src/swgeneral.hh \
+		src/swgeneral.cc \
+		src/swwidget.hh \
+		src/swwidget.cc \
+		src/tile.hh \
+		src/tile.cc \
+		src/tileset.hh \
+		src/tileset.cc \
+		src/traverse.hh \
+		src/traverse.cc \
+		src/xmj3ts.hh \
+		src/xmj3ts.cc 
+
 
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \
