@@ -76,6 +76,9 @@ class Board: public GameHooks, public SwWidget {
     fKeepLit = 2,
   };
   
+  Board( const Board & other ) = delete;
+  Board & operator=( const Board & other ) = delete;
+
   Board(Panel *, Game *, Tileset *);
   virtual ~Board();
 

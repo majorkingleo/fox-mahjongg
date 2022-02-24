@@ -6,6 +6,8 @@ Moment Moment::genesis((Moment *)0);
 
 
 Moment::Moment(Moment *m)
+ : _sec(0),
+   _usec(0)
 {
   assert(m == 0);
   struct timeval tv;

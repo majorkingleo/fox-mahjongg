@@ -15,7 +15,7 @@ class Moment {
   
  public:
   
-  Moment()				{ }
+  Moment() : _sec(0), _usec(0) { }
   Moment(long sec, long usec = 0)	: _sec(sec), _usec(usec) { }
   Moment(const struct timeval &t)	: _sec(t.tv_sec), _usec(t.tv_usec) { }
   

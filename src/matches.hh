@@ -20,6 +20,9 @@ class MatchCount: public SwWidget, public GameHooks {
   
   MatchCount(SwWindow *, Gif_Stream *, const char *);
   
+  MatchCount( const MatchCount & other ) = delete;
+  MatchCount & operator=( const MatchCount & other ) = delete;
+
   void set_game(Game *);
   
   void change(int m)				{ draw(m, true); }

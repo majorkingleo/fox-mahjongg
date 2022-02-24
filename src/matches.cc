@@ -5,7 +5,12 @@
 
 MatchCount::MatchCount(SwWindow *window, Gif_Stream *gfs, const char *name)
   : SwWidget(window),
-    _game(0), _one_image(None), _one_mask(None), _count(0)
+    _game(0),
+    _one_image(None),
+    _one_mask(None),
+    _one_width(0),
+    _one_height(0),
+    _count(0)
 {
   Gif_Image *gfi = Gif_GetNamedImage(gfs, name);
   if (gfi) {

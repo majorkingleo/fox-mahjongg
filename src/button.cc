@@ -1,13 +1,16 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "button.hh"
 
 
 Button::Button(SwWindow *window)
   : SwWidget(window),
-    _normal(0), _normal_mask(0), _lit(0), _lit_mask(0),
-    _state(0), _flash_alarm(this)
+    _gifx(0),
+    _normal(0),
+    _normal_mask(0),
+    _lit(0),
+    _lit_mask(0),
+
+    _state(0),
+    _flash_alarm(this)
 {
 }
 

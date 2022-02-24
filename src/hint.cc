@@ -11,9 +11,20 @@ Moment Hint::flash_off_delay(0, 400000);
 
 
 Hint::Hint(Board *b)
-  : _board(b), _game(b->game()), _on(0),
-    _which(0), _state(false), _alarm(this),
-    _nchoices(0), _choices( new int[ _game->nmatches() ] )
+  : _board(b),
+    _game(b->game()),
+    _on(0),
+
+    _which(0),
+    _skip_which(0),
+
+    _state(false),
+    _alarm(this),
+
+    _tiles(),
+
+    _nchoices(0),
+    _choices( new int[ _game->nmatches() ] )
 {
   _game->add_hook(this);
 }

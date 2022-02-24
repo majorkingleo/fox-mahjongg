@@ -14,10 +14,17 @@
 #define NDOWN		5
 
 KyodaiTileset::KyodaiTileset(Gif_Stream *gfs, Gif_XContext *gifx)
-  : Tileset("ivory"), _gfs(gfs),
-    _gifx(gifx), _colormap(0), _hi_colormap(0), _background_colormap(0),
+  : Tileset("ivory"),
+    _gfs(gfs),
+    _gifx(gifx),
+    _colormap(0),
+    _hi_colormap(0),
+    _background_colormap(0),
     _image_error(ieNone),
-    _background(None), _background_mask(None)
+
+    _images(),
+    _background(None),
+    _background_mask(None)
 {
   initialize_images();
   if (check()) {

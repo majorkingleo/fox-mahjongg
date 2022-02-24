@@ -7,8 +7,14 @@
 #include "tile.hh"
 
 SolutionDisplay::SolutionDisplay(Game *game, Board *board)
-  : _game(game), _board(board),
-    _on(false), _pos(0), _alarm(this), _state(0), _time_scale(3)
+  : _game(game),
+    _board(board),
+
+    _on(false),
+    _pos(0),
+    _alarm(this),
+    _state(0),
+    _time_scale(3)
 {
 }
 

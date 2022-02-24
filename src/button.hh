@@ -22,6 +22,9 @@ class Button: public AlarmHooks, public SwWidget {
   
   Button(SwWindow *);
   
+  Button( const Button & other ) = delete;
+  Button & operator=( const Button & other ) = delete;
+
   bool set_normal(Gif_Stream *, const char *);
   bool set_lit(Gif_Stream *, const char *);
   

@@ -12,8 +12,19 @@ Moment Traversal::flash_off_delay(0, 150000);
 
 
 Traversal::Traversal(Board *b)
-  : _board(b), _game(b->game()), _on(false),
-    _cursor(0), _alarm(this)
+  : _board(b),
+    _game(b->game()),
+
+    _on(false),
+    _state(false),
+    _cursor(0),
+
+    _hint_on(),
+    _horizontal(),
+    _vertical(),
+    _vertical_pos(0),
+
+    _alarm(this)
 {
   _game->add_hook(this);
   layout_hook(_game);

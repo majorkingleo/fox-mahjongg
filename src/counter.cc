@@ -1,5 +1,6 @@
 #include "counter.hh"
 #include "images.h"
+#include "debug.h"
 
 static Pixmap digits[10];
 static Pixmap masks[10];
@@ -33,6 +34,8 @@ FancyCounter::FancyCounter(SwWindow *parent, int num_digits)
 void
 FancyCounter::draw()
 {
+  DEBUG( "draw" );
+
   clear_area(0, 0, width(), height());
   int v = _value;
   for (int d = _digits - 1; d >= 0; d--) {

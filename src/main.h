@@ -64,7 +64,10 @@ private:
 	std::string config_dir;
 
 protected:
-	MahjonggWindow(){}
+	MahjonggWindow();
+
+	MahjonggWindow( const MahjonggWindow & other ) = delete;
+	MahjonggWindow & operator=( const MahjonggWindow & other ) = delete;
 
 public:
 

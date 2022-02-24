@@ -5,7 +5,14 @@
 
 
 SwWidget::SwWidget(SwWindow *swwindow)
-  : _swwindow(swwindow), _visible(false)
+  : _swwindow(swwindow),
+
+    _x(0),
+    _y(0),
+    _width(0),
+    _height(0),
+
+	_visible(false)
 {
 }
 

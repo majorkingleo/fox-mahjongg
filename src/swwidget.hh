@@ -18,6 +18,9 @@ class SwWidget: public SwDrawable {
   SwWidget(SwWindow *);
   virtual ~SwWidget()			{ }
   
+  SwWidget( const SwWidget & other ) = delete;
+  SwWidget & operator=( const SwWidget & other ) = delete;
+
   Display *display() const		{ return _swwindow->display(); }
   Window window() const			{ return _swwindow->window(); }
   int depth() const			{ return _swwindow->depth(); }

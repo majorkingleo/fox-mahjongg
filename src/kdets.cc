@@ -24,11 +24,19 @@
 #define HIGHLIGHT_BG_MAPPING	44
 
 KDETileset::KDETileset(Gif_Stream *gfs, Gif_XContext *gifx)
-  : Tileset("ivory"), _gfs(gfs),
-    _gifx(gifx), _colormap(0), _background_colormap(0),
+  : Tileset("ivory"),
+    _gfs(gfs),
+    _gifx(gifx),
+    _colormap(0),
+    _background_colormap(0),
     _image_error(ieNone),
-    _background(None), _background_mask(None),
-    _h_background(None), _h_background_mask(None)
+
+    _images(),
+
+    _background(None),
+    _background_mask(None),
+    _h_background(None),
+    _h_background_mask(None)
 {
   initialize_images();
   if (check()) {

@@ -9,13 +9,53 @@
 
 Board::Board(Panel *panel, Game *game, Tileset *tileset)
   : SwWidget(panel),
-    _panel(panel), _game(game), _tileset(0),
+    _panel(panel),
+    _game(game),
+    _tileset(0),
     _redraw_live(true),
-    _layout_x(0), _layout_y(0),
-    _topmost_tile(-1), _botmost_tile(-1),
-    _leftmost_tile(-1), _rightmost_tile(-1),
-    _buffering(0), _buffer(None),
-    _selected(0)
+    _layout_x(0),
+    _layout_y(0),
+    _topmost_tile(-1),
+    _botmost_tile(-1),
+    _leftmost_tile(-1),
+    _rightmost_tile(-1),
+
+    _tile_width(0),
+    _tile_height(0),
+    _tile_xborder(0),
+    _tile_yborder(0),
+    _tile_shadow(0),
+    _tile_flags(),
+
+    _buffering(0),
+    _buffer(None),
+
+    _buffer_w(0),
+    _buffer_h(0),
+    _buffer_x(0),
+    _buffer_y(0),
+
+    _mask(),
+	_mask_tile(),
+	_mask_next_mru(),
+	_mask_prev_mru(),
+	_mask_mru(0),
+	_masking(0),
+	_masking_gc(0),
+	_masking_tile(0),
+
+	_copygc(0),
+	_orgc(0),
+	_erasegc(0),
+	_maskgc(0),
+	_mask_one_gc(0),
+	_mask_zero_gc(0),
+
+    _selected(0),
+
+    _hint(0),
+
+    _display_order()
 {
   // set up mask info
   for (int i = 0; i < NMASK; i++) {

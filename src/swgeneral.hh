@@ -42,6 +42,9 @@ class SwWindow: public SwDrawable {
   SwWindow(Display *, Window, int = -1);
   ~SwWindow();
   
+  SwWindow( const SwWindow & other ) = delete;
+  SwWindow & operator=( const SwWindow & other ) = delete;
+
   Display *display() const			{ return _display; }
   Window window() const				{ return _window; }
   int depth() const				{ return _depth; }
@@ -67,6 +70,9 @@ class SwClippedWindow: public SwWindow {
   
   SwClippedWindow(Display *, Window, int = -1);
   
+  SwClippedWindow( const SwClippedWindow & other ) = delete;
+  SwClippedWindow & operator=( const SwClippedWindow & other ) = delete;
+
   bool clipped() const				{ return _clipping; }
   void unclip()					{ _clipping = false; }
   void intersect_clip(int x, int y, int w, int h);
@@ -81,10 +87,10 @@ class SwClippedWindow: public SwWindow {
 //
 
 class SwImage {
-
+/*
   SwImage(const SwImage &);
   SwImage &operator=(const SwImage &);
-  
+  */
  protected:
 
   Display *_display;
@@ -95,12 +101,38 @@ class SwImage {
   
  public:
   
-  SwImage(Display *d, Pixmap s, int w, int h)	{ set_image(d, s, 0, w, h); }
+  SwImage(Display *d, Pixmap s, int w, int h)
+  : _display(d),
+    _source(s),
+    _mask(0),
+    _width(w),
+    _height(h)
+  {
+  }
+
   SwImage(Display *d, Pixmap s, Pixmap m, int w, int h)
-    						{ set_image(d, s, m, w, h); }
-  SwImage()					{ set_image(0, 0, 0, 0, 0); }
+  : _display(d),
+    _source(s),
+    _mask(m),
+    _width(w),
+    _height(h)
+  {
+  }
+
+  SwImage()
+  : _display(0),
+     _source(0),
+     _mask(0),
+     _width(0),
+     _height(0)
+   {
+   }
+
   virtual ~SwImage();
   
+  SwImage( const SwImage & other ) = delete;
+  SwImage & operator=( const SwImage & other ) = delete;
+
   void set_image(Display *d, Pixmap s, Pixmap m, int w, int h) {
     _display = d; _source = s; _mask = m; _width = w; _height = h;
   }
@@ -121,7 +153,17 @@ class SwGifImage: public SwImage {
   
  public:
 
-  SwGifImage(Gif_Stream *gfs, Gif_Image *gfi)	{ initialize(gfs, gfi); }
+  SwGifImage( const SwGifImage & other ) = delete;
+  SwGifImage & operator=( const SwGifImage & other ) = delete;
+
+  SwGifImage(Gif_Stream *gfs, Gif_Image *gfi)
+  : _gfs(0),
+    _gfi(0),
+    _made(false)
+  {
+	  initialize(gfs, gfi);
+  }
+
   SwGifImage(Gif_Stream *gfs, int n);
   ~SwGifImage();
 
@@ -143,6 +185,9 @@ SwDrawable::draw_image(Pixmap src, Pixmap mask, int w, int h, int x, int y)
 
 inline
 SwGifImage::SwGifImage(Gif_Stream *gfs, int image_number)
+: _gfs(0),
+  _gfi(0),
+  _made(false)
 {
   initialize(gfs, Gif_GetImage(gfs, image_number));
 }

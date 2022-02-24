@@ -1,9 +1,9 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "swgeneral.hh"
 #include <cstdio>
+#include "debug.h"
+#include <format.h>
 
+using namespace Tools;
 
 SwDrawable::~SwDrawable()
 {
@@ -22,7 +22,14 @@ SwDrawable::invalidate(int, int, int, int)
 //
 
 SwWindow::SwWindow(Display *display, Window window, int depth)
-  : _display(display), _window(window), _depth(depth), _gifx(0)
+  : _display(display),
+    _window(window),
+    _depth(depth),
+
+    _copy_gc(0),
+    _masked_image_gc(0),
+
+    _gifx(0)
 {
   if (_depth <= 0) {
     XWindowAttributes attr;
@@ -75,7 +82,12 @@ SwWindow::clear_area(int x, int y, int width, int height)
 //
 
 SwClippedWindow::SwClippedWindow(Display *display, Window window, int depth)
-  : SwWindow(display, window, depth), _clipping(false)
+  : SwWindow(display, window, depth),
+    _clipping(false),
+    _clip_left(0),
+    _clip_top(0),
+    _clip_right(0),
+    _clip_bottom(0)
 {
 }
 
@@ -141,9 +153,13 @@ SwClippedWindow::draw_subimage(Pixmap source, Pixmap mask,
 {
   short old_x = x, old_y = y;
   do_clip(x, y, width, height);
-  if (width > 0 && height > 0)
+  if (width > 0 && height > 0) {
+	DEBUG( "draw_subimage" );
     SwWindow::draw_subimage(source, mask, src_x + x - old_x, src_y + y - old_y,
 			    width, height, x, y);
+  } else {
+	  DEBUG( format("not drawing subimage: width: %d height: %d", width, height ) );
+  }
 }
 
 void

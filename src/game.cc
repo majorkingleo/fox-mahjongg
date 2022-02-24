@@ -13,11 +13,26 @@ Tile Game::the_null_tile;
 
 
 Game::Game(Tileset *ts)
-  : _tileset(ts), _nmatches(ts->nmatches()),
-    _taken(0), _left(0), _possible_moves(0),
+  : _tileset(ts),
+    _nmatches(ts->nmatches()),
+
+    _tiles(),
+
+    _board_number(0),
+    _taken(0),
+    _left(0),
+    _possible_moves(0),
+
+    _moves(),
+    _user_moves(),
     _user_move_pos(0),
+
+    _solution(),
+    _hooks(),
+
     _grid(new Tile *[TILE_ROWS * TILE_COLS * TILE_LEVS]),
-    _bad_free_count(1), _free_count(new int[_nmatches]),
+    _bad_free_count(1),
+    _free_count(new int[_nmatches]),
     _left_count(new int[_nmatches])
 {
   _user_moves.push_back(0);

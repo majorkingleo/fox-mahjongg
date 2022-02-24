@@ -37,6 +37,9 @@ class KDETileset: public Tileset {
   KDETileset(Gif_Stream *, Gif_XContext *);
   ~KDETileset();
   
+  KDETileset( const KDETileset & other ) = delete;
+  KDETileset & operator=( const KDETileset & other ) = delete;
+
   bool ok() const				{ return _gfs; }
   
   void draw_normal(const Tile *, SwDrawable *, short x, short y);

@@ -27,7 +27,7 @@ class Panel: public SwClippedWindow {
   MatchCount *_match_count;
   SolutionDisplay *_solution;
   Traversal *_traversal;
-  MahjonggWindow *parent;
+  MahjonggWindow *_parent;
   
   short _scan_mark_x;
   short _scan_mark_y;
@@ -66,6 +66,9 @@ class Panel: public SwClippedWindow {
   
   Panel(Display *, Window, MahjonggWindow *parent );
   
+  Panel( const Panel & other ) = delete;
+  Panel & operator=( const Panel & other ) = delete;
+
   Board *board() const				{ return _board; }
   void set_board(Board *);
   void set_background(Pixmap);

@@ -13,8 +13,14 @@
 #define NDOWN		4
 
 GnomeMjTileset::GnomeMjTileset(Gif_Stream *gfs, Gif_XContext *gifx)
-  : Tileset("ivory"), _gfs(gfs),
-    _gifx(gifx), _colormap(0), _image_error(ieNone)
+  : Tileset("ivory"),
+    _gfs(gfs),
+    _gifx(gifx),
+    _colormap(0),
+    _image_error(ieNone),
+
+    _images(),
+    _masks()
 {
   initialize_images();
   if (check()) {

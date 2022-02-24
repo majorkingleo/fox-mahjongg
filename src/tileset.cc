@@ -1,16 +1,33 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "tileset.hh"
 #include <cstring>
 
 Tileset::Tileset(short ntiles, short npictures, short nmatches)
-  : _ntiles(ntiles), _npictures(npictures), _nmatches(nmatches),
-    _pictures(ntiles, -1), _matches(ntiles, -1)
+  : _xborder(0),
+    _yborder(0),
+    _shadow(0),
+    _width(0),
+    _height(0),
+
+    _ntiles(ntiles),
+    _npictures(npictures),
+    _nmatches(nmatches),
+    _pictures(ntiles, -1),
+    _matches(ntiles, -1)
 {
 }
 
 Tileset::Tileset(const char *name)
+: _xborder(0),
+  _yborder(0),
+  _shadow(0),
+  _width(0),
+  _height(0),
+
+  _ntiles(),
+  _npictures(),
+  _nmatches(),
+  _pictures(),
+  _matches()
 {
   if (strcmp(name, "ivory") == 0)
     initialize_ivory();

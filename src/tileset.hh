@@ -31,6 +31,9 @@ class Tileset {
   Tileset(const char *);		// set up by name, e.g. "ivory"
   virtual ~Tileset()			{ }
   
+  Tileset( const Tileset & other ) = delete;
+  Tileset & operator=( const Tileset & other ) = delete;
+
   virtual bool ok() const = 0;
   
   int xborder() const			{ return _xborder; }

@@ -28,8 +28,25 @@ class Alarm {
   
  public:
   
-  Alarm()				: _scheduled(0), _hook(0) { }
-  Alarm(AlarmHooks *h)			: _scheduled(0), _hook(h) { }
+  Alarm()
+  : _dead( false),
+    _scheduled(0),
+    _moment(),
+    _hook(0),
+    _next(0)
+  { }
+
+  Alarm(AlarmHooks *h)
+  : _dead( false),
+    _scheduled(0),
+    _moment(),
+    _hook(h),
+    _next(0)
+  { }
+
+  Alarm( const Alarm & other ) = delete;
+  Alarm & operator=( const Alarm & other ) = delete;
+
   ~Alarm()				{ if (_scheduled) unschedule(); }
   
   const Moment &moment() const		{ return _moment; }

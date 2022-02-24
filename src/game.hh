@@ -17,8 +17,15 @@ struct Move {
   Tile *m1;
   Tile *m2;
   
-  Move()				{ }
-  Move(Tile *t1, Tile *t2)		: m1(t1), m2(t2) { }
+  Move()
+  : m1(0),
+    m2(0)
+  { }
+
+  Move(Tile *t1, Tile *t2)
+  : m1(t1),
+    m2(t2)
+  { }
   
 };
 
@@ -90,6 +97,9 @@ class Game {
   Game(Tileset *);
   ~Game();
   
+  Game( const Game & other ) = delete;
+  Game & operator=( const Game & other ) = delete;
+
   void add_hook(GameHooks *gh)			{ _hooks.push_back(gh); }
   void remove_hook(GameHooks *gh);
   

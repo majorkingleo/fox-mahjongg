@@ -13,15 +13,38 @@
 #include "counter.hh"
 #include <X11/keysym.h>
 #include "main.h"
+#include "debug.h"
 
-Panel::Panel(Display *d, Window w, MahjonggWindow *parent_ )
+Panel::Panel(Display *d, Window w, MahjonggWindow *parent )
   : SwClippedWindow(d, w),
     _visible(false),
-    _window_width(-1), _window_height(-1),
-    _board(0), _background(None),
-    _tile_count(0), _match_count(0), _solution(0),
-    _traversal(0), _need_redraw(false),
-    parent( parent_ )
+
+    _window_width(-1),
+    _window_height(-1),
+
+    _board(0),
+    _background(None),
+    _tile_count(0),
+    _match_count(0),
+    _solution(0),
+    _traversal(0),
+    _parent( parent ),
+
+    _scan_mark_x( 0 ),
+    _scan_mark_y( 0 ),
+
+    _redraw_left( 0 ),
+    _redraw_top( 0 ),
+    _redraw_right( 0 ),
+    _redraw_bottom( 0 ),
+
+    _need_redraw(false),
+
+    new_but(0),
+    undo_but(0),
+    quit_but(0),
+    hint_but(0),
+    clean_but(0)
 {
 }
 
@@ -156,9 +179,13 @@ Panel::redraw_all()
 void
 Panel::redraw()
 {
-  if (!_need_redraw || !_visible)
+  if (!_need_redraw || !_visible) {
+	DEBUG( "no redraw required" );
     return;
+  }
   
+  DEBUG( "redraw" );
+
   _redraw_left -= 2;
   _redraw_top -= 2;
   _redraw_right += 2;
@@ -273,11 +300,11 @@ Panel::command(Game *g, Command com, Button *button, bool keyboard, Time when)
    case comNew: {
      // randomize next board number by factoring in time between news
      // (don't want the next board after # K0 to always be # K1)
-     int diff = (Moment::now() - parent->getLastNewBoard()).usec() / 100;
-     parent->setLastNewBoard( Moment::now() );
+     int diff = (Moment::now() - _parent->getLastNewBoard()).usec() / 100;
+     _parent->setLastNewBoard( Moment::now() );
      for (int i = 0; i < diff % 16; i++)
        zrand();
-     g->start(zrand(), parent->getSolveableBoards());
+     g->start(zrand(), _parent->getSolveableBoards());
      break;
    }
     

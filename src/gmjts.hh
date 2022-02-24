@@ -32,6 +32,9 @@ class GnomeMjTileset: public Tileset {
   GnomeMjTileset(Gif_Stream *, Gif_XContext *);
   ~GnomeMjTileset();
   
+  GnomeMjTileset( const GnomeMjTileset & other ) = delete;
+  GnomeMjTileset & operator=( const GnomeMjTileset & other ) = delete;
+
   bool ok() const				{ return _gfs; }
   
   void draw_normal(const Tile *, SwDrawable *, short x, short y);

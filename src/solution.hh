@@ -24,6 +24,9 @@ class SolutionDisplay: public AlarmHooks {
   
   SolutionDisplay(Game *, Board *);
   
+  SolutionDisplay( const SolutionDisplay & other ) = delete;
+  SolutionDisplay & operator=( const SolutionDisplay & other ) = delete;
+
   bool on() const			{ return _on; }
   
   bool turn_on(Panel *);

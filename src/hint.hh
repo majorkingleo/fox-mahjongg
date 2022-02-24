@@ -35,6 +35,9 @@ class Hint: public AlarmHooks, public GameHooks {
   Hint(Board *);
   ~Hint();
   
+  Hint( const Hint & other ) = delete;
+  Hint & operator=( const Hint & other ) = delete;
+
   bool on() const				{ return _on; }
 
   bool find(int match);

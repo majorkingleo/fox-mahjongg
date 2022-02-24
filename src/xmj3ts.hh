@@ -46,6 +46,9 @@ class Xmj3Tileset: public Tileset {
   Xmj3Tileset(Gif_Stream *, Gif_XContext *);
   ~Xmj3Tileset();
   
+  Xmj3Tileset( const Xmj3Tileset & other ) = delete;
+  Xmj3Tileset & operator=( const Xmj3Tileset & other ) = delete;
+
   bool ok() const				{ return _gfs; }
   
   void draw_normal(const Tile *, SwDrawable *, short x, short y);

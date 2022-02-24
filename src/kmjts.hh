@@ -35,6 +35,9 @@ class KyodaiTileset: public Tileset {
   KyodaiTileset(Gif_Stream *, Gif_XContext *);
   ~KyodaiTileset();
   
+  KyodaiTileset( const KyodaiTileset & other ) = delete;
+  KyodaiTileset & operator=( const KyodaiTileset & other ) = delete;
+
   bool ok() const				{ return _gfs; }
   
   void draw_normal(const Tile *, SwDrawable *, short x, short y);

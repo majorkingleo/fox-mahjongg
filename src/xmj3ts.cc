@@ -9,8 +9,19 @@
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 
 Xmj3Tileset::Xmj3Tileset(Gif_Stream *gfs, Gif_XContext *gifx)
-  : Tileset("ivory"), _gfs(gfs),
-    _gifx(gifx), _colormap(0), _image_error(ieNone)
+  : Tileset("ivory"),
+    _gfs(gfs),
+    _gifx(gifx),
+    _colormap(0),
+    _image_error(ieNone),
+
+    _face_ref(),
+    _base_ref(),
+    _selected_ref(),
+    _obscured_ref(),
+
+    _images(),
+    _masks()
 {
   initialize_images();
   if (check()) {

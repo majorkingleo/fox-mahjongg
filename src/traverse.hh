@@ -39,6 +39,9 @@ class Traversal: public AlarmHooks, public GameHooks {
   Traversal(Board *);
   ~Traversal();
   
+  Traversal( const Traversal & other ) = delete;
+  Traversal & operator=( const Traversal & other ) = delete;
+
   void turn_off();
   
   Tile *cursor() const;

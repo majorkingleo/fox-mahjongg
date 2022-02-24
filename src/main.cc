@@ -49,11 +49,65 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 FXIMPLEMENT(MahjonggWindow,FXMainWindow,MahjonggWindowMap,ARRAYNUMBER(MahjonggWindowMap));
 
 
+MahjonggWindow::MahjonggWindow()
+: FXMainWindow(0,"",NULL,NULL,
+		DECOR_TITLE | DECOR_CLOSE | DECOR_MINIMIZE,
+		0,0,810,600),
+  contents(0),
+  canvasFrame(0),
+  buttonFrame(0),
+  canvas(0),
+  mdflag(0),
+  drawColor(0),
+  running(0),
+  level_count(0),
+  retry_count(0),
+  level_label(0),
+  retry_label(0),
+  move_mode(0),
+
+  gifx(0),
+  tileset(0),
+  background(0),
+  game(0),
+  last_new_board(),
+  solveable_boards( true ),
+  panel(0),
+  gifbuttons(0),
+  matches(0),
+  layout_name(0),
+  config_dir()
+{}
 
 // Construct a MahjonggWindow
-MahjonggWindow::MahjonggWindow(FXApp *a):FXMainWindow(a,"austromobil.at Breakout",NULL,NULL,
+MahjonggWindow::MahjonggWindow(FXApp *a)
+: FXMainWindow(a,"austromobil.at Breakout",NULL,NULL,
 		DECOR_TITLE | DECOR_CLOSE | DECOR_MINIMIZE,
-		0,0,810,600)
+		0,0,810,600),
+  contents(0),
+  canvasFrame(0),
+  buttonFrame(0),
+  canvas(0),
+  mdflag(0),
+  drawColor(0),
+  running(0),
+  level_count(0),
+  retry_count(0),
+  level_label(0),
+  retry_label(0),
+  move_mode(0),
+
+  gifx(0),
+  tileset(0),
+  background(0),
+  game(0),
+  last_new_board(),
+  solveable_boards( true ),
+  panel(0),
+  gifbuttons(0),
+  matches(0),
+  layout_name(0),
+  config_dir()
 {
 
 	contents=new FXHorizontalFrame(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 0,0,0,0);
@@ -230,6 +284,7 @@ long MahjonggWindow::onMouseMove(FXObject*, FXSelector, void* ptr){
 long MahjonggWindow::onPaint(FXObject*,FXSelector,void* ptr){
 
 	// level->paint();
+	panel->redraw_all();
 	panel->redraw();
 
 	return 1;
@@ -244,6 +299,9 @@ long MahjonggWindow::onCmdClear(FXObject*,FXSelector,void*){
 	retry_count = 2;
 	level_count = LEVEL_START;
 	// level = get_next_level( true );
+
+	panel->redraw_all();
+	update();
 
 	return 1;
 }

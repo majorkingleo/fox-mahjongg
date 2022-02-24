@@ -13,8 +13,11 @@
 
 
 SolvableMaker::SolvableMaker(Game *game)
-  : _game(game), _tileset(game->tileset()),
-    _null_tile(game->null_tile()), _tiles(game->tiles())
+  : _game(game),
+    _tileset(game->tileset()),
+    _null_tile(game->null_tile()),
+    _tiles(game->tiles()),
+    _solution()
 {
 }
 

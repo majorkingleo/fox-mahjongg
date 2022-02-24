@@ -28,6 +28,9 @@ class SolvableMaker {
   
   SolvableMaker(Game *);
   
+  SolvableMaker( const SolvableMaker & other ) = delete;
+  SolvableMaker & operator=( const SolvableMaker & other ) = delete;
+
   bool assign(uint32_t);
   const Vector<Move> &solution() const		{ return _solution; }
   
