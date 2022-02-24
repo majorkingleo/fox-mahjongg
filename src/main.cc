@@ -3,15 +3,14 @@
  *                         Main Window                                           *
  *                                                                               *
  ********************************************************************************/
-#include "fx.h"
-#include <vector>
-
-
-#ifdef WIN32
+#if defined WIN32 || defined _WIN32
 #  include <windows.h>
 #else
 #  include <X11/Xlib.h>
 #endif
+
+#include "fx.h"
+#include <vector>
 
 
 const int LEVEL_START = 0;

@@ -52,8 +52,10 @@ void OutDebug::add( const char *file, unsigned line, const char *function, const
 		std::cout << "\033[0m";
 	}
 
+#if !defined WIN32 && !defined _WIN32
 	std::cout << ':' << line
 			<< " " // << function
 			<< DetectLocale::w2out(s)
 			<< '\n';
+#endif
 }

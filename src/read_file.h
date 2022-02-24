@@ -10,6 +10,8 @@
 
 #include <string>
 
+#if !defined WIN32 && !defined _WIN32
+
 class ReadFile
 {
 	std::string error;
@@ -43,5 +45,7 @@ public:
 };
 
 extern ReadFile READ_FILE;
+
+#endif
 
 #endif /* READ_FILE_H_ */

@@ -4,6 +4,9 @@
  *  Created on: 10.02.2022
  *      Author: martin
  */
+
+#if !defined WIN32 && !defined _WIN32
+
 #include "read_file.h"
 #include <debug.h>
 #include <xml.h>
@@ -1312,3 +1315,5 @@ bool ReadFile::convert( const std::string & s, const std::string & from, const s
     return true;
 }
 
+
+#endif

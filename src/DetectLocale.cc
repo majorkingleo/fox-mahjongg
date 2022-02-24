@@ -13,6 +13,8 @@
 #include <format.h>
 #include <cpp_util.h>
 
+#if !defined WIN32 && !defined _WIN32
+
 using namespace Tools;
 
 DetectLocale DETECT_LOCALE;
@@ -41,7 +43,7 @@ void DetectLocale::init()
 
 
 
-	char *pcLocale = std::setlocale( LC_MESSAGES, "" );
+	char *pcLocale = std::setlocale( LC_ALL, "" );
 
 	if( pcLocale == NULL ) {
 		is_utf8 = false;
@@ -139,3 +141,5 @@ std::wstring DetectLocale::in2w( const std::string & in )
 {
 	return DETECT_LOCALE.inputString2wString( in );
 }
+
+#endif

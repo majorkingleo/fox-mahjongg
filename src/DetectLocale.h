@@ -11,6 +11,8 @@
 #include <string>
 #include <map>
 
+#if !defined WIN32 && !defined _WIN32
+
 class DetectLocale
 {
 	bool is_utf8;
@@ -41,5 +43,7 @@ public:
 };
 
 extern DetectLocale DETECT_LOCALE;
+
+#endif
 
 #endif /* DETECTLOCALE_H_ */
