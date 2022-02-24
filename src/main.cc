@@ -11,7 +11,16 @@
 
 #include "fx.h"
 #include <vector>
+#include "panel.hh"
+#include "tileset.hh"
+#include <errno.h>
+#include <format.h>
+#include <xmj3ts.hh>
+#include <gmjts.hh>
+#include <kdets.hh>
+#include <kmjts.hh>
 
+using namespace Tools;
 
 const int LEVEL_START = 0;
 const unsigned TIMEOUT_VALUE = 20;
@@ -38,6 +47,8 @@ private:
 	FXLabel          *retry_label;
 
 	int               move_mode;
+
+	Gif_XContext *gifx;
 
 protected:
 	MahjonggWindow(){}
@@ -80,6 +91,12 @@ public:
 
 	// Initialize
 	virtual void create();
+
+private:
+	Tileset *load_tileset(const char *tileset_name, const char *config_dir);
+
+	void error( const std::string & error );
+	void config_error( const std::string & error );
 };
 
 
@@ -162,6 +179,19 @@ MahjonggWindow::MahjonggWindow(FXApp *a):FXMainWindow(a,"austromobil.at Breakout
 	running=0;
 	level_count = LEVEL_START;
 	move_mode = 0;
+
+	Display *display  = (Display*)getApp()->getDisplay();
+	int screen 		  = DefaultScreen(display);
+	int depth 		  = DefaultDepth(display, screen );
+	Colormap colormap = DefaultColormap(display, screen );
+	Visual *visual    = DefaultVisual(display, screen );
+
+	gifx = Gif_NewXContextFromVisual( display,
+									  screen,
+									  visual,
+									  depth,
+									  colormap);
+
 }
 
 
@@ -395,6 +425,90 @@ long MahjonggWindow::onClose(FXObject*obj,FXSelector sel,void* ptr )
 
 	return FXMainWindow::onCmdClose( obj, sel, ptr );
 }
+
+void MahjonggWindow::error( const std::string & error )
+{
+	std::cerr << "Error: " << error << std::endl;
+}
+
+void MahjonggWindow::config_error( const std::string & error )
+{
+	std::cerr << "Config Error: " << error << std::endl;
+}
+
+
+Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *config_dir)
+{
+	int len = strlen(tileset_name) + strlen(config_dir) + 15;
+	char *buf = new char[len];
+	Gif_Stream *gfs;
+
+	sprintf(buf, "%s/tiles/%s.gif", config_dir, tileset_name);
+	FILE *f = fopen(buf, "rb");
+	if (!f)
+		f = fopen(tileset_name, "rb");
+	if (!f) {
+		gfs = 0;
+		error(format("bad tileset `%s': %s", tileset_name, strerror(errno)));
+	} else {
+		gfs = Gif_FullReadFile(f, GIF_READ_COMPRESSED, 0, 0);
+		fclose(f);
+	}
+
+	Tileset *tileset = 0;
+
+	// Xmahjongg tileset?
+	if (gfs && !tileset && Gif_ImageCount(gfs) > 1)
+		tileset = new Xmj3Tileset(gfs, gifx);
+
+	// Otherwise, check dimensions.
+	int width = 0, height = 0;
+	if (gfs && !tileset) {
+		Gif_Image *gfi = Gif_GetImage(gfs, 0);
+		width = (gfi ? Gif_ImageWidth(gfi) : 0);
+		height = (gfi ? Gif_ImageHeight(gfi) : 0);
+	}
+
+	// Gnome tileset?
+	if (gfs && !tileset && width > 2*height)
+		tileset = new GnomeMjTileset(gfs, gifx);
+
+	// KDE tileset?
+	if (gfs && !tileset && width == 360 && height == 280) {
+		tileset = new KDETileset(gfs, gifx);
+		if (!tileset->ok()) {
+			delete tileset;
+			tileset = 0;
+		}
+	}
+
+	// Kyodai tileset?
+	if (gfs && !tileset)
+		tileset = new KyodaiTileset(gfs, gifx);
+
+	// Delete tileset if bad
+	if (tileset && !tileset->ok()) {
+		delete tileset;
+		tileset = 0;
+	}
+
+	delete[] buf;
+	if (gfs && !gfs->refcount)
+		Gif_DeleteStream(gfs);
+
+	// What if that's not a valid tileset?
+	if (!tileset) {
+		if (strcmp(tileset_name, "thick") == 0)
+			config_error("can't load `thick' tileset!");
+		else if (f != 0)
+			error(format("tileset `%s' is invalid", tileset_name));
+		error(format("using default tileset `thick'"));
+		return load_tileset("thick", config_dir);
+	}
+
+	return tileset;
+}
+
 
 // Here we begin
 int main(int argc,char *argv[]){
