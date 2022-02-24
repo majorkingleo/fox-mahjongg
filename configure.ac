@@ -16,7 +16,7 @@ AC_DEFUN([CXX_FLAGS_CHECK],
 ])
 
 
-AC_INIT(fox-mahjongg, 0.33)
+AC_INIT(fox-mahjongg, 0.1)
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
 AC_PROG_CC
 AC_CONFIG_FILES([
