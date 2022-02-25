@@ -524,7 +524,7 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 
 	Tileset *tileset = 0;
 
-	tileset = load_tileset_thick( getApp() );
+	tileset = load_tileset_thick( this );
 #if 0
 	// Xmahjongg tileset?
 	if (gfs && !tileset && Gif_ImageCount(gfs) > 1)
@@ -681,6 +681,38 @@ void MahjonggWindow::loadDigitImages()
 	imageByName["7"]       = createGifImage( digit_07_gif );
 	imageByName["8"]       = createGifImage( digit_08_gif );
 	imageByName["9"]       = createGifImage( digit_09_gif );
+}
+
+FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image )
+{
+	image->render();
+
+	FXBitmap* bitmap = new FXBitmap(getApp(), 0, 0, image->getWidth(),image->getHeight() );
+	bitmap->create();
+
+	int width = image->getWidth();
+	int height = image->getHeight();
+
+	FXColor transparent_color = 0;
+
+	FXIcon *icon = dynamic_cast<FXIcon*>( image );
+
+	if( icon ) {
+		transparent_color = icon->getTransparentColor();
+	} else {
+		transparent_color = image->getPixel( 0, 0 );
+	}
+
+	for( unsigned x = 0; x < width; x++ ) {
+		for( unsigned y = 0; y < height; y++ ) {
+			FXColor color = image->getPixel( x, y );
+			if( color != transparent_color ) {
+				bitmap->setPixel( x, y, true );
+			}
+		}
+	}
+
+	return bitmap;
 }
 
 void

@@ -117,7 +117,7 @@ const char *tiles_thick_name[] = {
 		"selected"
 };
 
-Tileset *load_tileset_thick( FXApp *app )
+Tileset *load_tileset_thick( MahjonggWindow *root )
 {
 	Xmj3Tileset::TILE_DATA data;
 
@@ -125,7 +125,7 @@ Tileset *load_tileset_thick( FXApp *app )
 		data.push_back( Xmj3Tileset::TileDataType( tiles_thick_name[i], tiles_thick[i] ));
 	}
 
-	Xmj3Tileset *tileset = new Xmj3Tileset( app, data );
+	Xmj3Tileset *tileset = new Xmj3Tileset( root, data );
 
 	tileset->xborder( 8 );
 	tileset->yborder( 8 );

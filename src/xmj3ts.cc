@@ -5,12 +5,13 @@
 #include "debug.h"
 #include <format.h>
 #include <cpp_util.h>
+#include "main.h"
 
 using namespace Tools;
 
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 
-Xmj3Tileset::Xmj3Tileset( FXApp *app, const TILE_DATA & tile_data )
+Xmj3Tileset::Xmj3Tileset( MahjonggWindow *root, const TILE_DATA & tile_data )
   : Tileset("ivory"),
     _image_error(ieNone),
 
@@ -22,7 +23,7 @@ Xmj3Tileset::Xmj3Tileset( FXApp *app, const TILE_DATA & tile_data )
     _images(),
     _masks(),
     _tile_data( tile_data ),
-    _app( app )
+    _root( root )
 {
   _xborder = 4;
   _yborder = 4;
@@ -182,7 +183,7 @@ Xmj3Tileset::initialize_images()
 
     std::string name = _tile_data[imagei].name;
 
-    FXImage *image = new FXGIFImage( _app );
+    FXImage *image = new FXGIFIcon( _root->getApp(), 0, 0, IMAGE_ALPHAGUESS );
     FXMemoryStream ms(FXStreamLoad,(FXuchar*)_tile_data[imagei].data);
     if( !image->loadPixels(ms) ) {
     	throw REPORT_EXCEPTION( format("Cannot load image %d", _tile_data[imagei].name) );
@@ -197,8 +198,7 @@ Xmj3Tileset::initialize_images()
     	  image->getWidth(),
     	  image->getHeight()));
 
-#warning TODOOO
-    DEBUG( "TODO: _masks" );
+    _masks.push_back( _root->createBitmapMaskFromImage( image ) );
 
     if (strncmp(name.c_str(), "base", 4) == 0)
       map_one_image(name.c_str() + 4, imagei, itBase, genericity);

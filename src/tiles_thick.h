@@ -11,7 +11,9 @@
 #include "fx.h"
 #include "tileset.hh"
 
-Tileset *load_tileset_thick( FXApp *app );
+class MahjonggWindow;
+
+Tileset *load_tileset_thick( MahjonggWindow *root );
 
 
 

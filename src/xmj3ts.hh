@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+class MahjonggWindow;
+
 class Xmj3Tileset: public Tileset {
   
 public:
@@ -52,7 +54,7 @@ protected:
 
   TILE_DATA _tile_data;
 
-  FXApp *_app;
+  MahjonggWindow *_root;
 
   void map_one_image(const char *, int, ImageType, Vector<short> &);
   void initialize_images();
@@ -64,7 +66,7 @@ protected:
   
  public:
   
-  Xmj3Tileset( FXApp *app, const TILE_DATA & tile_data );
+  Xmj3Tileset( MahjonggWindow *root, const TILE_DATA & tile_data );
   ~Xmj3Tileset();
   
   Xmj3Tileset( const Xmj3Tileset & other ) = delete;

@@ -133,6 +133,7 @@ public:
 
 	FXImage *getImageByName( const std::string & image );
 	FXBitmap *getBitmapMaskByName( const std::string & image );
+	FXBitmap *createBitmapMaskFromImage( FXImage *image );
 
 private:
 	Tileset *load_tileset(const char *tileset_name, const char *config_dir);
