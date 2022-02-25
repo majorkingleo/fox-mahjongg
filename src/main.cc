@@ -18,6 +18,7 @@
 #include <OutDebug.h>
 #include <arg.h>
 #include <cpp_util.h>
+#include "tiles_thick.h"
 
 using namespace Tools;
 
@@ -490,6 +491,8 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 	}
 
 	Tileset *tileset = 0;
+
+	tileset = load_tileset_thick( getApp() );
 #if 0
 	// Xmahjongg tileset?
 	if (gfs && !tileset && Gif_ImageCount(gfs) > 1)
@@ -564,7 +567,7 @@ FXImage* MahjonggWindow::load_background(const char *background_name, const char
 		getApp()->endWaitCursor();
 	}
 
-	return background;
+	return img;
 }
 
 

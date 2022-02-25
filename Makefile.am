@@ -51,11 +51,24 @@ fox_mahjongg_SOURCES=\
 		src/traverse.cc \
 		src/xmj3ts.hh \
 		src/xmj3ts.cc  \
-		src/random.cc 		
+		src/random.cc \
+		src/data_tiles_thick.cc \
+		src/data_tiles_thick.h \
+		src/tiles_thick.h \
+		src/tiles_thick.cc
 		
 ##TODO
 		
-##BUILT_SOURCES=src/images.cc
+BUILT_SOURCES=src/data_tiles_thick.cc \
+			  src/data_tiles_thick.h
+
+src/data_tiles_thick.cc: share/tiles/thick.gif
+	mkdir -p share/tiles/thick
+	convert share/tiles/thick.gif share/tiles/thick/tiles_thick_%02d.gif
+	reswrap -o src/data_tiles_thick.cc -i data_tiles_thick.h --suffix _gif share/tiles/thick/tiles_thick_*.gif
+	reswrap -o src/data_tiles_thick.h -h --suffix _gif share/tiles/thick/tiles_thick_*.gif
+		
+src/data_tiles_thick.h: src/data_tiles_thick.cc
 
 ##src/images.cc: images/digits.gif images/buttons.gif
 ##	reswrap -o src/images.cc --suffix _gif images/digits.gif images/buttons.gif

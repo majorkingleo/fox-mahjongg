@@ -1,20 +1,16 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "xmj3ts.hh"
 #include "tile.hh"
 #include "swgeneral.hh"
 #include <cstring>
+#include "debug.h"
+#include <format.h>
+
+using namespace Tools;
 
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 
-#if 0
-
-Xmj3Tileset::Xmj3Tileset(Gif_Stream *gfs, Gif_XContext *gifx)
+Xmj3Tileset::Xmj3Tileset( FXApp *app, const TILE_DATA & tile_data )
   : Tileset("ivory"),
-    _gfs(gfs),
-    _gifx(gifx),
-    _colormap(0),
     _image_error(ieNone),
 
     _face_ref(),
@@ -23,33 +19,31 @@ Xmj3Tileset::Xmj3Tileset(Gif_Stream *gfs, Gif_XContext *gifx)
     _obscured_ref(),
 
     _images(),
-    _masks()
+    _masks(),
+    _tile_data( tile_data ),
+    _app( app )
 {
+  _xborder = 4;
+  _yborder = 4;
+  _shadow = 1;
+
   initialize_images();
   if (check()) {
     initialize();
-    _gfs->refcount++;
-  } else
-    _gfs = 0;
+  }
 }
 
 Xmj3Tileset::~Xmj3Tileset()
 {
-  Gif_DeleteColormap(_colormap);
-  
-  Display *display = _gifx->display;
-  if (_gfs && _images.size())
-    for (int i = 0; i < Gif_ImageCount(_gfs); i++) {
-      if (_images[i]) {
-    	  delete  _images[i];
-      }
+	for (int i = 0; i < _images.size(); i++) {
+		if (_images[i]) {
+			delete  _images[i];
+		}
 
-      if (_masks[i]) {
-    	  delete _masks[i];
-      }
-    }
-  
-  Gif_DeleteStream(_gfs);
+		if (_masks[i]) {
+			delete _masks[i];
+		}
+	}
 }
 
 
@@ -175,36 +169,37 @@ Xmj3Tileset::map_one_image(const char *name_rest, int image_index,
 void
 Xmj3Tileset::initialize_images()
 {
-  if (_gfs == 0) {
-    _image_error = ieBadGif;
-    return;
-  }
-  
   initialize_picture_names();
   _base_ref.assign(NPICTURES, -1);
   _selected_ref.assign(NPICTURES, -1);
   _obscured_ref.assign(NPICTURES, -1);
   _face_ref.assign(NPICTURES, -1);
   
-  Vector<short> genericity(Gif_ImageCount(_gfs), NPICTURES + 1);
+  Vector<short> genericity( _tile_data.size(), NPICTURES + 1);
   
-  for (int imagei = 0; imagei < Gif_ImageCount(_gfs); imagei++) {
-    Gif_Image *gfi = Gif_GetImage(_gfs, imagei);
-    const char *name = gfi->identifier;
-    if (!name || name[0] == 0)
-      ;
-    else if (strncmp(name, "base", 4) == 0)
-      map_one_image(name + 4, imagei, itBase, genericity);
-    else if (strncmp(name, "selected", 8) == 0)
-      map_one_image(name + 8, imagei, itSelected, genericity);
-    else if (strncmp(name, "obscured", 8) == 0)
-      map_one_image(name + 8, imagei, itObscured, genericity);
+  for (int imagei = 0; imagei < _tile_data.size(); imagei++) {
+
+    std::string name = _tile_data[imagei].name;
+
+    FXImage *image = new FXGIFImage( _app, _tile_data[imagei].data );
+    image->create();
+    _images.push_back(image);
+
+    DEBUG( format( "creating image %02d => %s %p", imagei, name, _images.at(imagei) ));
+
+#warning TODOOO
+    DEBUG( "TODO: _masks" );
+
+    if (strncmp(name.c_str(), "base", 4) == 0)
+      map_one_image(name.c_str() + 4, imagei, itBase, genericity);
+    else if (strncmp(name.c_str(), "selected", 8) == 0)
+      map_one_image(name.c_str() + 8, imagei, itSelected, genericity);
+    else if (strncmp(name.c_str(), "obscured", 8) == 0)
+      map_one_image(name.c_str() + 8, imagei, itObscured, genericity);
     else
-      map_one_image(name, imagei, itFace, genericity);
+      map_one_image(name.c_str(), imagei, itFace, genericity);
   }
   
-  _images.assign(Gif_ImageCount(_gfs), None);
-  _masks.assign(Gif_ImageCount(_gfs), None);
   
   check_images();
 }
@@ -224,21 +219,27 @@ Xmj3Tileset::check_images()
   // Check the sizes of all the images
   // Assume it's broken.
   _image_error = ieBadSize;
-  Gif_Image *gfi = Gif_GetImage(_gfs, _obscured_ref[0]);
-  int w = gfi->width;
-  int h = gfi->height;
+  FXImage *img = _images.at(_obscured_ref[0]);
+  int w = img->getWidth();
+  int h = img->getHeight();
   for (int i = 0; i < NPICTURES; i++) {
-    Gif_Image *gfi = Gif_GetImage(_gfs, _base_ref[i]);
-    if (gfi->width != w || gfi->height != h)
+    FXImage *img2 = _images.at(_base_ref[i]);
+    if (img2->getWidth() != w || img2->getHeight() != h) {
       return;
-    gfi = Gif_GetImage(_gfs, _selected_ref[i]);
-    if (gfi->width != w || gfi->height != h)
+    }
+
+    img2 = _images.at(_selected_ref[i]);
+    if (img2->getWidth() != w || img2->getHeight() != h) {
       return;
-    gfi = Gif_GetImage(_gfs, _obscured_ref[i]);
-    if (gfi->width != w || gfi->height != h)
+    }
+
+    img2 = _images.at(_obscured_ref[i]);
+    if (img2->getWidth() != w || img2->getHeight() != h) {
       return;
-    gfi = Gif_GetImage(_gfs, _face_ref[i]);
-    if (gfi->width > w || gfi->height > h)
+    }
+
+    img2 = _images.at(_face_ref[i]);
+    if (img2->getWidth() > w || img2->getHeight() > h)
       return;
   }
   
@@ -249,10 +250,6 @@ Xmj3Tileset::check_images()
 bool
 Xmj3Tileset::check() const
 {
-  // Stream must exist & have global colormap
-  if (!_gfs->global || _image_error != ieNone)
-    return false;
-  
   // OK
   return true;
 }
@@ -260,20 +257,9 @@ Xmj3Tileset::check() const
 void
 Xmj3Tileset::initialize()
 {
-  _colormap = Gif_CopyColormap(_gfs->global);
-  
-  int border = 4, shadow = 1;
-  for (Gif_Extension *gfex = _gfs->extensions; gfex; gfex = gfex->next)
-    if (gfex->application && strcmp(gfex->application, "xmahjongg") == 0) {
-      sscanf((char *)gfex->data, "border=%u", &border);
-      sscanf((char *)gfex->data, "shadow=%d", &shadow);
-    }
-  _xborder = _yborder = border;
-  _shadow = shadow;
-  
-  Gif_Image *gfi = Gif_GetImage(_gfs, _base_ref[0]);
-  _width = gfi->width - _xborder;
-  _height = gfi->height - _yborder;
+  FXImage *image = _images.at(_base_ref[0]);
+  _width = image->getWidth() - _xborder;
+  _height = image->getHeight() - _yborder;
 }
 
 void
@@ -281,26 +267,20 @@ Xmj3Tileset::draw(SwDrawable *drawable, short x, short y, short base,
 		  short face)
 {
   if (base >= 0) {
-    if (!_images[base]) {
-      Gif_Image *gfi = Gif_GetImage(_gfs, base);
-      _images[base] = Gif_XImageColormap(_gifx, _gfs, _colormap, gfi);
-      _masks[base] = Gif_XMask(_gifx, _gfs, gfi);
-    }
-    drawable->draw_image(_images[base], _masks[base],
+
+    drawable->draw_image(_images.at(base), _masks.at(base),
 			 _width + _xborder, _height + _yborder, x, y);
   }
   
   if (face >= 0) {
-    Gif_Image *facei = Gif_GetImage(_gfs, face);
-    if (!_images[face]) {
-      _images[face] = Gif_XImageColormap(_gifx, _gfs, _colormap, facei);
-      _masks[face] = Gif_XMask(_gifx, _gfs, facei);
-    }
     
-    int dx = (_shadow & 1 ? _xborder : 0) + facei->left;
-    int dy = (_shadow & 2 ? _yborder : 0) + facei->top;
-    drawable->draw_image(_images[face], _masks[face],
-			 facei->width, facei->height, x + dx, y + dy);
+    int dx = (_shadow & 1 ? _xborder : 0);
+    int dy = (_shadow & 2 ? _yborder : 0);
+
+    FXImage *img = _images.at(face);
+
+    drawable->draw_image( img, _masks[face],
+    		img->getWidth(), img->getHeight(), x + dx, y + dy);
   }
 }
 
@@ -329,4 +309,3 @@ Xmj3Tileset::draw_obscured(const Tile *t, SwDrawable *drawable,
   draw(drawable, x, y, _obscured_ref[which], -1);
 }
 
-#endif

@@ -36,9 +36,15 @@ class Tileset {
 
   virtual bool ok() const = 0;
   
+  void xborder( int xborder )   { _xborder = xborder; }
   int xborder() const			{ return _xborder; }
+
+  void yborder( int yborder )   { _yborder = yborder; }
   int yborder() const			{ return _yborder; }
+
+  void shadow( int shadow ) 	{ _shadow = shadow; }
   int shadow() const			{ return _shadow; }
+
   int width() const			{ return _width; }
   int height() const			{ return _height; }
   
