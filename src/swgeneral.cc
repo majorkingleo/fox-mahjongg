@@ -24,18 +24,12 @@ SwDrawable::invalidate(int, int, int, int)
 SwWindow::SwWindow(FXApp *display, FXWindow *window, MahjonggWindow *root )
   : _display(display),
     _window(window),
-    _root( root ),
-    _copy_gc(0),
-    _masked_image_gc(0)
+    _root( root )
 {
-  _copy_gc = new FXDCWindow(_window);
-  _masked_image_gc = new FXDCWindow(_window);
 }
 
 SwWindow::~SwWindow()
 {
-  delete _copy_gc;
-  delete _masked_image_gc;
 }
 
 void
@@ -44,23 +38,22 @@ SwWindow::draw_subimage(FXImage *source, FXBitmap *mask,
 			int x, int y)
 {
   if (source && width > 0 && height > 0) {
-    FXDCWindow *image_gc = 0;
-    if (mask) {
-      image_gc = _masked_image_gc;
-
-      // XSetClipMask(_display, image_gc, mask);
-      image_gc->setClipMask( mask );
-
-      // TODO ?
-      // XSetClipOrigin(_display, image_gc, x - src_x, y - src_y);
-    } else
-      image_gc = _copy_gc;
-      image_gc->setClipRectangle( x, y, width, height );
-	  image_gc->drawImage( source, x, y);
-
+      FXDCWindow image_gc(window());
+      if (mask) {
+          
+          // XSetClipMask(_display, image_gc, mask);
+          image_gc.setClipMask( mask );
+          
+          // TODO ?
+          // XSetClipOrigin(_display, image_gc, x - src_x, y - src_y);
+      } 
+      
+      image_gc.setClipRectangle( x, y, width, height );
+      image_gc.drawImage( source, x, y);
+      
 	  // image_gc->clearClipRectangle();
-    // XCopyArea(_display, source, _window, image_gc, src_x, src_y,
-	//      width, height, x, y);
+      // XCopyArea(_display, source, _window, image_gc, src_x, src_y,
+      //      width, height, x, y);
   }
 }
 
@@ -68,8 +61,6 @@ void
 SwWindow::clear_area(int x, int y, int width, int height)
 {
   if (width > 0 && height > 0) {
-	  _copy_gc->clearClipMask();
-	  _copy_gc->clearClipRectangle();
    // XClearArea(_display, _window, x, y, width, height, False);
   }
 }

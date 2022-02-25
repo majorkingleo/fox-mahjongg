@@ -17,8 +17,7 @@ static void setup_digits( MahjonggWindow *root )
 
   for( unsigned i = 0; i < 10; i++ ) {
 	  digits[i] = root->getImageByName( format( "%d", i ) );
-#warning TODOOOO
-	  // masks[i] = root->getBitmapMaskByName( format( "%d", i ) );
+	  masks[i] = root->getBitmapMaskByName( format( "%d", i ) );
   }
   digit_width = digits[0]->getWidth();
   digit_height = digits[0]->getHeight();
@@ -29,6 +28,7 @@ FancyCounter::FancyCounter(SwWindow *parent, int num_digits)
   : SwWidget(parent), _digits(num_digits), _value(0)
 {
   setup_digits(parent->root());
+
   set_size(digit_width * num_digits, digit_height);
 }
 

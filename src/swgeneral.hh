@@ -32,9 +32,6 @@ class SwWindow: public SwDrawable {
   FXApp    *_display;
   FXWindow *_window;
   MahjonggWindow *_root;
-
-  FXDCWindow *_copy_gc;
-  FXDCWindow *_masked_image_gc;
   
  public:
   

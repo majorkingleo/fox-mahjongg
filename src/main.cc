@@ -264,7 +264,7 @@ void MahjonggWindow::create(){
     int width = wid + 38;
     int height = hgt + 38 + 56; // + Buttons
     canvas->resize(width, height );
-
+   
     // automatically done by panel->resize()
     // board->set_size(width, height - board->y_pos());
     // board->center_layout();
@@ -653,7 +653,7 @@ FXBitmap *MahjonggWindow::getBitmapMaskByName( const std::string & image_name )
 
 FXImage* MahjonggWindow::createGifImage( const unsigned char* data )
 {
-	FXImage* img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP );
+	FXImage* img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP | IMAGE_OPAQUE );
 	img->create();
 	return img;
 }
@@ -671,6 +671,17 @@ void MahjonggWindow::loadButtonImages()
 	imageByName["new-lit"]    = createGifImage( button_08_gif );
 	imageByName["quit-lit"]   = createGifImage( button_09_gif );
 	imageByName["undo-lit"]   = createGifImage( button_10_gif );
+
+    bitmapMaskByName["hint"]      = createBitmapMaskFromImage( imageByName["hint"], "hint" );
+    bitmapMaskByName["new"]       = createBitmapMaskFromImage( imageByName["new"], "new" );
+    bitmapMaskByName["quit"]      = createBitmapMaskFromImage( imageByName["quit"], "quit" );
+    bitmapMaskByName["rock"]      = createBitmapMaskFromImage( imageByName["rock"], "rock" );
+    bitmapMaskByName["undo"]      = createBitmapMaskFromImage( imageByName["undo"], "undo" );
+    bitmapMaskByName["clean"]     = createBitmapMaskFromImage( imageByName["clean"], "clean" );
+    bitmapMaskByName["clean-lit"] = createBitmapMaskFromImage( imageByName["clean-lit"], "clean-lit" );
+    bitmapMaskByName["hint-lit"]  = createBitmapMaskFromImage( imageByName["hint-lit"], "hint-lit" );
+    bitmapMaskByName["new-lit"]   = createBitmapMaskFromImage( imageByName["new-lit"], "new-lit" );
+    bitmapMaskByName["quit-lit"]  = createBitmapMaskFromImage( imageByName["quit-lit"], "quit-lit" );
 }
 
 void MahjonggWindow::loadDigitImages()
@@ -685,9 +696,20 @@ void MahjonggWindow::loadDigitImages()
 	imageByName["7"]       = createGifImage( digit_07_gif );
 	imageByName["8"]       = createGifImage( digit_08_gif );
 	imageByName["9"]       = createGifImage( digit_09_gif );
+
+    bitmapMaskByName["0"]   = createBitmapMaskFromImage( imageByName["0"], "0" );
+    bitmapMaskByName["1"]   = createBitmapMaskFromImage( imageByName["1"], "1" );
+    bitmapMaskByName["2"]   = createBitmapMaskFromImage( imageByName["2"], "2" );
+    bitmapMaskByName["3"]   = createBitmapMaskFromImage( imageByName["3"], "3" );
+    bitmapMaskByName["4"]   = createBitmapMaskFromImage( imageByName["4"], "4" );
+    bitmapMaskByName["5"]   = createBitmapMaskFromImage( imageByName["5"], "5" );
+    bitmapMaskByName["6"]   = createBitmapMaskFromImage( imageByName["6"], "6" );
+    bitmapMaskByName["7"]   = createBitmapMaskFromImage( imageByName["7"], "7" );
+    bitmapMaskByName["8"]   = createBitmapMaskFromImage( imageByName["8"], "8" );
+    bitmapMaskByName["9"]   = createBitmapMaskFromImage( imageByName["9"], "9" );
 }
 
-FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image )
+FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image, const std::string & image_name )
 {
 	if( !image->getData() ) {
         DEBUG( "image option IMAGE_KEEP not set" );
@@ -715,12 +737,16 @@ FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image )
 		transparent_color = image->getPixel( 0, 0 );
 	}
 
+    DEBUG( format( "%s: transparent color: 0x%X", image_name, transparent_color ) );
+
 	for( unsigned x = 0; x < width; x++ ) {
 		for( unsigned y = 0; y < height; y++ ) {
 			FXColor color = image->getPixel( x, y );
-			bitmap->setPixel( x, y, ( color != transparent_color ) );
+			bitmap->setPixel( x, y, !( color != transparent_color ) );
         }
     }
+
+    bitmap->render();
 
 	return bitmap;
 }
