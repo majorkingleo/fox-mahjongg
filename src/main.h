@@ -69,6 +69,7 @@ private:
 
 protected:
 	MahjonggWindow();
+	~MahjonggWindow();
 
 	MahjonggWindow( const MahjonggWindow & other ) = delete;
 	MahjonggWindow & operator=( const MahjonggWindow & other ) = delete;
@@ -91,6 +92,8 @@ public:
 	// Ref<Level> get_next_level( bool force = false );
 
 	// void autoRepeat(int state);
+
+	void detach() override;
 
 public:
 

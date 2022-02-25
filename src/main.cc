@@ -172,7 +172,33 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	layout_name = 0;
 }
 
+MahjonggWindow::~MahjonggWindow()
+{
+	for( auto it : imageByName ) {
+		delete it.second;
+	}
 
+	imageByName.clear();
+
+	for( auto it : bitmapMaskByName ) {
+		delete it.second;
+	}
+
+	bitmapMaskByName.clear();
+}
+
+void MahjonggWindow::detach()
+{
+	FXMainWindow::detach();
+
+	for( auto it : imageByName ) {
+		it.second->detach();
+	}
+
+	for( auto it : bitmapMaskByName ) {
+		it.second->detach();
+	}
+}
 
 // Create and initialize 
 void MahjonggWindow::create(){
@@ -195,6 +221,8 @@ void MahjonggWindow::create(){
 
 	background->create();
 
+
+	DEBUG( format( "canvas window is %p", canvas));
 
 	panel = new Panel(getApp(), canvas, this);
 
