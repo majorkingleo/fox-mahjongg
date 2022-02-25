@@ -5,6 +5,10 @@
 #include "hint.hh"
 #include "debug.h"
 
+#include <format.h>
+
+using namespace Tools;
+
 Board::Board(Panel *panel, Game *game, Tileset *tileset)
   : SwWidget(panel),
     _panel(panel),
@@ -78,7 +82,8 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 
   gcv.foreground = 97;
 #endif
-  _erasegc = new FXDCWindow(window());
+  DEBUG( format( "creating _erasegc in Window: %p", window()));
+  _erasegc = new FXDC( display() );
 #if 0
   gcv.foreground = 0UL;
   gcv.background = ~0UL;
@@ -129,6 +134,13 @@ Board::set_tileset(Tileset *ts)
   _tile_yborder = ts->yborder();  
   _tile_shadow = ts->shadow();
   
+  DEBUG( format("_tile_width: %dx%d border: %d shadow: %d",
+		 _tile_width,
+		 _tile_height,
+		 _tile_xborder,
+		 _tile_shadow ) );
+
+
   assert(!_buffering);
   _buffer_w = _tile_width + _tile_xborder;
   _buffer_h = _tile_height + _tile_yborder;
@@ -422,6 +434,14 @@ void
 Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 		     int w, int h, int x, int y)
 {
+	DEBUG( format( "%s: pos %02dx%02d", x, y ));
+
+	{
+		FXDCWindow dc(window());
+		_erasegc->setFillStyle( _erasegc->getFillStyle() );
+		_erasegc->setTile( _erasegc->getTile() );
+	}
+
   if (_masking < 0 && !_buffering) {
     _panel->draw_subimage(image, mask, src_x, src_y, w, h, x, y);
     return;

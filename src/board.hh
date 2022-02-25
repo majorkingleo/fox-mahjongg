@@ -46,7 +46,7 @@ class Board: public GameHooks, public SwWidget {
   
   FXDCWindow *_copygc;
   FXDCWindow *_orgc;
-  FXDCWindow *_erasegc;
+  FXDC       *_erasegc;
   FXDCWindow *_maskgc;
   FXDCWindow *_mask_one_gc;
   FXDCWindow *_mask_zero_gc;
