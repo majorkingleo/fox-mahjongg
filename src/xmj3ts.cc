@@ -4,6 +4,7 @@
 #include <cstring>
 #include "debug.h"
 #include <format.h>
+#include <cpp_util.h>
 
 using namespace Tools;
 
@@ -181,11 +182,20 @@ Xmj3Tileset::initialize_images()
 
     std::string name = _tile_data[imagei].name;
 
-    FXImage *image = new FXGIFImage( _app, _tile_data[imagei].data );
+    FXImage *image = new FXGIFImage( _app );
+    FXMemoryStream ms(FXStreamLoad,(FXuchar*)_tile_data[imagei].data);
+    if( !image->loadPixels(ms) ) {
+    	throw REPORT_EXCEPTION( format("Cannot load image %d", _tile_data[imagei].name) );
+    }
     image->create();
     _images.push_back(image);
 
-    DEBUG( format( "creating image %02d => %s %p", imagei, name, _images.at(imagei) ));
+    DEBUG( format( "creating image %02d => %s %p size: %dx%d",
+    	  imagei,
+    	  name,
+    	  _images.at(imagei),
+    	  image->getWidth(),
+    	  image->getHeight()));
 
 #warning TODOOO
     DEBUG( "TODO: _masks" );
@@ -213,6 +223,7 @@ Xmj3Tileset::check_images()
   for (int i = 0; i < NPICTURES; i++)
     if (_base_ref[i] < 0 || _selected_ref[i] < 0 || _obscured_ref[i] < 0) {
       _image_error = ieNoBase;
+      DEBUG( "invalid entry ieNoBase" );
       return;
     }
   
@@ -260,6 +271,8 @@ Xmj3Tileset::initialize()
   FXImage *image = _images.at(_base_ref[0]);
   _width = image->getWidth() - _xborder;
   _height = image->getHeight() - _yborder;
+
+  DEBUG( format( "image %d has size: %dx%d", _base_ref[0], _width, _height ) );
 }
 
 void

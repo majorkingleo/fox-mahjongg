@@ -122,7 +122,7 @@ Tileset *load_tileset_thick( FXApp *app )
 	Xmj3Tileset::TILE_DATA data;
 
 	for( unsigned i = 0; i < sizeof(tiles_thick)/sizeof(tiles_thick[0]); i++ ) {
-		data.push_back( Xmj3Tileset::TileDataType( tiles_thick_name[i], &tiles_thick[i] ));
+		data.push_back( Xmj3Tileset::TileDataType( tiles_thick_name[i], tiles_thick[i] ));
 	}
 
 	Xmj3Tileset *tileset = new Xmj3Tileset( app, data );

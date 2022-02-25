@@ -11,10 +11,10 @@ public:
 	struct TileDataType
 	{
 		std::string name;
-		const unsigned char **data;
+		const unsigned char *data;
 
 		TileDataType( const std::string & name_,
-					  const unsigned char **data_ )
+					  const unsigned char *data_ )
 		: name( name_ ),
 		  data( data_ )
 		{}
