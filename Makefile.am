@@ -15,8 +15,6 @@ fox_mahjongg_SOURCES=\
 		src/board.cc \
 		src/button.hh \
 		src/button.cc \
-		src/images.h \
-		src/images.cc \
 		src/counter.hh \
 		src/counter.cc \
 		src/game.hh \
@@ -57,14 +55,17 @@ fox_mahjongg_SOURCES=\
 		src/tiles_thick.h \
 		src/tiles_thick.cc \
 		src/data_buttons.h \
-		src/data_buttons.cc		
-		
-##TODO
+		src/data_buttons.cc \
+		src/data_digits.h \
+		src/data_digits.cc		
 		
 BUILT_SOURCES=src/data_tiles_thick.cc \
 			  src/data_tiles_thick.h \
 			  src/data_buttons.h \
-			  src/data_buttons.cc
+			  src/data_buttons.cc \
+			  src/data_digits.h \
+			  src/data_digits.cc
+			  
 
 src/data_tiles_thick.cc: share/tiles/thick.gif
 	mkdir -p share/tiles/thick
@@ -82,8 +83,13 @@ src/data_buttons.cc: images/buttons.gif
 
 src/data_buttons.h: src/data_buttons.cc
 
-##src/images.cc: images/digits.gif images/buttons.gif
-##	reswrap -o src/images.cc --suffix _gif images/digits.gif images/buttons.gif
+src/data_digits.cc: images/digits.gif
+	mkdir -p images/digits
+	convert images/digits.gif images/digits/digit_%02d.gif
+	reswrap -o src/data_digits.cc -i data_digits.h --suffix _gif images/digits/digit_*.gif
+	reswrap -o src/data_digits.h -h --suffix _gif images/digits/digit_*.gif
+
+src/data_digits.h: src/data_digits.cc
 
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \

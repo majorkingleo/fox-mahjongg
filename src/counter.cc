@@ -1,5 +1,4 @@
 #include "counter.hh"
-#include "images.h"
 #include "debug.h"
 #include "main.h"
 #include <format.h>
@@ -19,7 +18,7 @@ static void setup_digits( MahjonggWindow *root )
   for( unsigned i = 0; i < 10; i++ ) {
 	  digits[i] = root->getImageByName( format( "%d", i ) );
 #warning TODOOOO
-	  masks[i] = root->getBitmapMaskByName( format( "%d", i ) );
+	  // masks[i] = root->getBitmapMaskByName( format( "%d", i ) );
   }
   digit_width = digits[0]->getWidth();
   digit_height = digits[0]->getHeight();

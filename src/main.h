@@ -142,6 +142,7 @@ private:
 	Button* new_button(Panel *panel, const char *name);
 
 	void loadButtonImages();
+	void loadDigitImages();
 	FXImage* createGifImage( const unsigned char* data );
 };
 

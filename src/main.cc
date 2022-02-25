@@ -8,7 +8,6 @@
 #include <format.h>
 #include <main.h>
 #include "panel.hh"
-#include "images.h"
 #include "matches.hh"
 #include "button.hh"
 #include "board.hh"
@@ -20,6 +19,7 @@
 #include <cpp_util.h>
 #include "tiles_thick.h"
 #include "data_buttons.h"
+#include "data_digits.h"
 
 using namespace Tools;
 
@@ -181,6 +181,7 @@ void MahjonggWindow::create(){
 	FXMainWindow::create();
 
 	loadButtonImages();
+	loadDigitImages();
 
 	/*
 	level->create();
@@ -576,8 +577,6 @@ FXImage* MahjonggWindow::load_background(const char *background_name, const char
 
 void MahjonggWindow::make_panel_images(Panel *p)
 {
-  gifbuttons = Gif_ReadRecord(&buttons_gif);
-
   matches = new MatchCount(p, "rock");
   p->set_match_count(matches);
 
@@ -640,6 +639,20 @@ void MahjonggWindow::loadButtonImages()
 	imageByName["new-lit"]    = createGifImage( button_08_gif );
 	imageByName["quit-lit"]   = createGifImage( button_09_gif );
 	imageByName["undo-lit"]   = createGifImage( button_10_gif );
+}
+
+void MahjonggWindow::loadDigitImages()
+{
+	imageByName["0"]       = createGifImage( digit_00_gif );
+	imageByName["1"]       = createGifImage( digit_01_gif );
+	imageByName["2"]       = createGifImage( digit_02_gif );
+	imageByName["3"]       = createGifImage( digit_03_gif );
+	imageByName["4"]       = createGifImage( digit_04_gif );
+	imageByName["5"]       = createGifImage( digit_05_gif );
+	imageByName["6"]       = createGifImage( digit_06_gif );
+	imageByName["7"]       = createGifImage( digit_07_gif );
+	imageByName["8"]       = createGifImage( digit_08_gif );
+	imageByName["9"]       = createGifImage( digit_09_gif );
 }
 
 void

@@ -2,3 +2,5 @@ data_buttons.cc
 data_buttons.h
 data_tiles_thick.cc
 data_tiles_thick.h
+data_digits.cc
+data_digits.h
