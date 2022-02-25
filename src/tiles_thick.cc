@@ -127,8 +127,16 @@ Tileset *load_tileset_thick( MahjonggWindow *root )
 
 	Xmj3Tileset *tileset = new Xmj3Tileset( root, data );
 
-	tileset->xborder( 8 );
-	tileset->yborder( 8 );
+    int old_border = tileset->xborder();
+
+    const int BORDER_WIDTH = 8;
+    
+	tileset->xborder( BORDER_WIDTH );
+	tileset->yborder(  BORDER_WIDTH );
+
+    // restore correct width, which was calculated with the old border size
+    tileset->width( tileset->width() + old_border - BORDER_WIDTH );
+    tileset->height( tileset->height() + old_border - BORDER_WIDTH );
 
 	return tileset;
 }

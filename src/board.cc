@@ -434,7 +434,7 @@ void
 Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 		     int w, int h, int x, int y)
 {
-	DEBUG( format( "%s: pos %02dx%02d", x, y ));
+	// DEBUG( format( "%s: pos %02dx%02d", __FUNCTION__, x, y ));
 
 	{
 		FXDCWindow dc(window());

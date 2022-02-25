@@ -149,7 +149,7 @@ SwClippedWindow::draw_subimage(FXImage *source, FXBitmap *mask,
   short old_x = x, old_y = y;
   do_clip(x, y, width, height);
   if (width > 0 && height > 0) {
-	DEBUG( "draw_subimage" );
+      //	DEBUG( "draw_subimage" );
     SwWindow::draw_subimage(source, mask, src_x + x - old_x, src_y + y - old_y,
 			    width, height, x, y);
   } else {

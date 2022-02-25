@@ -45,7 +45,10 @@ class Tileset {
   void shadow( int shadow ) 	{ _shadow = shadow; }
   int shadow() const			{ return _shadow; }
 
-  int width() const			{ return _width; }
+  void width( int width )       { _width = width; }  
+  int width() const			    { return _width; }
+
+  void height( int height )     { _height = height; };
   int height() const			{ return _height; }
   
   int ntiles() const			{ return _ntiles; }

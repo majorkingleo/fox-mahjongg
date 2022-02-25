@@ -272,7 +272,11 @@ Xmj3Tileset::initialize()
   _width = image->getWidth() - _xborder;
   _height = image->getHeight() - _yborder;
 
-  DEBUG( format( "image %d has size: %dx%d", _base_ref[0], _width, _height ) );
+  DEBUG( format( "image %d has size: %dx%d image->width: %dx%d",
+                 _base_ref[0],
+                 _width, _height,
+                 image->getWidth(),
+                 image->getHeight()));
 }
 
 void
