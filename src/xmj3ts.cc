@@ -183,7 +183,7 @@ Xmj3Tileset::initialize_images()
 
     std::string name = _tile_data[imagei].name;
 
-    FXImage *image = new FXGIFIcon( _root->getApp(), 0, 0, IMAGE_ALPHAGUESS );
+    FXImage *image = new FXGIFIcon( _root->getApp(), 0, 0, IMAGE_ALPHAGUESS | IMAGE_KEEP );
     FXMemoryStream ms(FXStreamLoad,(FXuchar*)_tile_data[imagei].data);
     if( !image->loadPixels(ms) ) {
     	throw REPORT_EXCEPTION( format("Cannot load image %d", _tile_data[imagei].name) );

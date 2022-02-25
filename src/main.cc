@@ -649,7 +649,7 @@ FXBitmap *MahjonggWindow::getBitmapMaskByName( const std::string & image_name )
 
 FXImage* MahjonggWindow::createGifImage( const unsigned char* data )
 {
-	FXImage* img = new FXGIFImage( getApp(), data );
+	FXImage* img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP );
 	img->create();
 	return img;
 }
@@ -685,14 +685,22 @@ void MahjonggWindow::loadDigitImages()
 
 FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image )
 {
-	image->render();
-
-	FXBitmap* bitmap = new FXBitmap(getApp(), 0, 0, image->getWidth(),image->getHeight() );
-	bitmap->create();
+	if( !image->getData() ) {
+        DEBUG( "image option IMAGE_KEEP not set" );
+        image->restore();
+    }
 
 	int width = image->getWidth();
 	int height = image->getHeight();
+    
+	FXBitmap* bitmap = new FXBitmap(getApp(), 0, BITMAP_KEEP|BITMAP_SHMI|BITMAP_SHMP );
+    bitmap->create();
 
+    FXuchar *pixels = 0;
+    allocElms( pixels, width * height );
+	   
+    bitmap->setData( pixels, BITMAP_KEEP | BITMAP_OWNED, width, height );
+    
 	FXColor transparent_color = 0;
 
 	FXIcon *icon = dynamic_cast<FXIcon*>( image );
@@ -706,11 +714,9 @@ FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image )
 	for( unsigned x = 0; x < width; x++ ) {
 		for( unsigned y = 0; y < height; y++ ) {
 			FXColor color = image->getPixel( x, y );
-			if( color != transparent_color ) {
-				bitmap->setPixel( x, y, true );
-			}
-		}
-	}
+			bitmap->setPixel( x, y, ( color != transparent_color ) );
+        }
+    }
 
 	return bitmap;
 }
