@@ -12,7 +12,7 @@ MatchCount::MatchCount(SwWindow *window, const char *name)
 {
 #warning TODOO
 	_one_image  = root()->getImageByName( name );
-	_one_mask   = root()->getBitmapMaskByName( name );
+	// _one_mask   = root()->getBitmapMaskByName( name );
     _one_width  = _one_image->getWidth();
     _one_height = _one_image->getHeight();
 }

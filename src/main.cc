@@ -19,6 +19,7 @@
 #include <arg.h>
 #include <cpp_util.h>
 #include "tiles_thick.h"
+#include "data_buttons.h"
 
 using namespace Tools;
 
@@ -178,6 +179,8 @@ void MahjonggWindow::create(){
 
 	// Create the windows
 	FXMainWindow::create();
+
+	loadButtonImages();
 
 	/*
 	level->create();
@@ -615,6 +618,28 @@ FXBitmap *MahjonggWindow::getBitmapMaskByName( const std::string & image_name )
 	}
 
 	return it->second;
+}
+
+FXImage* MahjonggWindow::createGifImage( const unsigned char* data )
+{
+	FXImage* img = new FXGIFImage( getApp(), data );
+	img->create();
+	return img;
+}
+
+void MahjonggWindow::loadButtonImages()
+{
+	imageByName["hint"]       = createGifImage( button_00_gif );
+	imageByName["new"]     	  = createGifImage( button_01_gif );
+	imageByName["quit"]    	  = createGifImage( button_02_gif );
+	imageByName["rock"]       = createGifImage( button_03_gif );
+	imageByName["undo"]       = createGifImage( button_04_gif );
+	imageByName["clean"]      = createGifImage( button_05_gif );
+	imageByName["clean-lit"]  = createGifImage( button_06_gif );
+	imageByName["hint-lit"]   = createGifImage( button_07_gif );
+	imageByName["new-lit"]    = createGifImage( button_08_gif );
+	imageByName["quit-lit"]   = createGifImage( button_09_gif );
+	imageByName["undo-lit"]   = createGifImage( button_10_gif );
 }
 
 void

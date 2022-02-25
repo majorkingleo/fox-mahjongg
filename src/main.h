@@ -140,6 +140,9 @@ private:
 
 	void make_panel_images(Panel *p);
 	Button* new_button(Panel *panel, const char *name);
+
+	void loadButtonImages();
+	FXImage* createGifImage( const unsigned char* data );
 };
 
 

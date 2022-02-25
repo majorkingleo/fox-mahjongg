@@ -20,7 +20,7 @@ bool Button::set_normal( const char *name )
   _normal = root()->getImageByName( name );
 #warning TODOO
   DEBUG( "TODO: create masked bitmap" );
-  _normal_mask = root()->getBitmapMaskByName( name );
+  // _normal_mask = root()->getBitmapMaskByName( name );
   set_size(_normal->getWidth(), _normal->getHeight());
   return 1;
 }
@@ -30,7 +30,7 @@ bool Button::set_lit(const char *name)
 #warning TODOO
   DEBUG( "TODO: create masked bitmap" );
   _lit =  root()->getImageByName( name );
-  _lit_mask = root()->getBitmapMaskByName( name );
+  // _lit_mask = root()->getBitmapMaskByName( name );
   return 1;
 }
 

@@ -55,12 +55,16 @@ fox_mahjongg_SOURCES=\
 		src/data_tiles_thick.cc \
 		src/data_tiles_thick.h \
 		src/tiles_thick.h \
-		src/tiles_thick.cc
+		src/tiles_thick.cc \
+		src/data_buttons.h \
+		src/data_buttons.cc		
 		
 ##TODO
 		
 BUILT_SOURCES=src/data_tiles_thick.cc \
-			  src/data_tiles_thick.h
+			  src/data_tiles_thick.h \
+			  src/data_buttons.h \
+			  src/data_buttons.cc
 
 src/data_tiles_thick.cc: share/tiles/thick.gif
 	mkdir -p share/tiles/thick
@@ -69,6 +73,14 @@ src/data_tiles_thick.cc: share/tiles/thick.gif
 	reswrap -o src/data_tiles_thick.h -h --suffix _gif share/tiles/thick/tiles_thick_*.gif
 		
 src/data_tiles_thick.h: src/data_tiles_thick.cc
+
+src/data_buttons.cc: images/buttons.gif
+	mkdir -p images/buttons
+	convert images/buttons.gif images/buttons/button_%02d.gif
+	reswrap -o src/data_buttons.cc -i data_buttons.h --suffix _gif images/buttons/button_*.gif
+	reswrap -o src/data_buttons.h -h --suffix _gif images/buttons/button_*.gif
+
+src/data_buttons.h: src/data_buttons.cc
 
 ##src/images.cc: images/digits.gif images/buttons.gif
 ##	reswrap -o src/images.cc --suffix _gif images/digits.gif images/buttons.gif
