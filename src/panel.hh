@@ -38,16 +38,28 @@ class Panel: public SwClippedWindow {
   bool _need_redraw;
   
   enum Command {
-    comNone, comHint, comUndo, comRedo, comNew, comQuit, comClean, comSolve,
-    comDeselect, comCheckSolve,
+    comNone,
+    comHint,
+    comUndo,
+    comRedo,
+    comNew,
+    comQuit,
+    comClean,
+    comSolve,
+    comDeselect,
+    comCheckSolve,
   };
   enum TraversalCommand {
-    comTravLeft = 0, comTravRight = 1, comTravUp = 2, comTravDown = 3,
-    comTravAnchor, comTravTake,
+    comTravLeft  = 0,
+    comTravRight = 1,
+    comTravUp    = 2,
+    comTravDown  = 3,
+    comTravAnchor,
+    comTravTake,
   };
   
   void tile_command(Game *, Tile *);
-  void command(Game *, Command, Button *, bool, Time = CurrentTime);
+  void command(Game *, Command, Button *, bool, FXuint = CurrentTime);
   void traversal_command(Game *, TraversalCommand);
   void traversal_take_command(Game *, bool);
   
@@ -91,7 +103,7 @@ class Panel: public SwClippedWindow {
   // events
   void handle(Game *, XEvent *);
   void key_press(Game *, KeySym, unsigned);
-  void click(Game *, int, int, unsigned, Time);
+  void click(Game *, int, int, unsigned, FXuint when );
   
   void set_visible( bool state ) {
 	  _visible = state;

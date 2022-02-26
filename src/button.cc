@@ -102,6 +102,14 @@ Button::track(Time time)
 
   return was_lit;
 #endif
+
+  if( _state == 0 ) {
+	 change_state(1);
+  } else {
+	 change_state(0);
+	 return true;
+  }
+
   return false;
 }
 

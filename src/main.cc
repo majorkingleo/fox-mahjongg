@@ -36,6 +36,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		//________Message_Type_____________________ID____________Message_Handler_______
 		FXMAPFUNC(SEL_PAINT,             MahjonggWindow::ID_CANVAS, MahjonggWindow::onPaint),
 		FXMAPFUNC(SEL_LEFTBUTTONPRESS,   MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseDown),
+		FXMAPFUNC(SEL_LEFTBUTTONRELEASE, MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseUp),
 		FXMAPFUNC(SEL_MOTION,            MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseMove),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_CLEAR,  MahjonggWindow::onCmdClear),
 		// FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
@@ -62,7 +63,6 @@ MahjonggWindow::MahjonggWindow()
   canvas(0),
   mdflag(0),
   drawColor(0),
-  running(0),
   level_count(0),
   retry_count(0),
   level_label(0),
@@ -95,7 +95,6 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   canvas(0),
   mdflag(0),
   drawColor(0),
-  running(0),
   level_count(0),
   retry_count(0),
   level_label(0),
@@ -161,7 +160,6 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	// Initialize private variables
 	drawColor=FXRGB(255,0,0);
 	mdflag=0;
-	running=0;
 	level_count = LEVEL_START;
 	move_mode = 0;
 
@@ -209,11 +207,6 @@ void MahjonggWindow::create(){
 	loadButtonImages();
 	loadDigitImages();
 
-	/*
-	level->create();
-	running = 1;
-	level->run();
-	*/
 
 	tileset = load_tileset("thick", config_dir.c_str());
 	background = load_background("default", config_dir.c_str());
@@ -284,18 +277,28 @@ void MahjonggWindow::create(){
 
 
 // Mouse button was pressed somewhere
-long MahjonggWindow::onMouseDown(FXObject*,FXSelector,void*){
+long MahjonggWindow::onMouseDown(FXObject*,FXSelector,void* ptr){
 
-	running = !running;
+	DEBUG( __FUNCTION__ );
 
-	if( running )
-	{
-		canvas->grab();
-		// level->run();
-	} else {
-		// level->pause();
-	}
+	FXEvent *ev=(FXEvent*)ptr;
 
+#warning "TODOOO shift"
+	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
+
+	return 1;
+}
+
+
+// Mouse button was pressed somewhere
+long MahjonggWindow::onMouseUp(FXObject*,FXSelector,void* ptr){
+
+	DEBUG( __FUNCTION__ );
+
+	FXEvent *ev=(FXEvent*)ptr;
+
+#warning "TODOOO shift"
+	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
 
 	return 1;
 }

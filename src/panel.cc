@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "matches.hh"
 #include "panel.hh"
 #include "tile.hh"
@@ -14,6 +11,9 @@
 #include <X11/keysym.h>
 #include "main.h"
 #include "debug.h"
+#include <format.h>
+
+using namespace Tools;
 
 Panel::Panel(FXApp *app, FXWindow *window, MahjonggWindow *root )
   : SwClippedWindow(app, window, root ),
@@ -279,7 +279,7 @@ Panel::tile_command(Game *g, Tile *t)
 
 
 void
-Panel::command(Game *g, Command com, Button *button, bool keyboard, Time when)
+Panel::command(Game *g, Command com, Button *button, bool keyboard, FXuint when)
 {
   if (com != comHint)
     _board->hint()->turn_off();
@@ -311,7 +311,7 @@ Panel::command(Game *g, Command com, Button *button, bool keyboard, Time when)
    }
     
    case comQuit:
-    exit(0);
+    root()->onClose( 0, 0, 0 );
     break;
     
    case comHint:
@@ -411,22 +411,37 @@ Panel::traversal_command(Game *g, TraversalCommand command)
 
 
 void
-Panel::click(Game *g, int x, int y, unsigned state, Time when)
+Panel::click(Game *g, int x, int y, unsigned state, FXuint when)
 {
-  if (Tile *t = _board->find_tile(x, y))
+  if (Tile *t = _board->find_tile(x, y)) {
+	DEBUG( format("%s detected tile_command", __FUNCTION__ ) );
     tile_command(g, t);
-  else if (hint_but->within(x, y))
+
+  } else if (hint_but->within(x, y)) {
+	DEBUG( format( "%s detected hint_command", __FUNCTION__ ) );
     command(g, comHint, hint_but, false, when);
-  else if (undo_but->within(x, y))
+
+  } else if (undo_but->within(x, y)) {
+	DEBUG( format( "%s detected shift_command", __FUNCTION__ ) );
     command(g, state & ShiftMask ? comRedo : comUndo, undo_but, false, when);
-  else if (new_but->within(x, y))
+
+  } else if (new_but->within(x, y)) {
+	DEBUG( format( "%s detected new_command", __FUNCTION__ ) );
     command(g, comNew, new_but, false, when);
-  else if (quit_but->within(x, y))
+
+  } else if (quit_but->within(x, y)) {
+	DEBUG( format( "%s detected quit_command", __FUNCTION__ ) );
     command(g, comQuit, quit_but, false, when);
-  else if (clean_but->within(x, y))
+
+  } else if (clean_but->within(x, y)) {
+	DEBUG( format( "%s detected clean_command", __FUNCTION__ ) );
     command(g, comClean, clean_but, false, when);
-  else
+
+  } else {
+	DEBUG( format( "%s no command detected", __FUNCTION__ ) );
     command(g, comNone, 0, false, when);
+
+  }
 }
 
 

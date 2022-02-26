@@ -44,7 +44,6 @@ private:
 	int                mdflag;                  // Mouse button down?
 	FXColor            drawColor;               // Color for the line
 	// Ref<Level>         level;
-	int                running;
 	int                level_count;
 	int                retry_count;
 	FXLabel          *level_label;
@@ -79,6 +78,7 @@ public:
 	// Message handlers
 	long onPaint(FXObject*,FXSelector,void*);
 	long onMouseDown(FXObject*,FXSelector,void*);
+	long onMouseUp(FXObject*,FXSelector,void*);
 	long onMouseMove(FXObject*,FXSelector,void*);
 	long onCmdClear(FXObject*,FXSelector,void*);
 	long onTimeout(FXObject*,FXSelector,void*);
@@ -87,7 +87,6 @@ public:
 	long onkeyrelease(FXObject*,FXSelector,void*);
 	long onClose(FXObject*,FXSelector,void*);
 
-	// void pause() { level->pause(); running = 0; move_mode = 0; }
 	// void cont() { level->run(); running = 1; }
 	// Ref<Level> get_next_level( bool force = false );
 
