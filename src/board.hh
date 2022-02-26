@@ -109,6 +109,7 @@ class Board: public GameHooks, public SwWidget {
   void draw(Tile *);
   void draw_area(short rowtop, short colleft, short rowbot, short colright);
   void draw_marked();
+  void draw_background();
   
   void draw_subimage(FXImage *source, FXBitmap *mask, int, int, int, int, int, int) override;
   

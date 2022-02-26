@@ -39,17 +39,30 @@ SwWindow::draw_subimage(FXImage *source, FXBitmap *mask,
 {
   if (source && width > 0 && height > 0) {
       FXDCWindow image_gc(window());
-      if (mask) {
-          
+      /*      
+      if (mask) {          
           // XSetClipMask(_display, image_gc, mask);
           image_gc.setClipMask( mask );
           
           // TODO ?
           // XSetClipOrigin(_display, image_gc, x - src_x, y - src_y);
-      } 
+      }  else {      
+          image_gc.setClipRectangle( x, y, width, height );
+          }*/
       
-      image_gc.setClipRectangle( x, y, width, height );
-      image_gc.drawImage( source, x, y);
+
+      FXIcon *icon = dynamic_cast<FXIcon*>( source );
+
+      if( icon != 0 ) {
+          DEBUG( format("drawing icon transparent color: 0x%X OPAQUE: %d ALPHAGUESS: %d",
+                        icon->getTransparentColor(),
+                        icon->getOptions() & IMAGE_OPAQUE,
+                        icon->getOptions() & IMAGE_ALPHAGUESS));
+          image_gc.drawIcon( icon, x, y);
+      } else {
+          DEBUG( "drawing image" );
+          image_gc.drawImage( source, x, y);
+      }
       
 	  // image_gc->clearClipRectangle();
       // XCopyArea(_display, source, _window, image_gc, src_x, src_y,

@@ -653,7 +653,7 @@ FXBitmap *MahjonggWindow::getBitmapMaskByName( const std::string & image_name )
 
 FXImage* MahjonggWindow::createGifImage( const unsigned char* data )
 {
-	FXImage* img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP | IMAGE_OPAQUE );
+	FXImage* img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP  );
 	img->create();
 	return img;
 }
@@ -682,6 +682,7 @@ void MahjonggWindow::loadButtonImages()
     bitmapMaskByName["hint-lit"]  = createBitmapMaskFromImage( imageByName["hint-lit"], "hint-lit" );
     bitmapMaskByName["new-lit"]   = createBitmapMaskFromImage( imageByName["new-lit"], "new-lit" );
     bitmapMaskByName["quit-lit"]  = createBitmapMaskFromImage( imageByName["quit-lit"], "quit-lit" );
+    bitmapMaskByName["undo-lit"]  = createBitmapMaskFromImage( imageByName["undo-lit"], "undo-lit" );
 }
 
 void MahjonggWindow::loadDigitImages()
@@ -742,7 +743,7 @@ FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image, const std::
 	for( unsigned x = 0; x < width; x++ ) {
 		for( unsigned y = 0; y < height; y++ ) {
 			FXColor color = image->getPixel( x, y );
-			bitmap->setPixel( x, y, !( color != transparent_color ) );
+			bitmap->setPixel( x, y, ( color != transparent_color ) );
         }
     }
 

@@ -37,21 +37,4 @@ class Button: public AlarmHooks, public SwWidget {
   
 };
 
-
-inline void
-Button::draw()
-{
-  if (_state > 0)
-    draw_image(_lit, _lit_mask, width(), height(), 0, 0);
-  else
-    draw_image(_normal, _normal_mask, width(), height(), 0, 0);
-}
-
-inline bool
-Button::within(int xval, int yval) const
-{
-  return xval >= x() && yval >= y() && xval < x() + width()
-    && yval < y() + height();
-}
-
 #endif

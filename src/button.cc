@@ -18,19 +18,15 @@ Button::Button(SwWindow *window)
 bool Button::set_normal( const char *name )
 {
   _normal = root()->getImageByName( name );
-#warning TODOO
-  DEBUG( "TODO: create masked bitmap" );
-  // _normal_mask = root()->getBitmapMaskByName( name );
+  _normal_mask = root()->getBitmapMaskByName( name );
   set_size(_normal->getWidth(), _normal->getHeight());
   return 1;
 }
 
 bool Button::set_lit(const char *name)
 {
-#warning TODOO
-  DEBUG( "TODO: create masked bitmap" );
   _lit =  root()->getImageByName( name );
-  // _lit_mask = root()->getBitmapMaskByName( name );
+  _lit_mask = root()->getBitmapMaskByName( name );
   return 1;
 }
 
@@ -124,4 +120,21 @@ Button::flash()
     change_state(2);
     _flash_alarm.schedule(Moment::now() + Moment(0, 100000));
   }
+}
+
+
+void
+Button::draw()
+{
+  if (_state > 0)
+    draw_image(_lit, _lit_mask, width(), height(), 0, 0);
+  else
+    draw_image(_normal, _normal_mask, width(), height(), 0, 0);
+}
+
+bool
+Button::within(int xval, int yval) const
+{
+  return xval >= x() && yval >= y() && xval < x() + width()
+    && yval < y() + height();
 }

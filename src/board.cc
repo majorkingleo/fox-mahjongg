@@ -434,14 +434,8 @@ void
 Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 		     int w, int h, int x, int y)
 {
-	// DEBUG( format( "%s: pos %02dx%02d", __FUNCTION__, x, y ));
-
-	{
-		FXDCWindow dc(window());
-		_erasegc->setFillStyle( _erasegc->getFillStyle() );
-		_erasegc->setTile( _erasegc->getTile() );
-	}
-
+	DEBUG( format( "%s: pos %02dx%02d, w: %d h: %d", __FUNCTION__, x, y, w, h ));
+    
   if (_masking < 0 && !_buffering) {
     _panel->draw_subimage(image, mask, src_x, src_y, w, h, x, y);
     return;
@@ -686,4 +680,13 @@ Board::remove_tile_hook(Game *g, Tile *t)
   // clear masking tiles
   for (int i = 0; i < NMASK; i++)
     _mask_tile[i] = -1;
+}
+
+void
+Board::draw_background()
+{
+    FXDCWindow dc(window());
+    dc.setFillStyle( _erasegc->getFillStyle() );
+    dc.setTile( _erasegc->getTile() );
+    dc.fillRectangle( 0, 0, width(), height() );
 }

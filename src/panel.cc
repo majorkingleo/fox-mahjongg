@@ -197,6 +197,8 @@ Panel::redraw()
   
   intersect_clip(_redraw_left, _redraw_top,
 		 _redraw_right - _redraw_left, _redraw_bottom - _redraw_top);
+
+  _board->draw_background();
   
   _tile_count->draw();
   _match_count->draw();
