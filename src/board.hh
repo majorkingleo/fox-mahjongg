@@ -41,15 +41,15 @@ class Board: public GameHooks, public SwWidget {
   int _mask_prev_mru[NMASK];
   int _mask_mru;
   int _masking;
-  FXDCWindow *_masking_gc;
+  // FXDCWindow *_masking_gc;
   Tile *_masking_tile;
   
-  FXDCWindow *_copygc;
-  FXDCWindow *_orgc;
+  // FXDCWindow *_copygc;
+  // FXDCWindow *_orgc;
   FXDC       *_erasegc;
-  FXDCWindow *_maskgc;
-  FXDCWindow *_mask_one_gc;
-  FXDCWindow *_mask_zero_gc;
+  // FXDCWindow *_maskgc;
+  // FXDCWindow *_mask_one_gc;
+  // FXDCWindow *_mask_zero_gc;
   
   Tile *_selected;
   
@@ -142,16 +142,5 @@ Board::set_tile_flag(Tile *t, TileFlag flag, bool on)
     _tile_flags[t->number()] &= ~flag;
 }
 
-inline bool
-Board::tile_flag(Tile *t, TileFlag flag) const
-{
-  return _tile_flags[t->number()] & flag;
-}
-
-inline bool
-Board::lit(Tile *t) const
-{
-  return tile_flag(t, fLit);
-}
 
 #endif

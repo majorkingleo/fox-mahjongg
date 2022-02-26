@@ -65,6 +65,7 @@ private:
 
 	std::map<std::string,FXImage *> imageByName;
 	std::map<std::string,FXBitmap *> bitmapMaskByName;
+    std::map<FXImage*,std::string> nameByImagePtr; // just for debugging
 
 protected:
 	MahjonggWindow();
@@ -134,6 +135,20 @@ public:
 	FXBitmap *getBitmapMaskByName( const std::string & image );
 	FXBitmap *createBitmapMaskFromImage( FXImage *image, const std::string & image_name = "" );
 
+    std::string getNameByImage( FXImage *img ) const {
+        auto it = nameByImagePtr.find( img );
+
+        if( it == nameByImagePtr.end() ) {
+            return "unknown";
+        }
+
+        return it->second;
+    }
+
+    void registerNameByImage( FXImage *img, const std::string & name ) {
+        nameByImagePtr[img] = name;
+    }
+
 private:
 	Tileset *load_tileset(const char *tileset_name, const char *config_dir);
 	FXImage* load_background(const char *background_name, const char *config_dir );
@@ -146,7 +161,7 @@ private:
 
 	void loadButtonImages();
 	void loadDigitImages();
-	FXImage* createGifImage( const unsigned char* data );
+	FXImage* createGifImage( const unsigned char* data, const std::string & name );
 };
 
 

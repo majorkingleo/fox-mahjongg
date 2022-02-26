@@ -4,7 +4,7 @@
 #include "tile.hh"
 #include "hint.hh"
 #include "debug.h"
-
+#include "main.h"
 #include <format.h>
 
 using namespace Tools;
@@ -43,15 +43,15 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 	_mask_prev_mru(),
 	_mask_mru(0),
 	_masking(0),
-	_masking_gc(0),
+//	_masking_gc(0),
 	_masking_tile(0),
 
-	_copygc(0),
-	_orgc(0),
+//	_copygc(0),
+//	_orgc(0),
 	_erasegc(0),
-	_maskgc(0),
-	_mask_one_gc(0),
-	_mask_zero_gc(0),
+//	_maskgc(0),
+//	_mask_one_gc(0),
+//	_mask_zero_gc(0),
 
     _selected(0),
 
@@ -71,11 +71,12 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 
   set_tileset(tileset);
   _game->add_hook(this);
-  
-  _copygc = new FXDCWindow(window());
-  
+
 #warning TODOOO
 #if 0
+  _copygc = new FXDCWindow(window());
+  
+
   XGCValues gcv;
   gcv.function = GXor;
   _orgc = XCreateGC(display(), window(), GCFunction, &gcv);
@@ -115,12 +116,12 @@ Board::~Board()
     }
   }
   
-  delete _copygc;
-  delete _orgc;
+// delete _copygc;
+// delete _orgc;
   delete _erasegc;
-  delete _maskgc;
-  delete _mask_one_gc;
-  delete _mask_zero_gc;
+//  delete _maskgc;
+//  delete _mask_one_gc;
+//  delete _mask_zero_gc;
 }
 
 void
@@ -149,6 +150,7 @@ Board::set_tileset(Tileset *ts)
   }
 
   _buffer = new FXImage(display(), 0, IMAGE_DITHER|IMAGE_SHMI|IMAGE_SHMP, _buffer_w, _buffer_h );
+  _buffer->create();
 
   // create new masks
   for (int i = 0; i < NMASK; i++) {
@@ -157,6 +159,7 @@ Board::set_tileset(Tileset *ts)
     }
 
     _mask[i] = new FXImage(display(), 0, IMAGE_DITHER|IMAGE_SHMI|IMAGE_SHMP, _buffer_w, _buffer_h );
+    _mask[i]->create();
     ///_mask[i] = XCreatePixmap(display(), window(), _buffer_w, _buffer_h, 1);
   }
 }
@@ -381,8 +384,9 @@ Board::move(int x, int y)
 void
 Board::copy_buffer()
 {
-  if (_buffering)
+  if (_buffering) {
     _panel->draw_image(_buffer, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
+  }
 }
 
 void
@@ -437,6 +441,7 @@ Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 	DEBUG( format( "%s: pos %02dx%02d, w: %d h: %d", __FUNCTION__, x, y, w, h ));
     
   if (_masking < 0 && !_buffering) {
+ 	DEBUG( format( "draw_subimage() for %s", root()->getNameByImage(image)) );
     _panel->draw_subimage(image, mask, src_x, src_y, w, h, x, y);
     return;
   }
@@ -444,25 +449,39 @@ Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
   x -= _buffer_x;
   y -= _buffer_y;
   if (_masking >= 0 && mask) {
-	DEBUG( "TODO: XCopyArea" );
-#warning TODOOO
-	/*
-    XCopyArea(display(), mask, _mask[_masking], _masking_gc,
-	      src_x, src_y, w, h, x, y);
-	*/
+	DEBUG( "here1" );
+	FXDCWindow dc(_mask[_masking]);
+	dc.drawArea( mask, src_x, src_y, w, h, x, y );
+
   } else if (_masking >= 0) {
-#warning TODOOO
-	  DEBUG( "TODO: XFillRectangle" );
-	  // XFillRectangle(display(), _mask[_masking], _masking_gc, x, y, w, h);
+
+	  DEBUG( "here2" );
+	  FXDCWindow dc(_mask[_masking]);
+	  dc.fillRectangle( x, y, w, h );
+
   } else if (_buffering && mask) {
-#warning TODOOO
-	  DEBUG( "TODO: XCopyPlane" );
+
+	  DEBUG( "here3" );
+	  DEBUG( format( "XCopyPlane for %s at %dx%d", root()->getNameByImage(image), x, y ));
     // XCopyPlane(display(), mask, _buffer, _maskgc, src_x, src_y, w, h, x, y, 1);
     // XCopyArea(display(), image, _buffer, _orgc, src_x, src_y, w, h, x, y);
+	  FXDCWindow dcbuffer( _buffer );
+
+	  dcbuffer.setFunction( BLT_SRC_AND_DST );
+	  dcbuffer.drawArea( mask, src_x, src_y, w, h, x, y );
+
+	  dcbuffer.setFunction( BLT_SRC_OR_DST );
+	  dcbuffer.drawArea( image, src_x, src_y, w, h, x, y );
+
+
   } else {
-#warning TODOOO
-	  DEBUG( "TODO: XCopyArea" );
     // XCopyArea(display(), image, _buffer, _copygc, src_x, src_y, w, h, x, y);
+
+	  DEBUG( format("XCopyArea for %s %dx%d", root()->getNameByImage(image), x, y ) );
+	  FXDCWindow dcbuffer(_buffer);
+
+	  dcbuffer.drawArea( image, src_y, src_y, w, h, x, y );
+
   }
 }
 
@@ -472,8 +491,11 @@ Board::draw(Tile *t)
 {
   short x, y;
   position(t, &x, &y);
+
+  /*
   if (_masking >= 0)
     _masking_gc = (t == _masking_tile ? _mask_one_gc : _mask_zero_gc);
+  */
   
   if (!t->real())
     ;
@@ -543,12 +565,14 @@ Board::draw_neighborhood(Tile *t, int erase)
   switch (erase) {
 
    case 0: {			// drawing new tile
-#warning TODOOO
-	 DEBUG( "TODO: XCopyArea");
+	 DEBUG( format("%s XCopyArea", __FUNCTION__) );
 	 /*
      XCopyArea(display(), _panel->window(), _buffer, _copygc,
 	       _buffer_x, _buffer_y, _buffer_w, _buffer_h, 0, 0);
 	       */
+	 FXDCWindow dc(_buffer );
+	 dc.drawArea( _panel->window(), _buffer_x, _buffer_y, _buffer_w, _buffer_h, 0, 0 );
+
      mark_around(t, true, false);
      draw_marked();
      copy_buffer();
@@ -577,12 +601,15 @@ Board::draw_neighborhood(Tile *t, int erase)
      if (themask < 0) {
        // couldn't find a prepared mask for this tile; create one
        _masking = themask = lru_mask();
-       DEBUG( "TODO: XFillRectangle");
-#warning TODOOO
+       DEBUG( format("%s: XFillRectangle", __FUNCTION__) );
+
        /*
        XFillRectangle(display(), _mask[themask], _mask_zero_gc,
 		      0, 0, _buffer_w, _buffer_h);
 		      */
+       FXDCWindow dc( _mask[themask] );
+       dc.setFunction( BLT_NOT_SRC );
+       dc.fillRectangle( 0, 0, _buffer_w, _buffer_h );
        _masking_tile = t;
        
        mark_around(t, true, false);
@@ -689,4 +716,17 @@ Board::draw_background()
     dc.setFillStyle( _erasegc->getFillStyle() );
     dc.setTile( _erasegc->getTile() );
     dc.fillRectangle( 0, 0, width(), height() );
+}
+
+
+bool
+Board::tile_flag(Tile *t, TileFlag flag) const
+{
+  return _tile_flags[t->number()] & flag;
+}
+
+bool
+Board::lit(Tile *t) const
+{
+  return tile_flag(t, fLit);
 }

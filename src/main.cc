@@ -654,26 +654,31 @@ FXBitmap *MahjonggWindow::getBitmapMaskByName( const std::string & image_name )
 	return it->second;
 }
 
-FXImage* MahjonggWindow::createGifImage( const unsigned char* data )
+FXImage* MahjonggWindow::createGifImage( const unsigned char* data, const std::string & name )
 {
 	FXImage* img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP  );
 	img->create();
+
+    if( !name.empty() ) {
+        nameByImagePtr[img] = name;
+    }
+    
 	return img;
 }
 
 void MahjonggWindow::loadButtonImages()
 {
-	imageByName["hint"]       = createGifImage( button_00_gif );
-	imageByName["new"]     	  = createGifImage( button_01_gif );
-	imageByName["quit"]    	  = createGifImage( button_02_gif );
-	imageByName["rock"]       = createGifImage( button_03_gif );
-	imageByName["undo"]       = createGifImage( button_04_gif );
-	imageByName["clean"]      = createGifImage( button_05_gif );
-	imageByName["clean-lit"]  = createGifImage( button_06_gif );
-	imageByName["hint-lit"]   = createGifImage( button_07_gif );
-	imageByName["new-lit"]    = createGifImage( button_08_gif );
-	imageByName["quit-lit"]   = createGifImage( button_09_gif );
-	imageByName["undo-lit"]   = createGifImage( button_10_gif );
+	imageByName["hint"]       = createGifImage( button_00_gif, "hint" );
+	imageByName["new"]     	  = createGifImage( button_01_gif, "new" );
+	imageByName["quit"]    	  = createGifImage( button_02_gif, "quit" );
+	imageByName["rock"]       = createGifImage( button_03_gif, "rock" );
+	imageByName["undo"]       = createGifImage( button_04_gif, "undo" );
+	imageByName["clean"]      = createGifImage( button_05_gif, "clean" );
+	imageByName["clean-lit"]  = createGifImage( button_06_gif, "clean-lit" );
+	imageByName["hint-lit"]   = createGifImage( button_07_gif, "hint-lit" );
+	imageByName["new-lit"]    = createGifImage( button_08_gif, "new-lit" );
+	imageByName["quit-lit"]   = createGifImage( button_09_gif, "quit-lit" );
+	imageByName["undo-lit"]   = createGifImage( button_10_gif, "undo-lit" );
 
     bitmapMaskByName["hint"]      = createBitmapMaskFromImage( imageByName["hint"], "hint" );
     bitmapMaskByName["new"]       = createBitmapMaskFromImage( imageByName["new"], "new" );
@@ -690,16 +695,16 @@ void MahjonggWindow::loadButtonImages()
 
 void MahjonggWindow::loadDigitImages()
 {
-	imageByName["0"]       = createGifImage( digit_00_gif );
-	imageByName["1"]       = createGifImage( digit_01_gif );
-	imageByName["2"]       = createGifImage( digit_02_gif );
-	imageByName["3"]       = createGifImage( digit_03_gif );
-	imageByName["4"]       = createGifImage( digit_04_gif );
-	imageByName["5"]       = createGifImage( digit_05_gif );
-	imageByName["6"]       = createGifImage( digit_06_gif );
-	imageByName["7"]       = createGifImage( digit_07_gif );
-	imageByName["8"]       = createGifImage( digit_08_gif );
-	imageByName["9"]       = createGifImage( digit_09_gif );
+	imageByName["0"]       = createGifImage( digit_00_gif, "0" );
+	imageByName["1"]       = createGifImage( digit_01_gif, "1" );
+	imageByName["2"]       = createGifImage( digit_02_gif, "2" );
+	imageByName["3"]       = createGifImage( digit_03_gif, "3" );
+	imageByName["4"]       = createGifImage( digit_04_gif, "4" );
+	imageByName["5"]       = createGifImage( digit_05_gif, "5" );
+	imageByName["6"]       = createGifImage( digit_06_gif, "6" );
+	imageByName["7"]       = createGifImage( digit_07_gif, "7" );
+	imageByName["8"]       = createGifImage( digit_08_gif, "8" );
+	imageByName["9"]       = createGifImage( digit_09_gif, "9" );
 
     bitmapMaskByName["0"]   = createBitmapMaskFromImage( imageByName["0"], "0" );
     bitmapMaskByName["1"]   = createBitmapMaskFromImage( imageByName["1"], "1" );
@@ -725,7 +730,7 @@ FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image, const std::
     
 	FXBitmap* bitmap = new FXBitmap(getApp(), 0, BITMAP_KEEP|BITMAP_SHMI|BITMAP_SHMP );
     bitmap->create();
-
+    
     FXuchar *pixels = 0;
     allocElms( pixels, width * height );
 	   
