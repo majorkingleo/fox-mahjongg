@@ -154,6 +154,14 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	level_label = new FXLabel( buttonFrame, "Level: ", NULL,JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_SUNKEN );
 	retry_label = new FXLabel( buttonFrame, "Retries: ", NULL,JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_SUNKEN );
 
+	current = new FXCanvas(buttonFrame,0,0,
+			FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+			0, 0, 70, 70);
+
+	current_mask = new FXCanvas(buttonFrame,0,0,
+				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+				0, 0, 70, 70);
+
 	// level = new LevelStartup( canvas, getApp() );
 
 

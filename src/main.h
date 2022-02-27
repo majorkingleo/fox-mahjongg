@@ -67,6 +67,9 @@ private:
 	std::map<std::string,FXBitmap *> bitmapMaskByName;
     std::map<FXImage*,std::string> nameByImagePtr; // just for debugging
 
+    FXCanvas *current;
+    FXCanvas *current_mask;
+
 protected:
 	MahjonggWindow();
 	~MahjonggWindow();
@@ -147,6 +150,29 @@ public:
 
     void registerNameByImage( FXImage *img, const std::string & name ) {
         nameByImagePtr[img] = name;
+    }
+
+    void setCurrentImage( FXImage *image ) {
+    	FXDCWindow dc(current);
+    	FXIcon *icon = dynamic_cast<FXIcon*>( image );
+
+    	dc.setForeground( FXRGB(0,255,0));
+    	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
+
+    	if( icon ) {
+    		dc.drawIcon( icon, 0, 0 );
+    	} else {
+    		dc.drawImage( image, 0, 0 );
+    	}
+    }
+
+    void setCurrentImageMask( FXBitmap *bitmap ) {
+    	FXDCWindow dc(current_mask);
+
+    	dc.setForeground( FXRGB(0,255,0));
+    	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
+
+    	dc.drawBitmap( bitmap, 0, 0 );
     }
 
 private:

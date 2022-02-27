@@ -133,14 +133,4 @@ class Board: public GameHooks, public SwWidget {
 };
 
 
-inline void
-Board::set_tile_flag(Tile *t, TileFlag flag, bool on)
-{
-  if (on)
-    _tile_flags[t->number()] |= flag;
-  else
-    _tile_flags[t->number()] &= ~flag;
-}
-
-
 #endif

@@ -463,12 +463,14 @@ Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 
 	  DEBUG( "here3" );
 	  DEBUG( format( "XCopyPlane for %s at %dx%d", root()->getNameByImage(image), x, y ));
+	  root()->setCurrentImage( image );
     // XCopyPlane(display(), mask, _buffer, _maskgc, src_x, src_y, w, h, x, y, 1);
     // XCopyArea(display(), image, _buffer, _orgc, src_x, src_y, w, h, x, y);
 	  FXDCWindow dcbuffer( _buffer );
 
 	  dcbuffer.setFunction( BLT_SRC_AND_DST );
 	  dcbuffer.drawArea( mask, src_x, src_y, w, h, x, y );
+	  root()->setCurrentImageMask( mask );
 
 	  dcbuffer.setFunction( BLT_SRC_OR_DST );
 	  dcbuffer.drawArea( image, src_x, src_y, w, h, x, y );
@@ -729,4 +731,14 @@ bool
 Board::lit(Tile *t) const
 {
   return tile_flag(t, fLit);
+}
+
+
+inline void
+Board::set_tile_flag(Tile *t, TileFlag flag, bool on)
+{
+  if (on)
+    _tile_flags[t->number()] |= flag;
+  else
+    _tile_flags[t->number()] &= ~flag;
 }
