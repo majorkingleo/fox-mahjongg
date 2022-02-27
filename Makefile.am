@@ -57,7 +57,9 @@ fox_mahjongg_SOURCES=\
 		src/data_buttons.h \
 		src/data_buttons.cc \
 		src/data_digits.h \
-		src/data_digits.cc		
+		src/data_digits.cc \
+		src/FXPixelBuffer.h \
+		src/FXPixelBuffer.cc
 		
 BUILT_SOURCES=src/data_tiles_thick.cc \
 			  src/data_tiles_thick.h \

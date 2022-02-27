@@ -788,7 +788,7 @@ Board::lit(Tile *t) const
 }
 
 
-inline void
+void
 Board::set_tile_flag(Tile *t, TileFlag flag, bool on)
 {
   if (on)

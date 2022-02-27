@@ -24,10 +24,12 @@
 #include <string>
 #include <map>
 
+
 class Panel;
 class Gif_Stream;
 class MatchCount;
 class Button;
+class FXPixelBuffer;
 
 // Main Window
 class MahjonggWindow : public FXMainWindow {
@@ -70,6 +72,13 @@ private:
     FXCanvas *current;
     FXCanvas *current_mask;
     FXCanvas *current_result;
+
+    FXPixelBuffer *pixel_buffer;
+
+    FXTabBook *tabbook;
+    FXTabItem *tab_main;
+    FXTabItem *tab_debug;
+
 
 protected:
 	MahjonggWindow();

@@ -20,6 +20,7 @@
 #include "tiles_thick.h"
 #include "data_buttons.h"
 #include "data_digits.h"
+#include "FXPixelBuffer.h"
 
 using namespace Tools;
 
@@ -81,7 +82,8 @@ MahjonggWindow::MahjonggWindow()
   layout_name(0),
   config_dir(),
   imageByName(),
-  bitmapMaskByName()
+  bitmapMaskByName(),
+  nameByImagePtr()
 {}
 
 // Construct a MahjonggWindow
@@ -111,10 +113,26 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   gifbuttons(0),
   matches(0),
   layout_name(0),
-  config_dir()
+  config_dir(),
+  imageByName(),
+  bitmapMaskByName(),
+  nameByImagePtr()
 {
+	FXVerticalFrame *f = new FXVerticalFrame( this, LAYOUT_FILL_X | LAYOUT_FILL_Y );
 
-	contents=new FXHorizontalFrame(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 0,0,0,0);
+	tabbook = new FXTabBook( f, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y );
+	new FXTabItem( tabbook, "Debug" );
+	f = new FXVerticalFrame( tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED );
+
+	pixel_buffer=new FXPixelBuffer(f,this,ID_CANVAS,
+			FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+			0, 0, 670, 550);
+
+
+	new FXTabItem( tabbook, "Main" );
+	f = new FXVerticalFrame( tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED );
+
+	contents=new FXHorizontalFrame(f,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 0,0,0,0);
 
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(contents,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
@@ -278,6 +296,9 @@ void MahjonggWindow::create(){
     game->start(time(0), solveable_boards );
     last_new_board = Moment::now();
     panel->set_visible( true );
+
+
+    pixel_buffer->setTiledBackgroundImage( background );
 
 	// Make the main window appear
 	show(PLACEMENT_SCREEN);
