@@ -162,6 +162,10 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
 				0, 0, 70, 70);
 
+	current_result = new FXCanvas(buttonFrame,0,0,
+				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+				0, 0, 70, 70);
+
 	// level = new LevelStartup( canvas, getApp() );
 
 
@@ -330,6 +334,9 @@ long MahjonggWindow::onPaint(FXObject*,FXSelector,void* ptr){
 	// level->paint();
 	panel->redraw_all();
 	panel->redraw();
+
+	setCurrentImage( getImageByName( "new" ) );
+	setCurrentImageMask( getBitmapMaskByName( "new" ) );
 
 	return 1;
 }
@@ -766,6 +773,41 @@ FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image, const std::
     bitmap->render();
 
 	return bitmap;
+}
+
+void MahjonggWindow::setCurrentImage( FXImage *image ) {
+	FXDCWindow dc(current);
+	FXIcon *icon = dynamic_cast<FXIcon*>( image );
+
+	dc.setForeground( FXRGB(0,255,0));
+	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
+
+	if( icon ) {
+		dc.drawIcon( icon, 0, 0 );
+	} else {
+		dc.drawImage( image, 0, 0 );
+	}
+}
+
+void MahjonggWindow::setCurrentImageMask( FXBitmap *bitmap ) {
+	FXDCWindow dc(current_mask);
+
+	dc.setForeground( FXRGB(0,255,0));
+	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
+
+	dc.drawBitmap( bitmap, 0, 0 );
+
+
+	FXDCWindow dc_res(current_result);
+	// dc_res.drawImage( background, 0, 0 );
+	dc_res.setForeground( FXRGB(0,0,100));
+	dc_res.fillRectangle(0,0,current_result->getWidth(), current_result->getHeight() );
+
+
+	FXDCWindow dc_source(current);
+	dc_res.setClipMask( bitmap );
+	dc_res.setFunction( BLT_CLR );
+	dc_res.drawArea( background, 0, 0, 64, 64, 0, 0 );
 }
 
 void

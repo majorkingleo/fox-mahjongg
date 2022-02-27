@@ -69,6 +69,7 @@ private:
 
     FXCanvas *current;
     FXCanvas *current_mask;
+    FXCanvas *current_result;
 
 protected:
 	MahjonggWindow();
@@ -152,28 +153,9 @@ public:
         nameByImagePtr[img] = name;
     }
 
-    void setCurrentImage( FXImage *image ) {
-    	FXDCWindow dc(current);
-    	FXIcon *icon = dynamic_cast<FXIcon*>( image );
+    void setCurrentImage( FXImage *image );
 
-    	dc.setForeground( FXRGB(0,255,0));
-    	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
-
-    	if( icon ) {
-    		dc.drawIcon( icon, 0, 0 );
-    	} else {
-    		dc.drawImage( image, 0, 0 );
-    	}
-    }
-
-    void setCurrentImageMask( FXBitmap *bitmap ) {
-    	FXDCWindow dc(current_mask);
-
-    	dc.setForeground( FXRGB(0,255,0));
-    	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
-
-    	dc.drawBitmap( bitmap, 0, 0 );
-    }
+    void setCurrentImageMask( FXBitmap *bitmap );
 
 private:
 	Tileset *load_tileset(const char *tileset_name, const char *config_dir);

@@ -43,15 +43,15 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 	_mask_prev_mru(),
 	_mask_mru(0),
 	_masking(0),
-//	_masking_gc(0),
+	_masking_gc(0),
 	_masking_tile(0),
 
 //	_copygc(0),
 //	_orgc(0),
 	_erasegc(0),
 //	_maskgc(0),
-//	_mask_one_gc(0),
-//	_mask_zero_gc(0),
+	_mask_one_gc(0),
+	_mask_zero_gc(0),
 
     _selected(0),
 
@@ -91,15 +91,25 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
   gcv.function = GXand;
   _maskgc = XCreateGC(display(), window(),
 		      GCForeground | GCBackground | GCFunction, &gcv);
+#endif
 
+  /*
   gcv.function = GXandInverted;
   gcv.foreground = ~0UL;
   _mask_zero_gc = XCreateGC(display(), _mask[0], GCFunction | GCForeground, &gcv);
+  */
+  _mask_zero_gc = new FXDC( display() );
+  _mask_zero_gc->setFunction( BLT_NOT_SRC_AND_DST );
+  _mask_zero_gc->setForeground( FXRGB(255,255,255) );
 
+  /*
   gcv.function = GXor;
   gcv.foreground = ~0UL;
   _mask_one_gc = XCreateGC(display(), _mask[0], GCFunction | GCForeground, &gcv);
-#endif
+  */
+  _mask_one_gc = new FXDC( display() );
+  _mask_one_gc->setFunction( BLT_SRC_XOR_DST );
+  _mask_one_gc->setForeground( FXRGB(255,255,255) );
 
   _hint = new Hint(this);
 }
@@ -120,8 +130,8 @@ Board::~Board()
 // delete _orgc;
   delete _erasegc;
 //  delete _maskgc;
-//  delete _mask_one_gc;
-//  delete _mask_zero_gc;
+  delete _mask_one_gc;
+  delete _mask_zero_gc;
 }
 
 void
@@ -158,7 +168,7 @@ Board::set_tileset(Tileset *ts)
     	delete _mask[i];
     }
 
-    _mask[i] = new FXImage(display(), 0, IMAGE_DITHER|IMAGE_SHMI|IMAGE_SHMP, _buffer_w, _buffer_h );
+    _mask[i] = new FXBitmap(display(), 0, BITMAP_SHMI|BITMAP_SHMP, _buffer_w, _buffer_h );
     _mask[i]->create();
     ///_mask[i] = XCreatePixmap(display(), window(), _buffer_w, _buffer_h, 1);
   }
@@ -450,31 +460,62 @@ Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
   y -= _buffer_y;
   if (_masking >= 0 && mask) {
 	DEBUG( "here1" );
+
+	/*
+	 *    XCopyArea(display(), mask, _mask[_masking], _masking_gc,
+              src_x, src_y, w, h, x, y
+	 */
 	FXDCWindow dc(_mask[_masking]);
+	dc.setFunction( _masking_gc->getFunction() );
+	dc.setForeground( _masking_gc->getForeground() );
+	dc.setBackground( _masking_gc->getBackground() );
+
 	dc.drawArea( mask, src_x, src_y, w, h, x, y );
 
   } else if (_masking >= 0) {
 
 	  DEBUG( "here2" );
+	  // XFillRectangle(display(), _mask[_masking], _masking_gc, x, y, w, h);
 	  FXDCWindow dc(_mask[_masking]);
+	  dc.setFunction( _masking_gc->getFunction() );
+	  dc.setForeground( _masking_gc->getForeground() );
+	  dc.setBackground( _masking_gc->getBackground() );
+
 	  dc.fillRectangle( x, y, w, h );
 
   } else if (_buffering && mask) {
 
 	  DEBUG( "here3" );
 	  DEBUG( format( "XCopyPlane for %s at %dx%d", root()->getNameByImage(image), x, y ));
-	  root()->setCurrentImage( image );
+	  // root()->setCurrentImage( image );
     // XCopyPlane(display(), mask, _buffer, _maskgc, src_x, src_y, w, h, x, y, 1);
-    // XCopyArea(display(), image, _buffer, _orgc, src_x, src_y, w, h, x, y);
-	  FXDCWindow dcbuffer( _buffer );
 
-	  dcbuffer.setFunction( BLT_SRC_AND_DST );
-	  dcbuffer.drawArea( mask, src_x, src_y, w, h, x, y );
-	  root()->setCurrentImageMask( mask );
+	  {
+		  FXDCWindow dcbuffer( _buffer );
+		  /*
+	  	  	  	  gcv.foreground = 0UL;
+	  	  	  	  gcv.background = ~0UL;
+	  	  	  	  gcv.function = GXand;
+	  	  	  	  _maskgc = XCreateGC(display(), window(),
+			      GCForeground | GCBackground | GCFunction, &gcv);
+		   */
+		  dcbuffer.setForeground( 0 );
+		  dcbuffer.setBackground( FXRGB(255,255,255) );
+		  dcbuffer.setFunction( BLT_SRC_AND_DST );
+#warning "TODO XCopyPlane"
+		  dcbuffer.drawArea( mask, src_x, src_y, w, h, x, y );
+	  }
 
-	  dcbuffer.setFunction( BLT_SRC_OR_DST );
-	  dcbuffer.drawArea( image, src_x, src_y, w, h, x, y );
-
+	  // XCopyArea(display(), image, _buffer, _orgc, src_x, src_y, w, h, x, y);
+	  {
+		  FXDCWindow dcbuffer( _buffer );
+		  /*
+			  gcv.function = GXor;
+  	  	  	  _orgc = XCreateGC(display(), window(), GCFunction, &gcv);
+		   */
+		  dcbuffer.setFunction( BLT_SRC_OR_DST );
+		  dcbuffer.drawArea( image, src_x, src_y, w, h, x, y );
+	  }
 
   } else {
     // XCopyArea(display(), image, _buffer, _copygc, src_x, src_y, w, h, x, y);
@@ -494,10 +535,8 @@ Board::draw(Tile *t)
   short x, y;
   position(t, &x, &y);
 
-  /*
   if (_masking >= 0)
     _masking_gc = (t == _masking_tile ? _mask_one_gc : _mask_zero_gc);
-  */
   
   if (!t->real())
     ;
@@ -582,7 +621,7 @@ Board::draw_neighborhood(Tile *t, int erase)
    }
 
    case 1: {			// erasing tile
-#warning TODOOO
+#warning "TODOOO Background drawing"
 	 DEBUG( "TODO: XSetTSOrigin");
      // XSetTSOrigin(display(), _erasegc, -_buffer_x, -_buffer_y);
      // XFillRectangle(display(), _buffer, _erasegc, 0, 0, _buffer_w, _buffer_h);
@@ -610,7 +649,11 @@ Board::draw_neighborhood(Tile *t, int erase)
 		      0, 0, _buffer_w, _buffer_h);
 		      */
        FXDCWindow dc( _mask[themask] );
-       dc.setFunction( BLT_NOT_SRC );
+
+       dc.setFunction( _mask_zero_gc->getFunction() );
+       dc.setForeground( _mask_zero_gc->getForeground() );
+       dc.setBackground( _mask_zero_gc->getBackground() );
+
        dc.fillRectangle( 0, 0, _buffer_w, _buffer_h );
        _masking_tile = t;
        
@@ -631,6 +674,17 @@ Board::draw_neighborhood(Tile *t, int erase)
 	       0, 0, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
      XSetClipMask(display(), _copygc, None);
      */
+
+     FXDCWindow dc(window());
+     dc.setClipMask( _mask[themask] );
+#warning "TODOO XSetClipOrigin"
+     // XSetClipOrigin(display(), _copygc, _buffer_x, _buffer_y);
+
+
+     // XCopyArea(display(), _buffer, _panel->window(), _copygc,
+	 //      0, 0, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
+     dc.drawArea( _buffer,  0, 0, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
+
      mark_mask_used(themask);
      _mask_tile[themask] = t->number();
      break;
@@ -742,3 +796,4 @@ Board::set_tile_flag(Tile *t, TileFlag flag, bool on)
   else
     _tile_flags[t->number()] &= ~flag;
 }
+

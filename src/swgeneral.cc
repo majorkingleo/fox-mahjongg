@@ -60,11 +60,11 @@ SwWindow::draw_subimage(FXImage *source, FXBitmap *mask,
                         icon->getOptions() & IMAGE_OPAQUE,
                         icon->getOptions() & IMAGE_ALPHAGUESS));
           image_gc.drawIcon( icon, x, y);
-          _root->setCurrentImage( icon );
+          // _root->setCurrentImage( icon );
       } else {
           DEBUG( "drawing image" );
           image_gc.drawImage( source, x, y);
-          _root->setCurrentImage( source );
+          // _root->setCurrentImage( source );
       }
       
 	  // image_gc->clearClipRectangle();

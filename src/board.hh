@@ -35,21 +35,21 @@ class Board: public GameHooks, public SwWidget {
   int _buffer_y;
 
   static const int NMASK = 10;
-  FXImage *_mask[NMASK];
+  FXBitmap *_mask[NMASK];
   int _mask_tile[NMASK];
   int _mask_next_mru[NMASK];
   int _mask_prev_mru[NMASK];
   int _mask_mru;
   int _masking;
-  // FXDCWindow *_masking_gc;
+  FXDC *_masking_gc;
   Tile *_masking_tile;
   
   // FXDCWindow *_copygc;
   // FXDCWindow *_orgc;
-  FXDC       *_erasegc;
+  FXDC *_erasegc;
   // FXDCWindow *_maskgc;
-  // FXDCWindow *_mask_one_gc;
-  // FXDCWindow *_mask_zero_gc;
+  FXDC *_mask_one_gc;
+  FXDC *_mask_zero_gc;
   
   Tile *_selected;
   
