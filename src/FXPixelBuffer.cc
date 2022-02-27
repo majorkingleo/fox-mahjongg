@@ -20,7 +20,14 @@ FXIMPLEMENT(FXPixelBuffer,FXCanvas,FXPixelBufferMap,ARRAYNUMBER(FXPixelBufferMap
 void FXPixelBuffer::ObjectContainer::draw( FXImage *target )
 {
 	FXDCWindow dc( target );
-	dc.drawImage( image, x, y );
+
+	FXIcon *icon = dynamic_cast<FXIcon*>( image );
+
+	if( icon ) {
+		dc.drawIcon( icon, x, y );
+	} else {
+		dc.drawImage( image, x, y );
+	}
 }
 
 void FXPixelBuffer::BackgroundObjectContainer::draw( FXImage *target )
@@ -95,10 +102,10 @@ void FXPixelBuffer::setBackground( FXImage *img, FXDC *dc, int floor )
 	owned_dc.push_back( dc );
 	objects.push_back( new BackgroundObjectContainer(img, dc, 0, 0, floor ) );
 
-	getOrCreateFloor( floor );
+	getOrCreateFloor( floor, true );
 }
 
-FXImage *FXPixelBuffer::getOrCreateFloor( int floor )
+FXImage *FXPixelBuffer::getOrCreateFloor( int floor, bool base )
 {
 	auto it = floors.find( floor );
 
@@ -106,7 +113,14 @@ FXImage *FXPixelBuffer::getOrCreateFloor( int floor )
 		return it->second;
 	}
 
-	FXImage *image = new FXImage( getApp(), 0, IMAGE_KEEP, getWidth(), getHeight() );
+	FXImage *image = 0;
+
+	if( base ) {
+		image = new FXImage( getApp(), 0, IMAGE_KEEP, getWidth(), getHeight() );
+	} else {
+		image = new FXIcon( getApp(), 0, 0, IMAGE_KEEP, getWidth(), getHeight() );
+	}
+
 	owned_images.push_back( image );
 	image->create();
 
@@ -128,12 +142,18 @@ int FXPixelBuffer::getHighestFloor() const
 // Canvas is an object drawn by another
 long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 {
-  DEBUG( __FUNCTION__ );
-
   // return FXCanvas::onPaint( obj, sel, ptr );
   for( auto it : floors ) {
 	  FXImage *target = it.second;
 	  int floor = it.first;
+
+	  {
+		  FXDCWindow dc( target );
+		  dc.setForeground( FXRGBA(0,255,0,0) );
+		  dc.setBackground( FXRGBA(0,255,0,0) );
+		  dc.fillRectangle( 0,0, getWidth(), getHeight() );
+	  }
+
 
 	  for( ObjectContainer *obj : objects ) {
 		  if( floor == obj->getFloor() ) {
@@ -142,12 +162,80 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 	  }
   }
 
+  FXImage buffer( getApp(), 0, IMAGE_KEEP, getWidth(), getHeight() );
+  buffer.create();
+
+  FXColor *pixels = 0;
+  allocElms( pixels, getWidth() * getHeight()  );
+
+  buffer.setData( pixels, IMAGE_KEEP | IMAGE_OWNED, getWidth(), getHeight() );
+
   for( auto it : floors ) {
 	  FXImage *source = it.second;
 
+	  if( !source->getData() ) {
+		  DEBUG( "icon option IMAGE_KEEP not set" );
+		  source->restore();
+	  }
+
+#if 0
 	  FXDCWindow dc(this);
-	  dc.drawArea( source, 0, 0, getWidth(), getHeight(), 0, 0 );
+
+	  FXIcon *icon = dynamic_cast<FXIcon*>( source );
+
+	  std::string extra;
+
+	  if( icon ) {
+		  extra = "as icon";
+		  dc.drawIcon( icon, 0, 0 );
+		  // dc.drawImage( icon, 0, 0 );
+		  if( !icon->getData() ) {
+			  DEBUG( "icon option IMAGE_KEEP not set" );
+			  icon->restore();
+		  }
+
+		  FXColor transparent_color = FXRGBA( 0, 255, 0, 0 );
+
+		  for( unsigned x = 0; x < width; x++ ) {
+			  for( unsigned y = 0; y < height; y++ ) {
+				  FXColor color = icon->getPixel( x, y );
+
+				  if( transparent_color != color ) {
+					  dc.setPixel( x, y, color );
+				  }
+			  }
+		  }
+
+	  } else {
+		  dc.drawArea( source, 0, 0, getWidth(), getHeight(), 0, 0 );
+	  }
+#endif
+	  FXColor transparent_color = FXRGBA( 0, 255, 0, 0 );
+
+	  for( unsigned x = 0; x < width; x++ ) {
+		  for( unsigned y = 0; y < height; y++ ) {
+			  FXColor color = source->getPixel( x, y );
+			  //std::cout << format( "0x%x", FXALPHAVAL( color )) << std::endl;
+			  if( FXALPHAVAL( color ) != 0 ) {
+				  buffer.setPixel( x, y, color );
+			  }
+		  }
+	  }
+
+	  DEBUG( format( "%s: drawing floor: %d", __FUNCTION__, it.first ) );;
   }
 
+  buffer.render();
+
+  FXDCWindow dc(this);
+  dc.drawImage( &buffer, 0, 0 );
+
   return 0;
+}
+
+void FXPixelBuffer::setImage( FXImage *img, int x, int y, int floor )
+{
+	objects.push_back( new ObjectContainer(img, x, y, floor ) );
+
+	getOrCreateFloor( floor );
 }

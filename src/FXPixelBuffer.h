@@ -79,13 +79,14 @@ public:
 	void detach();
 	void create();
 
+	void setImage( FXImage *img, int x, int y, int floor );
 	void setBackground( FXImage *img, FXDC *dc = NULL, int floor = -1 );
 	void setTiledBackgroundImage( FXImage *image );
 
 	int getLowestFloor() const;
 	int getHighestFloor() const;
 
-	FXImage *getOrCreateFloor( int floor );
+	FXImage *getOrCreateFloor( int floor, bool base = false );
 };
 
 

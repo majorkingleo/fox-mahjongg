@@ -299,6 +299,7 @@ void MahjonggWindow::create(){
 
 
     pixel_buffer->setTiledBackgroundImage( background );
+    pixel_buffer->setImage( getImageByName( "quit" ), 100, 100, 0 );
 
 	// Make the main window appear
 	show(PLACEMENT_SCREEN);
