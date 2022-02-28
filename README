@@ -12,7 +12,9 @@ I'm using opensuse leap 15.4
 				 mingw64-zlib-devel \
 				 mingw64-libjpeg8 \
 				 mingw64-libbz2-1 \
-				 mingw64-libpng16-16
+				 mingw64-libpng16-16 \
+				 mingw64-libMagick++-Q16-7 \
+				 mingw64-libmagick++-devel
 				 
 
 * cross compile the FOX library
@@ -29,7 +31,7 @@ I'm using opensuse leap 15.4
 
 * cross-compile fox-mahjongg
   if you cloned from git repo:
-    ./reconfigure --host=x86_64-w64-mingw32
+    ./reconfigure.sh --host=x86_64-w64-mingw32
   
   ./configure --host=x86_64-w64-mingw32
   make
