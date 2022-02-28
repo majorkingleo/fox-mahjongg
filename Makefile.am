@@ -100,7 +100,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-DNOWAMAS \
 	-std=c++11 \
 	-I$(top_srcdir)/liblcdf \
-	$(AUXLIBS_CFLAGS) 
+	$(AUXLIBS_CFLAGS)  \
+	$(LIBMAGICK_CFLAGS)
 
 noinst_LIBRARIES=tools/libtools.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
@@ -175,7 +176,8 @@ fox_mahjongg_LDADD = \
 	liblcdf/liblcdf.a
 
 LIBS= \
-	$(AUXLIBS_LIBS)
+	$(AUXLIBS_LIBS) \
+	$(LIBMAGICK_LIBS)
 
 if MINGW
 AM_LDFLAGS = -mwindows
