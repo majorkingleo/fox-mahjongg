@@ -7,6 +7,8 @@
 #include "FXPixelBuffer.h"
 #include "debug.h"
 #include <format.h>
+#include <cpp_util.h>
+#include <main.h>
 
 using namespace Tools;
 
@@ -17,42 +19,23 @@ FXDEFMAP(FXPixelBuffer) FXPixelBufferMap[]={
 // Object implementation
 FXIMPLEMENT(FXPixelBuffer,FXCanvas,FXPixelBufferMap,ARRAYNUMBER(FXPixelBufferMap));
 
-void FXPixelBuffer::ObjectContainer::draw( FXImage *target )
-{
-	FXDCWindow dc( target );
+Magick::Color FXPixelBuffer::TRANSPARENT("transparent");
 
-	FXIcon *icon = dynamic_cast<FXIcon*>( image );
-
-	if( icon ) {
-		dc.drawIcon( icon, x, y );
-	} else {
-		dc.drawImage( image, x, y );
-	}
-}
-
-void FXPixelBuffer::BackgroundObjectContainer::draw( FXImage *target )
-{
-	FXDCWindow tdc( target );
-	tdc.setFillStyle( dc->getFillStyle() );
-	tdc.setTile( dc->getTile() );
-	tdc.fillRectangle( 0, 0, target->getWidth(), target->getHeight() );
-}
 
 FXPixelBuffer::FXPixelBuffer()
 : objects(),
   floors(),
-  owned_dc(),
-  owned_images()
+  owned_dc()
 {
 
 }
 
-FXPixelBuffer::FXPixelBuffer(FXComposite* p,FXObject* tgt,FXSelector sel,FXuint opts,FXint x,FXint y,FXint w,FXint h)
+FXPixelBuffer::FXPixelBuffer(MahjonggWindow *root_, FXComposite* p,FXObject* tgt,FXSelector sel,FXuint opts,FXint x,FXint y,FXint w,FXint h)
 : FXCanvas( p, tgt, sel, opts, x, y, w, h ),
   objects(),
   floors(),
   owned_dc(),
-  owned_images()
+  root(root_)
 {
 
 }
@@ -63,10 +46,6 @@ FXPixelBuffer::~FXPixelBuffer()
 		delete dc;
 	}
 
-	for( auto img : owned_images ) {
-		delete img;
-	}
-
 	for( auto obj : objects ) {
 		delete obj;
 	}
@@ -74,38 +53,32 @@ FXPixelBuffer::~FXPixelBuffer()
 
 void FXPixelBuffer::detach()
 {
-	for( auto img : owned_images ) {
-		img->detach();
-	}
+
 }
 
 void FXPixelBuffer::create()
 {
 	FXCanvas::create();
-
-	for( auto img : owned_images ) {
-		img->create();
-	}
 }
 
-void FXPixelBuffer::setTiledBackgroundImage( FXImage *image )
+void FXPixelBuffer::setTiledBackgroundImage( FXImage *image, int floor, const std::string & name )
 {
 	FXDC *dc = new FXDC( getApp() );
 	dc->setFillStyle( FILL_TILED );
 	dc->setTile( image );
 
-	setBackground( image, dc );
+	setBackground( image, dc, -1, name );
 }
 
-void FXPixelBuffer::setBackground( FXImage *img, FXDC *dc, int floor )
+void FXPixelBuffer::setBackground( FXImage *img, FXDC *dc, int floor, const std::string & name )
 {
 	owned_dc.push_back( dc );
-	objects.push_back( new BackgroundObjectContainer(img, dc, 0, 0, floor ) );
+	objects.push_back( new FXPixelBufferBackgroundObject(this, img, dc, 0, 0, floor, name ) );
 
 	getOrCreateFloor( floor, true );
 }
 
-FXImage *FXPixelBuffer::getOrCreateFloor( int floor, bool base )
+FXPixelBuffer::RefMImage FXPixelBuffer::getOrCreateFloor( int floor, bool base )
 {
 	auto it = floors.find( floor );
 
@@ -113,20 +86,11 @@ FXImage *FXPixelBuffer::getOrCreateFloor( int floor, bool base )
 		return it->second;
 	}
 
-	FXImage *image = 0;
+	Tools::Ref<Magick::Image> mimage = new Magick::Image(Magick::Geometry(getWidth(), getHeight()), TRANSPARENT);
 
-	if( base ) {
-		image = new FXImage( getApp(), 0, IMAGE_KEEP, getWidth(), getHeight() );
-	} else {
-		image = new FXIcon( getApp(), 0, 0, IMAGE_KEEP, getWidth(), getHeight() );
-	}
+	floors[floor] = mimage;
 
-	owned_images.push_back( image );
-	image->create();
-
-	floors[floor] = image;
-
-	return image;
+	return mimage;
 }
 
 int FXPixelBuffer::getLowestFloor() const
@@ -144,98 +108,199 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 {
   // return FXCanvas::onPaint( obj, sel, ptr );
   for( auto it : floors ) {
-	  FXImage *target = it.second;
+	  RefMImage target = it.second;
 	  int floor = it.first;
 
-	  {
-		  FXDCWindow dc( target );
-		  dc.setForeground( FXRGBA(0,255,0,0) );
-		  dc.setBackground( FXRGBA(0,255,0,0) );
-		  dc.fillRectangle( 0,0, getWidth(), getHeight() );
-	  }
-
-
-	  for( ObjectContainer *obj : objects ) {
+	  for( FXPixelBufferObject *obj : objects ) {
 		  if( floor == obj->getFloor() ) {
 			  obj->draw( target );
 		  }
 	  }
   }
 
-  FXImage buffer( getApp(), 0, IMAGE_KEEP, getWidth(), getHeight() );
-  buffer.create();
 
-  FXColor *pixels = 0;
-  allocElms( pixels, getWidth() * getHeight()  );
 
-  buffer.setData( pixels, IMAGE_KEEP | IMAGE_OWNED, getWidth(), getHeight() );
+  std::list<Magick::Image> images;
 
   for( auto it : floors ) {
-	  FXImage *source = it.second;
+	  RefMImage img = it.second;
+	  images.push_back( img );
 
-	  if( !source->getData() ) {
-		  DEBUG( "icon option IMAGE_KEEP not set" );
-		  source->restore();
-	  }
-
-#if 0
-	  FXDCWindow dc(this);
-
-	  FXIcon *icon = dynamic_cast<FXIcon*>( source );
-
-	  std::string extra;
-
-	  if( icon ) {
-		  extra = "as icon";
-		  dc.drawIcon( icon, 0, 0 );
-		  // dc.drawImage( icon, 0, 0 );
-		  if( !icon->getData() ) {
-			  DEBUG( "icon option IMAGE_KEEP not set" );
-			  icon->restore();
-		  }
-
-		  FXColor transparent_color = FXRGBA( 0, 255, 0, 0 );
-
-		  for( unsigned x = 0; x < width; x++ ) {
-			  for( unsigned y = 0; y < height; y++ ) {
-				  FXColor color = icon->getPixel( x, y );
-
-				  if( transparent_color != color ) {
-					  dc.setPixel( x, y, color );
-				  }
-			  }
-		  }
-
-	  } else {
-		  dc.drawArea( source, 0, 0, getWidth(), getHeight(), 0, 0 );
-	  }
-#endif
-	  FXColor transparent_color = FXRGBA( 0, 255, 0, 0 );
-
-	  for( unsigned x = 0; x < width; x++ ) {
-		  for( unsigned y = 0; y < height; y++ ) {
-			  FXColor color = source->getPixel( x, y );
-			  //std::cout << format( "0x%x", FXALPHAVAL( color )) << std::endl;
-			  if( FXALPHAVAL( color ) != 0 ) {
-				  buffer.setPixel( x, y, color );
-			  }
-		  }
-	  }
+	  img->write( format( "img_%d.png", it.first ));
 
 	  DEBUG( format( "%s: drawing floor: %d", __FUNCTION__, it.first ) );;
   }
 
-  buffer.render();
+  Magick::Image flattenedImage( Magick::Geometry(getWidth(),getHeight()), Magick::Color("transparent") );
+  flattenedImage.type(Magick::TrueColorMatteType);
+
+  Magick::flattenImages(&flattenedImage, images.begin(), images.end());
+
+  flattenedImage.modifyImage();
+  flattenedImage.write("out.png");
+
+  FXImage *buffer = createImage( RefMImage(&flattenedImage,false) );
+
 
   FXDCWindow dc(this);
-  dc.drawImage( &buffer, 0, 0 );
+  dc.drawImage( buffer, 0, 0 );
+
+  delete buffer;
 
   return 0;
 }
 
-void FXPixelBuffer::setImage( FXImage *img, int x, int y, int floor )
+void FXPixelBuffer::setImage( FXImage *img, int x, int y, int floor, const std::string & name )
 {
-	objects.push_back( new ObjectContainer(img, x, y, floor ) );
+	objects.push_back( new FXPixelBufferObject(this, img, x, y, floor, name ) );
 
 	getOrCreateFloor( floor );
 }
+
+FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
+{
+	if( !image->getData() ) {
+		DEBUG( format("icon %s option IMAGE_KEEP not set", root->getNameByImage( image ) ) );
+		image->restore();
+	}
+
+    const int w = image->getWidth();
+    const int h = image->getHeight();
+
+    RefMImage mimage = new Magick::Image(Magick::Geometry(image->getWidth(), image->getHeight()), TRANSPARENT);
+
+    /* get pixelcache of ImageIn */
+#if MagickLibVersion >= 0x700
+
+    mimage->type(TrueColorAlphaType);
+    Quantum *pixelsOut = mimage->getPixels(0, 0, w, h);
+
+    for (int y = 0; y != h; ++y) {
+        for (int x = 0; x != w; ++x)
+        {
+            unsigned offset = mimage->channels() * ( w * y + x );
+
+            FXColor xc = image->getPixel(x,y);
+            ColorRGB color(FXREDVAL(xc)/255.0,
+            		       FXGREENVAL(xc)/255.0,
+            		       FXBLUEVAL(xc)/255.0,
+            		       FXALPHAVAL(xc)/255.0 );
+
+            pixelsOut[offset + 0] = color.quantumRed();
+            pixelsOut[offset + 1] = color.quantumGreen();
+            pixelsOut[offset + 2] = color.quantumBlue();
+            pixelsOut[offset + 3] = color.quantumAlpha();
+        }
+    }
+#else
+    mimage->type(Magick::TrueColorMatteType);
+    Magick::PixelPacket *pixelsOut = mimage->getPixels(0, 0, w, h);
+
+    for (int y = 0; y != h; ++y) {
+        for (int x = 0; x != w; ++x)
+        {
+            FXColor xc = image->getPixel(x,y);
+
+            Magick::ColorRGB color(FXREDVAL(xc)/255.0,
+            					   FXGREENVAL(xc)/255.0,
+            					   FXBLUEVAL(xc)/255.0 );
+
+            FXuint alpha = FXALPHAVAL(xc);
+            // in FOX 255 is opaque 0 is transparent
+            // in ImageMagick6 0 is opaque 1 is transparent
+            color.alpha( 1 - alpha / 255.0 );
+            // std::cout << "alpha: " << color.alpha() << " FX: " << alpha << " Green: " << (int)FXGREENVAL(xc) << std::endl;
+
+            pixelsOut[w * y + x] = color;
+        }
+    }
+#endif
+
+    mimage->syncPixels();
+
+    return mimage;
+}
+
+FXImage *FXPixelBuffer::createImage( RefMImage mimage )
+{
+	const int w = mimage->columns();
+    const int h = mimage->rows();
+
+    FXImage *image = new FXImage( getApp(), 0, IMAGE_KEEP, w, h );
+    image->create();
+
+    FXColor *pixels = 0;
+    allocElms( pixels, w * h  );
+    image->setData( pixels, IMAGE_KEEP | IMAGE_OWNED, w, h );
+
+    /* get pixelcache of ImageIn */
+#if MagickLibVersion >= 0x700
+
+    mimage->type(TrueColorAlphaType);
+    mimage->modifyImage();
+
+    Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
+
+    for (int y = 0; y != h; ++y) {
+        for (int x = 0; x != w; ++x)
+        {
+            unsigned offset = mimage->channels() * ( w * y + x );
+
+            Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
+            ColorRBG rbg( color );
+
+            FXColor xc = FXRGBA( rbg.red()*255.0,
+            					 rbg.green()*255.0,
+            					 rbg.blue()*255.0,
+            					 rbg.alpha()*255.0 );
+            image->setPixel( x, y, xc );
+        }
+    }
+#else
+    mimage->type(Magick::TrueColorMatteType);
+    mimage->modifyImage();
+
+    Magick::PixelPacket *pixelsIn = mimage->getPixels(0, 0, w, h);
+
+    if( !pixelsIn ) {
+    	throw REPORT_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
+    }
+
+    for (int y = 0; y != h; ++y) {
+        for (int x = 0; x != w; ++x)
+        {
+        	Magick::ColorRGB rbg( Magick::Color(pixelsIn[w * y + x]) );
+            FXColor xc = FXRGBA( rbg.red()*255.0,
+            					 rbg.green()*255.0,
+            					 rbg.blue()*255.0,
+            					 rbg.alpha()*255.0 );
+
+            image->setPixel( x, y, xc );
+        }
+    }
+#endif
+    image->render();
+
+    return image;
+}
+
+/*
+Magick::Image FXPixelBuffer::createFlatImage( const Magick::Image & image )
+{
+    Geometry size(image.columns(), image.rows());
+    Color color("white");
+    Image white(size, color);
+
+    std::list<Image> images;
+    images.push_back(white);
+    images.push_back(image);
+
+    Image flattenedImage;
+    flattenImages(&flattenedImage, images.begin(), images.end());
+
+    flattenedImage.magick( "RGB" );
+    flattenedImage.modifyImage();
+
+    return flattenedImage;
+}
+*/

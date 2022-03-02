@@ -21,6 +21,7 @@
 #include "data_buttons.h"
 #include "data_digits.h"
 #include "FXPixelBuffer.h"
+#include <Magick++.h>
 
 using namespace Tools;
 
@@ -124,7 +125,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	new FXTabItem( tabbook, "Debug" );
 	f = new FXVerticalFrame( tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED );
 
-	pixel_buffer=new FXPixelBuffer(f,this,ID_CANVAS,
+	pixel_buffer=new FXPixelBuffer(this,f,this,ID_CANVAS,
 			FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
 			0, 0, 670, 550);
 
@@ -246,7 +247,7 @@ void MahjonggWindow::create(){
 
 
 	DEBUG( format( "canvas window is %p", canvas));
-
+#if 0
 	panel = new Panel(getApp(), canvas, this);
 
 	make_panel_images(panel);
@@ -296,10 +297,10 @@ void MahjonggWindow::create(){
     game->start(time(0), solveable_boards );
     last_new_board = Moment::now();
     panel->set_visible( true );
+#endif
 
-
-    pixel_buffer->setTiledBackgroundImage( background );
-    pixel_buffer->setImage( getImageByName( "quit" ), 100, 100, 0 );
+    pixel_buffer->setTiledBackgroundImage( background, -1, getNameByImage( background ) );
+    pixel_buffer->setImage( getImageByName( "quit" ), 100, 100, 0, "quit" );
 
 	// Make the main window appear
 	show(PLACEMENT_SCREEN);
@@ -821,7 +822,7 @@ void MahjonggWindow::setCurrentImageMask( FXBitmap *bitmap ) {
 
 
 	FXDCWindow dc_res(current_result);
-	// dc_res.drawImage( background, 0, 0 );
+	dc_res.drawImage( background, 0, 0 );
 	dc_res.setForeground( FXRGB(0,0,100));
 	dc_res.fillRectangle(0,0,current_result->getWidth(), current_result->getHeight() );
 
@@ -852,6 +853,8 @@ static void usage( const std::string & prog )
 
 // Here we begin
 int main(int argc,char *argv[]){
+
+	Magick::InitializeMagick(*argv);
 
 	ColoredOutput colored_output;
 
