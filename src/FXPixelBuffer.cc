@@ -109,6 +109,11 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
   // return FXCanvas::onPaint( obj, sel, ptr );
   for( auto it : floors ) {
 	  RefMImage target = it.second;
+
+	  target->fillColor("white");
+	  target->draw( Magick::DrawableRectangle(0,0, target->columns(), target->rows() ) );
+	  target->transparent("white");
+
 	  int floor = it.first;
 
 	  for( FXPixelBufferObject *obj : objects ) {
@@ -126,7 +131,7 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 	  RefMImage img = it.second;
 	  images.push_back( img );
 
-	  img->write( format( "img_%d.png", it.first ));
+	  // img->write( format( "img_%d.png", it.first ));
 
 	  DEBUG( format( "%s: drawing floor: %d", __FUNCTION__, it.first ) );;
   }
@@ -137,7 +142,7 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
   Magick::flattenImages(&flattenedImage, images.begin(), images.end());
 
   flattenedImage.modifyImage();
-  flattenedImage.write("out.png");
+  // flattenedImage.write("out.png");
 
   FXImage *buffer = createImage( RefMImage(&flattenedImage,false) );
 
@@ -282,6 +287,17 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
     image->render();
 
     return image;
+}
+
+FXPixelBufferObject* FXPixelBuffer::getObjectByName( const std::string & name )
+{
+	for( auto obj : objects ) {
+		if( obj->getName() == name ) {
+			return obj;
+		}
+	}
+
+	return 0;
 }
 
 /*

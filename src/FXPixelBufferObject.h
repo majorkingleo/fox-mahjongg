@@ -49,6 +49,13 @@ public:
 	FXImage *getImage() const { return image; }
 
 	virtual void draw( RefMImage & target );
+
+	const std::string & getName() const { return name; }
+
+	void setX( int x_ ) { x = x_; }
+	void setY( int y_ ) { y = y_; }
+
+	void setDirty() { mimage = NULL; }
 };
 
 class FXPixelBufferBackgroundObject : public FXPixelBufferObject
@@ -62,7 +69,7 @@ public:
 								   int x_,
 								   int y_,
 								   int floor_,
-								   const std::string & name );
+								   const std::string & name_ );
 
 	virtual void draw( RefMImage & target ) override;
 };

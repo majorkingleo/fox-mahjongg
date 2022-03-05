@@ -345,6 +345,16 @@ long MahjonggWindow::onMouseMove(FXObject*, FXSelector, void* ptr){
 	FXEvent *ev=(FXEvent*)ptr;
 
 	// level->move_board( ev->win_x );
+	auto obj = pixel_buffer->getObjectByName( "quit" );
+
+	if( obj ) {
+		DEBUG( format( "%s %dx%d", __FUNCTION__, ev->win_x, ev->win_y ) );
+
+		obj->setX( ev->win_x );
+		obj->setY( ev->win_y );
+
+		pixel_buffer->redraw();
+	}
 
 	return 1;
 }

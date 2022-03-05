@@ -57,6 +57,12 @@ public:
 
 	RefMImage getOrCreateFloor( int floor, bool base = false );
 
+	FXPixelBufferObject* getObjectByName( const std::string & name );
+
+	void redraw() {
+		onPaint( 0, 0, 0 );
+	}
+
 public:
 	RefMImage createImage( FXImage *image );
 	FXImage *createImage( RefMImage mimage );

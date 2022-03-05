@@ -30,40 +30,36 @@ void FXPixelBufferObject::draw( RefMImage & target )
 {
 	FXIcon *icon = dynamic_cast<FXIcon*>( image );
 
-	if( icon ) {
-		DEBUG( format( "drawIcon %s", name ) );
-
-		RefMImage img = pixel_buffer->createImage( icon );
-		target->composite(*img, x, y, Magick::OverCompositeOp);
-
-	} else {
-
-		RefMImage img = pixel_buffer->createImage( icon );
-		target->composite(*img, x, y, Magick::OverCompositeOp);
-
+	if( !mimage.valid() ) {
+		mimage = pixel_buffer->createImage( icon );
 	}
+
+	target->composite(*mimage, x, y, Magick::OverCompositeOp);
 }
 
-FXPixelBufferBackgroundObject::FXPixelBufferBackgroundObject( FXPixelBuffer *pixel_buffer_,FXImage *image_, FXDC *dc_, int x_, int y_, int floor_, const std::string & name )
-: FXPixelBufferObject( pixel_buffer_, image_, x_, y_, floor_, name ),
+FXPixelBufferBackgroundObject::FXPixelBufferBackgroundObject( FXPixelBuffer *pixel_buffer_,FXImage *image_, FXDC *dc_, int x_, int y_, int floor_, const std::string & name_ )
+: FXPixelBufferObject( pixel_buffer_, image_, x_, y_, floor_, name_ ),
   dc( dc_ )
 {}
 
 void FXPixelBufferBackgroundObject::draw( RefMImage & target )
 {
-	FXImage *bg_image = pixel_buffer->createImage( target );
+	if( !mimage.valid() ) {
+		FXImage *bg_image = pixel_buffer->createImage( target );
 
-	{
-		FXDCWindow tdc( bg_image );
-		tdc.setFillStyle( dc->getFillStyle() );
-		tdc.setTile( dc->getTile() );
-		tdc.fillRectangle( 0, 0, bg_image->getWidth(), bg_image->getHeight() );
+		{
+			FXDCWindow tdc( bg_image );
+			tdc.setFillStyle( dc->getFillStyle() );
+			tdc.setTile( dc->getTile() );
+			tdc.fillRectangle( 0, 0, bg_image->getWidth(), bg_image->getHeight() );
+		}
+
+		bg_image->restore();
+
+		mimage = pixel_buffer->createImage( bg_image );
 	}
 
-	bg_image->restore();
-
-	RefMImage result = pixel_buffer->createImage( bg_image );
-	target->composite(*result, x, y, Magick::OverCompositeOp);
+	target->composite(*mimage, x, y, Magick::OverCompositeOp);
 }
 
 
