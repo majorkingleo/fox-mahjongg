@@ -15,7 +15,7 @@
 
 using namespace Tools;
 
-Panel::Panel(FXApp *app, FXWindow *window, MahjonggWindow *root )
+Panel::Panel(FXApp *app, FXPixelBuffer *window, MahjonggWindow *root )
   : SwClippedWindow(app, window, root ),
     _visible(false),
 
@@ -81,8 +81,6 @@ void
 Panel::set_background(FXImage *background)
 {
   _background = background;
-#warning TODOOO?
-  // XSetWindowBackgroundPixmap(display(), window(), _background);
   _board->set_background(_background);
 }
 

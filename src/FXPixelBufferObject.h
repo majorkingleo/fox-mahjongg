@@ -55,7 +55,8 @@ public:
 	void setX( int x_ ) { x = x_; }
 	void setY( int y_ ) { y = y_; }
 
-	void setDirty() { mimage = NULL; }
+	void setDirty();
+	void setImage( FXImage *image_ );
 };
 
 class FXPixelBufferBackgroundObject : public FXPixelBufferObject

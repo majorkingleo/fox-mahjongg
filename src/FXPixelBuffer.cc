@@ -75,10 +75,10 @@ void FXPixelBuffer::setBackground( FXImage *img, FXDC *dc, int floor, const std:
 	owned_dc.push_back( dc );
 	objects.push_back( new FXPixelBufferBackgroundObject(this, img, dc, 0, 0, floor, name ) );
 
-	getOrCreateFloor( floor, true );
+	getOrCreateFloor( floor );
 }
 
-FXPixelBuffer::RefMImage FXPixelBuffer::getOrCreateFloor( int floor, bool base )
+FXPixelBuffer::RefMImage FXPixelBuffer::getOrCreateFloor( int floor )
 {
 	auto it = floors.find( floor );
 
@@ -106,9 +106,21 @@ int FXPixelBuffer::getHighestFloor() const
 // Canvas is an object drawn by another
 long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 {
-  // return FXCanvas::onPaint( obj, sel, ptr );
+  // FXCanvas::onPaint( obj, sel, ptr );
+
+  // detect size change
+  if( !floors.empty() ) {
+	  if( floors.begin()->second->columns() != getWidth() ||
+		  floors.begin()->second->rows() != getHeight() ) {
+		  resize(getWidth(), getHeight());
+	  }
+  }
+
+
   for( auto it : floors ) {
 	  RefMImage target = it.second;
+
+	  DEBUG( format( "%s: floor %d size: %dx%d", __FUNCTION__, it.first, target->columns(), target->rows() ) );
 
 	  target->fillColor("white");
 	  target->draw( Magick::DrawableRectangle(0,0, target->columns(), target->rows() ) );
@@ -136,6 +148,8 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 	  DEBUG( format( "%s: drawing floor: %d", __FUNCTION__, it.first ) );;
   }
 
+  DEBUG( format( "%s: window size: %dx%d", __FUNCTION__, getWidth(),getHeight() ) );
+
   Magick::Image flattenedImage( Magick::Geometry(getWidth(),getHeight()), Magick::Color("transparent") );
   flattenedImage.type(Magick::TrueColorMatteType);
 
@@ -155,11 +169,14 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
   return 0;
 }
 
-void FXPixelBuffer::setImage( FXImage *img, int x, int y, int floor, const std::string & name )
+FXPixelBufferObject* FXPixelBuffer::setImage( FXImage *img, int x, int y, int floor, const std::string & name )
 {
-	objects.push_back( new FXPixelBufferObject(this, img, x, y, floor, name ) );
+	FXPixelBufferObject* obj = new FXPixelBufferObject(this, img, x, y, floor, name );
+	objects.push_back( obj );
 
 	getOrCreateFloor( floor );
+
+	return obj;
 }
 
 FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
@@ -298,6 +315,40 @@ FXPixelBufferObject* FXPixelBuffer::getObjectByName( const std::string & name )
 	}
 
 	return 0;
+}
+
+void FXPixelBuffer::resize( FXint width, FXint height )
+{
+	FXCanvas::resize(width, height);
+
+	for( auto it : floors ) {
+		RefMImage target = it.second;
+
+		// DEBUG( format( "resize floor %d to: %dx%d", it.first, width, height ) );
+
+		// ignore aspect ratio on resize
+		Magick::Geometry newsize( width, height );
+		newsize.aspect(true);
+		target->resize( newsize );
+
+		// DEBUG( format( "resized floor %d to: %dx%d", it.first, target->columns(), target->rows() ) );
+	}
+
+	// render everythin new
+	for( auto obj : objects ) {
+		obj->setDirty();
+	}
+}
+
+void FXPixelBuffer::remove( FXPixelBufferObject *obj )
+{
+	for( auto it = objects.begin(); it != objects.end(); it++ ) {
+		if( *it == obj ) {
+			objects.erase( it );
+			delete obj;
+			break;
+		}
+	}
 }
 
 /*

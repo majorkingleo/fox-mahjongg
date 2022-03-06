@@ -73,7 +73,7 @@ class Panel: public SwClippedWindow {
   
  public:
   
-  Panel(FXApp *app, FXWindow *window, MahjonggWindow *parent );
+  Panel(FXApp *app, FXPixelBuffer *window, MahjonggWindow *parent );
   
   Panel( const Panel & other ) = delete;
   Panel & operator=( const Panel & other ) = delete;

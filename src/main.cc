@@ -37,9 +37,15 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 
 		//________Message_Type_____________________ID____________Message_Handler_______
 		FXMAPFUNC(SEL_PAINT,             MahjonggWindow::ID_CANVAS, MahjonggWindow::onPaint),
+
 		FXMAPFUNC(SEL_LEFTBUTTONPRESS,   MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseDown),
 		FXMAPFUNC(SEL_LEFTBUTTONRELEASE, MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseUp),
 		FXMAPFUNC(SEL_MOTION,            MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseMove),
+
+		FXMAPFUNC(SEL_LEFTBUTTONPRESS,   MahjonggWindow::ID_PIX_TEST, MahjonggWindow::onMouseDownDebug),
+		FXMAPFUNC(SEL_LEFTBUTTONRELEASE, MahjonggWindow::ID_PIX_TEST, MahjonggWindow::onMouseUpDebug),
+		FXMAPFUNC(SEL_MOTION,            MahjonggWindow::ID_PIX_TEST, MahjonggWindow::onMouseMoveDebug),
+
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_CLEAR,  MahjonggWindow::onCmdClear),
 		// FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TITLE,  MahjonggWindow::openurl),
@@ -84,7 +90,8 @@ MahjonggWindow::MahjonggWindow()
   config_dir(),
   imageByName(),
   bitmapMaskByName(),
-  nameByImagePtr()
+  nameByImagePtr(),
+  pixel_buffer(0)
 {}
 
 // Construct a MahjonggWindow
@@ -117,73 +124,81 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   config_dir(),
   imageByName(),
   bitmapMaskByName(),
-  nameByImagePtr()
+  nameByImagePtr(),
+  pixel_buffer(0)
 {
 	FXVerticalFrame *f = new FXVerticalFrame( this, LAYOUT_FILL_X | LAYOUT_FILL_Y );
 
 	tabbook = new FXTabBook( f, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y );
-	new FXTabItem( tabbook, "Debug" );
-	f = new FXVerticalFrame( tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED );
 
-	pixel_buffer=new FXPixelBuffer(this,f,this,ID_CANVAS,
-			FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
-			0, 0, 670, 550);
+	{
+		new FXTabItem( tabbook, "Main" );
+		f = new FXVerticalFrame( tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED );
 
+		contents=new FXHorizontalFrame(f,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 0,0,0,0);
 
-	new FXTabItem( tabbook, "Main" );
-	f = new FXVerticalFrame( tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED );
+		// LEFT pane to contain the canvas
+		canvasFrame=new FXVerticalFrame(contents,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
+				0,0,0,0,10,10,10,10);
 
-	contents=new FXHorizontalFrame(f,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|LAYOUT_FILL_Y,0,0,0,0, 0,0,0,0);
+		// Label above the canvas
+		new FXButton(canvasFrame,"www.austromobil.at",NULL, this, ID_TITLE, JUSTIFY_CENTER_X|LAYOUT_FILL_X|FRAME_NONE);
 
-	// LEFT pane to contain the canvas
-	canvasFrame=new FXVerticalFrame(contents,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
-			0,0,0,0,10,10,10,10);
+		// Horizontal divider line
+		new FXHorizontalSeparator(canvasFrame,SEPARATOR_GROOVE|LAYOUT_FILL_X);
 
-	// Label above the canvas
-	new FXButton(canvasFrame,"www.austromobil.at",NULL, this, ID_TITLE, JUSTIFY_CENTER_X|LAYOUT_FILL_X|FRAME_NONE);
+		// Drawing canvas
+		canvas=new FXPixelBuffer(this,canvasFrame,this,ID_CANVAS,
+				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+				0, 0, 670, 550);
 
-	// Horizontal divider line
-	new FXHorizontalSeparator(canvasFrame,SEPARATOR_GROOVE|LAYOUT_FILL_X);
+		// RIGHT pane for the buttons
+		buttonFrame=new FXVerticalFrame(contents,FRAME_SUNKEN|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
+				0,0,0,0,10,10,10,10);
 
-	// Drawing canvas
-	canvas=new FXCanvas(canvasFrame,this,ID_CANVAS,
-			FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
-			0, 0, 670, 550);
+		// Label above the buttons
+		new FXLabel(buttonFrame,"Breakout",NULL,JUSTIFY_CENTER_X|LAYOUT_FILL_X);
 
-	// RIGHT pane for the buttons
-	buttonFrame=new FXVerticalFrame(contents,FRAME_SUNKEN|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
-			0,0,0,0,10,10,10,10);
+		// Horizontal divider line
+		new FXHorizontalSeparator(buttonFrame,SEPARATOR_RIDGE|LAYOUT_FILL_X);
 
-	// Label above the buttons
-	new FXLabel(buttonFrame,"Breakout",NULL,JUSTIFY_CENTER_X|LAYOUT_FILL_X);
+		// Button to clear
+		new FXButton(buttonFrame,"&New Game",NULL,this,ID_CLEAR,
+				FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT,0,0,0,0,10,10,5,5);
 
-	// Horizontal divider line
-	new FXHorizontalSeparator(buttonFrame,SEPARATOR_RIDGE|LAYOUT_FILL_X);
+		// Exit button
+		new FXButton(buttonFrame,"&Exit",NULL,this,ID_QUIT,
+				FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT,0,0,0,0,10,10,5,5);
 
-	// Button to clear
-	new FXButton(buttonFrame,"&New Game",NULL,this,ID_CLEAR,
-			FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT,0,0,0,0,10,10,5,5);
+		new FXHorizontalSeparator(buttonFrame,SEPARATOR_GROOVE|LAYOUT_FILL_X);
 
-	// Exit button
-	new FXButton(buttonFrame,"&Exit",NULL,this,ID_QUIT,
-			FRAME_THICK|FRAME_RAISED|LAYOUT_FILL_X|LAYOUT_TOP|LAYOUT_LEFT,0,0,0,0,10,10,5,5);
+		level_label = new FXLabel( buttonFrame, "Level: ", NULL,JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_SUNKEN );
+		retry_label = new FXLabel( buttonFrame, "Retries: ", NULL,JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_SUNKEN );
 
-	new FXHorizontalSeparator(buttonFrame,SEPARATOR_GROOVE|LAYOUT_FILL_X);
-
-	level_label = new FXLabel( buttonFrame, "Level: ", NULL,JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_SUNKEN );
-	retry_label = new FXLabel( buttonFrame, "Retries: ", NULL,JUSTIFY_LEFT | LAYOUT_FILL_X | FRAME_SUNKEN );
-
-	current = new FXCanvas(buttonFrame,0,0,
-			FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
-			0, 0, 70, 70);
-
-	current_mask = new FXCanvas(buttonFrame,0,0,
+		current = new FXCanvas(buttonFrame,0,0,
 				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
 				0, 0, 70, 70);
 
-	current_result = new FXCanvas(buttonFrame,0,0,
+		current_mask = new FXCanvas(buttonFrame,0,0,
 				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
 				0, 0, 70, 70);
+
+		current_result = new FXCanvas(buttonFrame,0,0,
+				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+				0, 0, 70, 70);
+	}
+
+
+	if( 0 ){
+		new FXTabItem( tabbook, "Debug" );
+		f = new FXVerticalFrame( tabbook, LAYOUT_FILL_X | LAYOUT_FILL_Y | FRAME_RAISED );
+
+		pixel_buffer=new FXPixelBuffer(this,f,this,ID_PIX_TEST,
+				FRAME_SUNKEN|FRAME_THICK|LAYOUT_TOP|LAYOUT_LEFT|LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+				0, 0, 670, 550);
+	}
+
+
 
 	// level = new LevelStartup( canvas, getApp() );
 
@@ -247,7 +262,7 @@ void MahjonggWindow::create(){
 
 
 	DEBUG( format( "canvas window is %p", canvas));
-#if 0
+
 	panel = new Panel(getApp(), canvas, this);
 
 	make_panel_images(panel);
@@ -297,10 +312,14 @@ void MahjonggWindow::create(){
     game->start(time(0), solveable_boards );
     last_new_board = Moment::now();
     panel->set_visible( true );
-#endif
 
-    pixel_buffer->setTiledBackgroundImage( background, -1, getNameByImage( background ) );
-    pixel_buffer->setImage( getImageByName( "quit" ), 100, 100, 0, "quit" );
+	panel->redraw_all();
+	canvas->onPaint( 0, 0, 0 );
+
+	if( pixel_buffer ) {
+		pixel_buffer->setTiledBackgroundImage( background, -1, getNameByImage( background ) );
+		pixel_buffer->setImage( getImageByName( "quit" ), 100, 100, 0, "quit" );
+	}
 
 	// Make the main window appear
 	show(PLACEMENT_SCREEN);
@@ -345,15 +364,70 @@ long MahjonggWindow::onMouseMove(FXObject*, FXSelector, void* ptr){
 	FXEvent *ev=(FXEvent*)ptr;
 
 	// level->move_board( ev->win_x );
-	auto obj = pixel_buffer->getObjectByName( "quit" );
 
-	if( obj ) {
-		DEBUG( format( "%s %dx%d", __FUNCTION__, ev->win_x, ev->win_y ) );
+	if( pixel_buffer ) {
+		auto obj = pixel_buffer->getObjectByName( "quit" );
 
-		obj->setX( ev->win_x );
-		obj->setY( ev->win_y );
+		if( obj ) {
+			DEBUG( format( "%s %dx%d", __FUNCTION__, ev->win_x, ev->win_y ) );
 
-		pixel_buffer->redraw();
+			obj->setX( ev->win_x );
+			obj->setY( ev->win_y );
+
+			pixel_buffer->redraw();
+		}
+	}
+
+	return 1;
+}
+
+
+// Mouse button was pressed somewhere
+long MahjonggWindow::onMouseDownDebug(FXObject*,FXSelector,void* ptr){
+
+	DEBUG( __FUNCTION__ );
+
+	FXEvent *ev=(FXEvent*)ptr;
+
+#warning "TODOOO shift"
+	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
+
+	return 1;
+}
+
+
+// Mouse button was pressed somewhere
+long MahjonggWindow::onMouseUpDebug(FXObject*,FXSelector,void* ptr){
+
+	DEBUG( __FUNCTION__ );
+
+	FXEvent *ev=(FXEvent*)ptr;
+
+#warning "TODOOO shift"
+	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
+
+	return 1;
+}
+
+
+
+// The mouse has moved, draw a line
+long MahjonggWindow::onMouseMoveDebug(FXObject*, FXSelector, void* ptr){
+	FXEvent *ev=(FXEvent*)ptr;
+
+	// level->move_board( ev->win_x );
+
+	if( pixel_buffer ) {
+		auto obj = pixel_buffer->getObjectByName( "quit" );
+
+		if( obj ) {
+			DEBUG( format( "%s %dx%d", __FUNCTION__, ev->win_x, ev->win_y ) );
+
+			obj->setX( ev->win_x );
+			obj->setY( ev->win_y );
+
+			pixel_buffer->redraw();
+		}
 	}
 
 	return 1;
@@ -361,12 +435,14 @@ long MahjonggWindow::onMouseMove(FXObject*, FXSelector, void* ptr){
 
 
 
+
 // Paint the canvas
-long MahjonggWindow::onPaint(FXObject*,FXSelector,void* ptr){
+long MahjonggWindow::onPaint(FXObject* obj,FXSelector sel,void* ptr){
 
 	// level->paint();
 	panel->redraw_all();
-	panel->redraw();
+	canvas->onPaint( obj, sel, ptr );
+	// panel->redraw();
 
 	setCurrentImage( getImageByName( "new" ) );
 	setCurrentImageMask( getBitmapMaskByName( "new" ) );
@@ -385,6 +461,7 @@ long MahjonggWindow::onCmdClear(FXObject*,FXSelector,void*){
 	// level = get_next_level( true );
 
 	panel->redraw_all();
+	canvas->redraw();
 	update();
 
 	return 1;

@@ -22,7 +22,7 @@ class SwWidget: public SwDrawable {
   SwWidget & operator=( const SwWidget & other ) = delete;
 
   FXApp *display() const		{ return _swwindow->display(); }
-  FXWindow* window() const			{ return _swwindow->window(); }
+  FXPixelBuffer* window() const			{ return _swwindow->window(); }
   MahjonggWindow* root() const { return _swwindow->root(); }
   
   int x() const				{ return _x; }

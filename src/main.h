@@ -42,7 +42,7 @@ private:
 	FXHorizontalFrame *contents;                // Content frame
 	FXVerticalFrame   *canvasFrame;             // Canvas frame
 	FXVerticalFrame   *buttonFrame;             // Button frame
-	FXCanvas          *canvas;                  // Canvas to draw into
+	FXPixelBuffer     *canvas;                  // Canvas to draw into
 	int                mdflag;                  // Mouse button down?
 	FXColor            drawColor;               // Color for the line
 	// Ref<Level>         level;
@@ -101,6 +101,11 @@ public:
 	long onkeyrelease(FXObject*,FXSelector,void*);
 	long onClose(FXObject*,FXSelector,void*);
 
+	long onMouseDownDebug(FXObject*,FXSelector,void*);
+	long onMouseUpDebug(FXObject*,FXSelector,void*);
+	long onMouseMoveDebug(FXObject*,FXSelector,void*);
+
+
 	// void cont() { level->run(); running = 1; }
 	// Ref<Level> get_next_level( bool force = false );
 
@@ -113,6 +118,7 @@ public:
 	// Messages for our class
 	enum{
 		ID_CANVAS=FXMainWindow::ID_LAST,
+		ID_PIX_TEST,
 		ID_CLEAR,
 		ID_TIMER,
 		ID_TITLE,

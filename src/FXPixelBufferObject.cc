@@ -37,6 +37,23 @@ void FXPixelBufferObject::draw( RefMImage & target )
 	target->composite(*mimage, x, y, Magick::OverCompositeOp);
 }
 
+void FXPixelBufferObject::setImage( FXImage *image_ )
+{
+	if( image == image_ ) {
+		return;
+	}
+
+	image = image_;
+	setDirty();
+}
+
+void FXPixelBufferObject::setDirty()
+{
+	mimage = RefMImage();
+
+	DEBUG( format( "%d: %s valid: %d", __FUNCTION__, name, mimage.valid() ));
+}
+
 FXPixelBufferBackgroundObject::FXPixelBufferBackgroundObject( FXPixelBuffer *pixel_buffer_,FXImage *image_, FXDC *dc_, int x_, int y_, int floor_, const std::string & name_ )
 : FXPixelBufferObject( pixel_buffer_, image_, x_, y_, floor_, name_ ),
   dc( dc_ )
@@ -44,7 +61,11 @@ FXPixelBufferBackgroundObject::FXPixelBufferBackgroundObject( FXPixelBuffer *pix
 
 void FXPixelBufferBackgroundObject::draw( RefMImage & target )
 {
+	DEBUG( "XXXXXXXXXXX paint bg image");
+
 	if( !mimage.valid() ) {
+		DEBUG( "XXXXXXXXXXX recreating bg image");
+
 		FXImage *bg_image = pixel_buffer->createImage( target );
 
 		{
@@ -55,12 +76,17 @@ void FXPixelBufferBackgroundObject::draw( RefMImage & target )
 		}
 
 		bg_image->restore();
+		DEBUG( format( "%s: bg_image width: %d height: %d", __FUNCTION__, bg_image->getWidth(), bg_image->getHeight()));
 
 		mimage = pixel_buffer->createImage( bg_image );
+		delete bg_image;
 	}
+
+	DEBUG( format( "%s: target width: %d height: %d", __FUNCTION__, target->columns(), target->rows()));
 
 	target->composite(*mimage, x, y, Magick::OverCompositeOp);
 }
+
 
 
 

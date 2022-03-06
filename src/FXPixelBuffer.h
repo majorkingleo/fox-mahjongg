@@ -48,20 +48,24 @@ public:
 	void detach();
 	void create();
 
-	void setImage( FXImage *img, int x, int y, int floor, const std::string & name = "" );
+	FXPixelBufferObject* setImage( FXImage *img, int x, int y, int floor, const std::string & name = "" );
 	void setBackground( FXImage *img, FXDC *dc = NULL, int floor = -1, const std::string & name = "" );
 	void setTiledBackgroundImage( FXImage *image, int floor = -1, const std::string & name = "" );
 
 	int getLowestFloor() const;
 	int getHighestFloor() const;
 
-	RefMImage getOrCreateFloor( int floor, bool base = false );
+	RefMImage getOrCreateFloor( int floor );
 
 	FXPixelBufferObject* getObjectByName( const std::string & name );
 
 	void redraw() {
 		onPaint( 0, 0, 0 );
 	}
+
+	void resize( FXint width, FXint height ) override;
+
+	void remove( FXPixelBufferObject *obj );
 
 public:
 	RefMImage createImage( FXImage *image );

@@ -1,14 +1,18 @@
 #include "button.hh"
 #include "main.h"
 #include "debug.h"
+#include "FXPixelBuffer.h"
+#include <debug.h>
+#include <format.h>
+
+using namespace Tools;
 
 Button::Button(SwWindow *window)
   : SwWidget(window),
     _normal(0),
-    _normal_mask(0),
     _lit(0),
-    _lit_mask(0),
-
+    _obj(0),
+	_name(),
     _state(0),
     _flash_alarm(this)
 {
@@ -17,8 +21,8 @@ Button::Button(SwWindow *window)
 
 bool Button::set_normal( const char *name )
 {
+  _name = name;
   _normal = root()->getImageByName( name );
-  _normal_mask = root()->getBitmapMaskByName( name );
   set_size(_normal->getWidth(), _normal->getHeight());
   return 1;
 }
@@ -26,7 +30,6 @@ bool Button::set_normal( const char *name )
 bool Button::set_lit(const char *name)
 {
   _lit =  root()->getImageByName( name );
-  _lit_mask = root()->getBitmapMaskByName( name );
   return 1;
 }
 
@@ -36,8 +39,10 @@ Button::change_state(int new_state)
 {
   int old_state = _state;
   _state = new_state;
-  if ((old_state == 0) != (new_state == 0))
+
+  if ((old_state == 0) != (new_state == 0)) {
     draw();
+  }
 }
 
 
@@ -134,10 +139,23 @@ Button::flash()
 void
 Button::draw()
 {
-  if (_state > 0)
-    draw_image(_lit, _lit_mask, width(), height(), 0, 0);
-  else
-    draw_image(_normal, _normal_mask, width(), height(), 0, 0);
+  FXImage *img = 0;
+
+  if (_state > 0) {
+	  img = _lit;
+  } else {
+	  img = _normal;
+  }
+
+  if( !_obj ) {
+	  _obj = window()->setImage( img, x(), y(), 0, _name );
+  } else {
+	  _obj->setImage( img );
+  }
+
+  window()->redraw();
+
+  DEBUG( format( "%s: %s", __FUNCTION__, _name ) );
 }
 
 bool

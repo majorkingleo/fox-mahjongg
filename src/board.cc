@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "main.h"
 #include <format.h>
+#include "FXPixelBuffer.h"
 
 using namespace Tools;
 
@@ -178,8 +179,7 @@ Board::set_tileset(Tileset *ts)
 void
 Board::set_background(FXImage *background)
 {
-  _erasegc->setFillStyle( FILL_TILED );
-  _erasegc->setTile(background);
+   window()->setTiledBackgroundImage( background, -1, "background" );
 }
 
 
@@ -599,6 +599,7 @@ Board::mark_around(Tile *t, bool up, bool down)
 void
 Board::draw_neighborhood(Tile *t, int erase)
 {
+#if 0
   short x, y;
   position(t, &x, &y);
   buffer_on(x, y);
@@ -692,6 +693,7 @@ Board::draw_neighborhood(Tile *t, int erase)
 
   }
   buffer_off();
+#endif
 }
 
 void
@@ -768,10 +770,12 @@ Board::remove_tile_hook(Game *g, Tile *t)
 void
 Board::draw_background()
 {
+	/*
     FXDCWindow dc(window());
     dc.setFillStyle( _erasegc->getFillStyle() );
     dc.setTile( _erasegc->getTile() );
     dc.fillRectangle( 0, 0, width(), height() );
+    */
 }
 
 

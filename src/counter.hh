@@ -2,12 +2,15 @@
 #define COUNTER_HH
 #include "swwidget.hh"
 #include "game.hh"
+#include <list>
+
 class Panel;
 
 class FancyCounter: public SwWidget {
   
   int _digits;
   int _value;
+  std::list<FXPixelBufferObject*> _obj_digits;
   
  public:
   

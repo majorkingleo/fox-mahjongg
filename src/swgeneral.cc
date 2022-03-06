@@ -22,7 +22,7 @@ SwDrawable::invalidate(int, int, int, int)
 
 //
 
-SwWindow::SwWindow(FXApp *display, FXWindow *window, MahjonggWindow *root )
+SwWindow::SwWindow(FXApp *display, FXPixelBuffer *window, MahjonggWindow *root )
   : _display(display),
     _window(window),
     _root( root )
@@ -39,6 +39,7 @@ SwWindow::draw_subimage(FXImage *source, FXBitmap *mask,
 			int x, int y)
 {
   if (source && width > 0 && height > 0) {
+#if 0
       FXDCWindow image_gc(window());
       /*      
       if (mask) {          
@@ -70,6 +71,7 @@ SwWindow::draw_subimage(FXImage *source, FXBitmap *mask,
 	  // image_gc->clearClipRectangle();
       // XCopyArea(_display, source, _window, image_gc, src_x, src_y,
       //      width, height, x, y);
+#endif
   }
 }
 
@@ -83,7 +85,7 @@ SwWindow::clear_area(int x, int y, int width, int height)
 
 //
 
-SwClippedWindow::SwClippedWindow(FXApp *app, FXWindow *window, MahjonggWindow *root )
+SwClippedWindow::SwClippedWindow(FXApp *app, FXPixelBuffer *window, MahjonggWindow *root )
   : SwWindow(app, window, root ),
     _clipping(false),
     _clip_left(0),
@@ -191,6 +193,19 @@ SwImage::draw(SwDrawable *drawable, int x, int y)
 {
   if (_source)
     drawable->draw_subimage(_source, _mask, 0, 0, _width, _height, x, y);
+}
+
+
+void
+SwDrawable::draw_image(FXImage *src, int w, int h, int x, int y)
+{
+  draw_subimage(src, 0, 0, 0, w, h, x, y);
+}
+
+void
+SwDrawable::draw_image(FXImage *src, FXBitmap *mask, int w, int h, int x, int y)
+{
+  draw_subimage(src, mask, 0, 0, w, h, x, y);
 }
 
 #if 0

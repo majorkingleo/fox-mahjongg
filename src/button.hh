@@ -7,9 +7,9 @@
 class Button: public AlarmHooks, public SwWidget {
   
   FXImage  *_normal;
-  FXBitmap *_normal_mask;
   FXImage  *_lit;
-  FXBitmap *_lit_mask;
+  FXPixelBufferObject *_obj;
+  std::string _name;
   
   int _state;				// 0 off, 1 lit, 2 flashing
   Alarm _flash_alarm;

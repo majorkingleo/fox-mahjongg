@@ -3,8 +3,11 @@
 
 #include <liblcdf/gif.h>
 #include "fx.h"
+#include <string>
 
 class MahjonggWindow;
+class FXPixelBuffer;
+class FXPixelBufferObject;
 
 class SwDrawable {
   
@@ -30,19 +33,19 @@ class SwWindow: public SwDrawable {
   
 
   FXApp    *_display;
-  FXWindow *_window;
+  FXPixelBuffer *_window;
   MahjonggWindow *_root;
   
  public:
   
-  SwWindow( FXApp *app, FXWindow *window, MahjonggWindow *root );
+  SwWindow( FXApp *app, FXPixelBuffer *window, MahjonggWindow *root );
   ~SwWindow();
   
   SwWindow( const SwWindow & other ) = delete;
   SwWindow & operator=( const SwWindow & other ) = delete;
 
   FXApp *display() const	{ return _display; }
-  FXWindow* window() const	{ return _window; }
+  FXPixelBuffer* window() const	{ return _window; }
   MahjonggWindow* root() const { return _root; }
   
   void draw_subimage(FXImage *source, FXBitmap *mask, int, int, int, int, int, int) override;
@@ -62,7 +65,7 @@ class SwClippedWindow: public SwWindow {
   
  public:
   
-  SwClippedWindow(FXApp *app, FXWindow *window, MahjonggWindow *root );
+  SwClippedWindow(FXApp *app, FXPixelBuffer *window, MahjonggWindow *root );
   
   SwClippedWindow( const SwClippedWindow & other ) = delete;
   SwClippedWindow & operator=( const SwClippedWindow & other ) = delete;
@@ -162,16 +165,5 @@ class SwGifImage: public SwImage {
 };
 #endif
 
-inline void
-SwDrawable::draw_image(FXImage *src, int w, int h, int x, int y)
-{
-  draw_subimage(src, 0, 0, 0, w, h, x, y);
-}
-
-inline void
-SwDrawable::draw_image(FXImage *src, FXBitmap *mask, int w, int h, int x, int y)
-{
-  draw_subimage(src, mask, 0, 0, w, h, x, y);
-}
 
 #endif
