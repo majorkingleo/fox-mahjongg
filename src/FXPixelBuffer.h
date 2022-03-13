@@ -20,14 +20,16 @@ class MahjonggWindow;
 
 class FXPixelBuffer : public FXCanvas
 {
+public:
+	typedef Tools::Ref<Magick::Image> RefMImage;
+
+protected:
 	FXDECLARE(FXPixelBuffer)
 protected:
 	FXPixelBuffer();
 private:
 	FXPixelBuffer(const FXPixelBuffer&);
 	FXPixelBuffer &operator=(const FXPixelBuffer&);
-
-	typedef Tools::Ref<Magick::Image> RefMImage;
 
 	static Magick::Color TRANSPARENT;
 
@@ -49,6 +51,7 @@ public:
 	void create();
 
 	FXPixelBufferObject* setImage( FXImage *img, int x, int y, int floor, const std::string & name = "" );
+	FXPixelBufferObject* setImage( RefMImage img, int x, int y, int floor, const std::string & name = "" );
 	void setBackground( FXImage *img, FXDC *dc = NULL, int floor = -1, const std::string & name = "" );
 	void setTiledBackgroundImage( FXImage *image, int floor = -1, const std::string & name = "" );
 

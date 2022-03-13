@@ -179,6 +179,16 @@ FXPixelBufferObject* FXPixelBuffer::setImage( FXImage *img, int x, int y, int fl
 	return obj;
 }
 
+FXPixelBufferObject* FXPixelBuffer::setImage( RefMImage img, int x, int y, int floor, const std::string & name )
+{
+	FXPixelBufferObject* obj = new FXPixelBufferObject(this, img, x, y, floor, name );
+	objects.push_back( obj );
+
+	getOrCreateFloor( floor );
+
+	return obj;
+}
+
 FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
 {
 	if( !image->getData() ) {

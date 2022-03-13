@@ -74,26 +74,7 @@ FancyCounter::draw()
 	  vObjects[i]->setX( x() + i * digit_width );
 	  vObjects[i]->setY( y() );
   }
-#if 0
 
-  for (int d = _digits - 1, numbers = 0; d >= 0; d--, numbers++ ) {
-    int digit = v % 10;
-    v /= 10;
-    if (v == 0) break;
-  }
-
-  if( _obj_digits.size() != numbers ) {
-
-  }
-
-  for (int d = _digits - 1; d >= 0; d--) {
-    int digit = v % 10;
-    draw_image(digits[digit], masks[digit], digit_width,
-	       digit_height, d * digit_width, 0);
-    v /= 10;
-    if (v == 0) break;
-  }
-#endif
 }
 
 

@@ -1,8 +1,8 @@
 #ifndef TILE_HH
 #define TILE_HH
 
+
 class Tile {
-  
   bool _real;
   int _mark_val;
   

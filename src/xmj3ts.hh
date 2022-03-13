@@ -4,6 +4,8 @@
 #include "fx.h"
 #include <string>
 #include <vector>
+#include <map>
+#include <FXPixelBuffer.h>
 
 class MahjonggWindow;
 
@@ -23,6 +25,22 @@ public:
 	};
 
 	typedef std::vector<TileDataType> TILE_DATA;
+
+	struct ObjectData
+	{
+		FXPixelBuffer::RefMImage img;
+		short background;
+		short foreground;
+
+		ObjectData()
+		: img(),
+		  background(-1),
+		  foreground(-1)
+		{}
+
+		~ObjectData()
+		{}
+	};
 
 protected:
 
@@ -55,6 +73,7 @@ protected:
   TILE_DATA _tile_data;
 
   MahjonggWindow *_root;
+  std::map<int,FXPixelBufferObject*> _objects_by_tilenumber;
 
   void map_one_image(const char *, int, ImageType, Vector<short> &);
   void initialize_images();
@@ -78,5 +97,8 @@ protected:
   void draw_lit(const Tile *, SwDrawable *, short x, short y);
   void draw_obscured(const Tile *, SwDrawable *, short x, short y);
   
+ protected:
+  FXPixelBuffer::RefMImage createImage( const Tile *t, SwDrawable *drawable, short background, short foreground );
+  FXPixelBuffer::RefMImage createImage( const Tile *t, SwDrawable *drawable, short background );
 };
 #endif

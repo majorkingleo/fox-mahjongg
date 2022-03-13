@@ -27,6 +27,8 @@ class SwDrawable {
   virtual void clear_area(int x, int y, int w, int h);
   virtual void invalidate(int x, int y, int w, int h);
   
+  virtual FXPixelBuffer* window() const = 0;
+
 };
 
 class SwWindow: public SwDrawable {
@@ -45,7 +47,7 @@ class SwWindow: public SwDrawable {
   SwWindow & operator=( const SwWindow & other ) = delete;
 
   FXApp *display() const	{ return _display; }
-  FXPixelBuffer* window() const	{ return _window; }
+  FXPixelBuffer* window() const	override { return _window; }
   MahjonggWindow* root() const { return _root; }
   
   void draw_subimage(FXImage *source, FXBitmap *mask, int, int, int, int, int, int) override;

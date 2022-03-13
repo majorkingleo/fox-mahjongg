@@ -18,7 +18,19 @@ FXPixelBufferObject::FXPixelBufferObject( FXPixelBuffer *pixel_buffer_, FXImage 
   floor( floor_ ),
   image( image_ ),
   mimage(),
-  name( name_ )
+  name( name_ ),
+  data(0)
+{}
+
+FXPixelBufferObject::FXPixelBufferObject( FXPixelBuffer *pixel_buffer_, RefMImage image_, int x_, int y_, int floor_, const std::string & name_ )
+: pixel_buffer( pixel_buffer_ ),
+  x( x_ ),
+  y( y_ ),
+  floor( floor_ ),
+  image( 0 ),
+  mimage( image_ ),
+  name( name_ ),
+  data(0)
 {}
 
 FXPixelBufferObject::~FXPixelBufferObject()
@@ -28,10 +40,12 @@ FXPixelBufferObject::~FXPixelBufferObject()
 
 void FXPixelBufferObject::draw( RefMImage & target )
 {
-	FXIcon *icon = dynamic_cast<FXIcon*>( image );
+	if( image ) {
+		FXIcon *icon = dynamic_cast<FXIcon*>( image );
 
-	if( !mimage.valid() ) {
-		mimage = pixel_buffer->createImage( icon );
+		if( !mimage.valid() ) {
+			mimage = pixel_buffer->createImage( icon );
+		}
 	}
 
 	target->composite(*mimage, x, y, Magick::OverCompositeOp);
@@ -45,6 +59,17 @@ void FXPixelBufferObject::setImage( FXImage *image_ )
 
 	image = image_;
 	setDirty();
+}
+
+void FXPixelBufferObject::setImage( RefMImage image_ )
+{
+	if( mimage.valid() ) {
+		if( mimage.address() == image_.address() ) {
+			return;
+		}
+	}
+
+	mimage = image_;
 }
 
 void FXPixelBufferObject::setDirty()

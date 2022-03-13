@@ -28,10 +28,18 @@ protected:
 	FXImage *image;
 	RefMImage mimage;
 	const std::string name;
+	void *data;
 
 public:
 	FXPixelBufferObject( FXPixelBuffer *pixel_buffer_,
 						 FXImage *image_,
+						 int x_,
+						 int y_,
+						 int floor_,
+						 const std::string & name_ );
+
+	FXPixelBufferObject( FXPixelBuffer *pixel_buffer_,
+						 RefMImage image_,
 						 int x_,
 						 int y_,
 						 int floor_,
@@ -57,6 +65,10 @@ public:
 
 	void setDirty();
 	void setImage( FXImage *image_ );
+	void setImage( RefMImage image_ );
+
+	void setData( void *data_ ) { data = data_; }
+	void *getData() { return data; }
 };
 
 class FXPixelBufferBackgroundObject : public FXPixelBufferObject
@@ -78,3 +90,4 @@ public:
 
 
 #endif /* SRC_FXPIXELBUFFEROBJECT_H_ */
+

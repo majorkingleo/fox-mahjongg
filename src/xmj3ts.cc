@@ -6,6 +6,7 @@
 #include <format.h>
 #include <cpp_util.h>
 #include "main.h"
+#include <FXPixelBuffer.h>
 
 using namespace Tools;
 
@@ -23,7 +24,8 @@ Xmj3Tileset::Xmj3Tileset( MahjonggWindow *root, const TILE_DATA & tile_data )
     _images(),
     _masks(),
     _tile_data( tile_data ),
-    _root( root )
+    _root( root ),
+    _objects_by_tilenumber()
 {
   _xborder = 4;
   _yborder = 4;
@@ -308,7 +310,36 @@ Xmj3Tileset::draw_normal(const Tile *t, SwDrawable *drawable, short x, short y)
 {
   int which = picture(t->number());
   assert(which >= 0 && which < NPICTURES);
-  draw(drawable, x, y, _base_ref[which], _face_ref[which]);
+
+  FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
+  short background = _base_ref[which];
+  short foreground = _face_ref[which];
+
+  FXPixelBuffer::RefMImage image;
+
+  if( !obj ) {
+
+	  image = createImage( t, drawable, background, foreground );
+	  obj = _objects_by_tilenumber[t->number()];
+
+  } else {
+	  ObjectData *od = (ObjectData*)obj->getData();
+
+	  // nothing changed
+	  if( od->background == background &&
+		  od->foreground == foreground ) {
+		  image = od->img;
+	  } else {
+		  image = createImage( t, drawable, background, foreground );
+		  obj = _objects_by_tilenumber[t->number()];
+	  }
+  }
+
+  obj->setImage( image );
+  obj->setX( x );
+  obj->setY( y );
+
+  // draw(drawable, x, y, _base_ref[which], _face_ref[which]);
 }
 
 void
@@ -316,7 +347,36 @@ Xmj3Tileset::draw_lit(const Tile *t, SwDrawable *drawable, short x, short y)
 {
   int which = picture(t->number());
   assert(which >= 0 && which < NPICTURES);
-  draw(drawable, x, y, _selected_ref[which], _face_ref[which]);
+
+  FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
+  short background = _selected_ref[which];
+  short foreground = _face_ref[which];
+
+  FXPixelBuffer::RefMImage image;
+
+  if( !obj ) {
+
+	  image = createImage( t, drawable, background, foreground );
+	  obj = _objects_by_tilenumber[t->number()];
+
+  } else {
+	  ObjectData *od = (ObjectData*)obj->getData();
+
+	  // nothing changed
+	  if( od->background == background &&
+		  od->foreground == foreground ) {
+		  image = od->img;
+	  } else {
+		  image = createImage( t, drawable, background, foreground );
+		  obj = _objects_by_tilenumber[t->number()];
+	  }
+  }
+
+  obj->setImage( image );
+  obj->setX( x );
+  obj->setY( y );
+
+  // draw(drawable, x, y, _selected_ref[which], _face_ref[which]);
 }
 
 void
@@ -325,6 +385,94 @@ Xmj3Tileset::draw_obscured(const Tile *t, SwDrawable *drawable,
 {
   int which = picture(t->number());
   assert(which >= 0 && which < NPICTURES);
-  draw(drawable, x, y, _obscured_ref[which], -1);
+
+
+  FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
+  short background = _obscured_ref[which];
+
+  FXPixelBuffer::RefMImage image;
+
+  if( !obj ) {
+
+	  image = createImage( t, drawable, background  );
+	  obj = _objects_by_tilenumber[t->number()];
+
+  } else {
+	  ObjectData *od = (ObjectData*)obj->getData();
+
+	  // nothing changed
+	  if( od->background == background &&
+		  od->foreground == -1 ) {
+		  image = od->img;
+	  } else {
+		  image = createImage( t, drawable, background );
+		  obj = _objects_by_tilenumber[t->number()];
+	  }
+  }
+
+  obj->setImage( image );
+  obj->setX( x );
+  obj->setY( y );
+
+
+  // draw(drawable, x, y, _obscured_ref[which], -1);
 }
 
+FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *drawable, short background, short foreground )
+{
+	// clear object data
+	if( _objects_by_tilenumber[t->number()] ) {
+		FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
+		ObjectData *od = (ObjectData*)obj->getData();
+		delete od;
+		obj->setData(0);
+		drawable->window()->remove( obj );
+	}
+
+	FXImage *img_bg = _images.at(background);
+	FXImage *img_fg = _images.at(foreground);
+
+
+	int dx = (_shadow & 1 ? _xborder : 0);
+	int dy = (_shadow & 2 ? _yborder : 0);
+
+	FXPixelBuffer::RefMImage mimage_bg = drawable->window()->createImage( img_bg );
+	FXPixelBuffer::RefMImage mimage_fg = drawable->window()->createImage( img_fg );
+
+	mimage_bg->composite(*mimage_fg, dx, dy, Magick::OverCompositeOp);
+
+	FXPixelBufferObject *obj = drawable->window()->setImage( mimage_bg, 0, 0, t->lev(), format( "Tile %d", t->number()) );
+	_objects_by_tilenumber[t->number()] = obj;
+	ObjectData *od = new ObjectData();
+	od->img = mimage_bg;
+	od->background = background;
+	od->foreground = foreground;
+	obj->setData(od);
+
+	return mimage_bg;
+}
+
+FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *drawable, short background )
+{
+	// clear object data
+	if( _objects_by_tilenumber[t->number()] ) {
+		FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
+		ObjectData *od = (ObjectData*)obj->getData();
+		delete od;
+		obj->setData(0);
+		drawable->window()->remove( obj );
+	}
+
+	FXPixelBuffer::RefMImage img_bg = drawable->window()->createImage( _images.at(background) );
+
+
+	FXPixelBufferObject *obj = drawable->window()->setImage( img_bg, 0, 0, t->lev(), format( "Tile %d", t->number()) );
+	_objects_by_tilenumber[t->number()] = obj;
+	ObjectData *od = new ObjectData();
+	od->img = img_bg;
+	od->background = background;
+	od->foreground = -1;
+	obj->setData(od);
+
+	return img_bg;
+}
