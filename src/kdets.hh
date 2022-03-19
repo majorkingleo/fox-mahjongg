@@ -1,7 +1,6 @@
 #ifndef KDETS_HH
 #define KDETS_HH
-#include <liblcdf/gif.h>
-#include <liblcdf/gifx.h>
+
 #include "tileset.hh"
 
 #if 0

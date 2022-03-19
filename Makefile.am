@@ -177,6 +177,8 @@ LIBS= \
 
 if MINGW
 AM_LDFLAGS = -mwindows
+# with -std=c++11 WIN32 is disabled (_WIN32) would be the valid one, so we define it in mingw.
+AM_CPPFLAGS += -DWIN32
 else
 AM_LDFLAGS = -lX11
 endif

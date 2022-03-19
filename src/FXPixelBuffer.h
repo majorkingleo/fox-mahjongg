@@ -31,7 +31,7 @@ private:
 	FXPixelBuffer(const FXPixelBuffer&);
 	FXPixelBuffer &operator=(const FXPixelBuffer&);
 
-	static Magick::Color TRANSPARENT;
+	static Magick::Color COLOR_TRANSPARENT;
 
 
 

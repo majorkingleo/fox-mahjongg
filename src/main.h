@@ -53,7 +53,6 @@ private:
 
 	int               move_mode;
 
-	Gif_XContext *gifx;
 	Tileset *tileset;
 	FXImage* background;
 	Game *game;

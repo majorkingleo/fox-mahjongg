@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "game.hh"
 #include "solvable.hh"
 #include "tile.hh"

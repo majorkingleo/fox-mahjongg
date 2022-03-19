@@ -1,7 +1,6 @@
 #ifndef SWGENERAL_HH
 #define SWGENERAL_HH
 
-#include <liblcdf/gif.h>
 #include "fx.h"
 #include <string>
 

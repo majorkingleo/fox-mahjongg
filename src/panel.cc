@@ -8,7 +8,6 @@
 #include "solution.hh"
 #include "traverse.hh"
 #include "counter.hh"
-#include <X11/keysym.h>
 #include "main.h"
 #include "debug.h"
 #include <format.h>
@@ -23,7 +22,7 @@ Panel::Panel(FXApp *app, FXPixelBuffer *window, MahjonggWindow *root )
     _window_height(-1),
 
     _board(0),
-    _background(None),
+    _background(0),
     _tile_count(0),
     _match_count(0),
     _solution(0),

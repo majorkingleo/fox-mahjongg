@@ -77,8 +77,6 @@ MahjonggWindow::MahjonggWindow()
   level_label(0),
   retry_label(0),
   move_mode(0),
-
-  gifx(0),
   tileset(0),
   background(0),
   game(0),
@@ -111,8 +109,6 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   level_label(0),
   retry_label(0),
   move_mode(0),
-
-  gifx(0),
   tileset(0),
   background(0),
   game(0),

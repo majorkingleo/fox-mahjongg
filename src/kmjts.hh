@@ -1,7 +1,5 @@
 #ifndef KMJTS_HH
 #define KMJTS_HH
-#include <liblcdf/gif.h>
-#include <liblcdf/gifx.h>
 #include "tileset.hh"
 
 #if 0

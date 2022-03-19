@@ -31,7 +31,7 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
     _tile_flags(),
 
     _buffering(0),
-    _buffer(None),
+    _buffer(0),
 
     _buffer_w(0),
     _buffer_h(0),
@@ -54,7 +54,7 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 {
   // set up mask info
   for (int i = 0; i < NMASK; i++) {
-    _mask[i] = None;
+    _mask[i] = 0;
     _mask_prev_mru[i] = i - 1;
     _mask_next_mru[i] = (i == NMASK - 1 ? -1 : i + 1);
     _mask_tile[i] = -1;

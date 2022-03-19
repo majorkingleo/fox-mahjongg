@@ -19,7 +19,7 @@ FXDEFMAP(FXPixelBuffer) FXPixelBufferMap[]={
 // Object implementation
 FXIMPLEMENT(FXPixelBuffer,FXCanvas,FXPixelBufferMap,ARRAYNUMBER(FXPixelBufferMap));
 
-Magick::Color FXPixelBuffer::TRANSPARENT("transparent");
+Magick::Color FXPixelBuffer::COLOR_TRANSPARENT("transparent");
 
 
 FXPixelBuffer::FXPixelBuffer()
@@ -88,7 +88,7 @@ FXPixelBuffer::RefMImage FXPixelBuffer::getOrCreateFloor( int floor )
 		return it->second;
 	}
 
-	Tools::Ref<Magick::Image> mimage = new Magick::Image(Magick::Geometry(getWidth(), getHeight()), TRANSPARENT);
+	Tools::Ref<Magick::Image> mimage = new Magick::Image(Magick::Geometry(getWidth(), getHeight()), COLOR_TRANSPARENT);
 
 	floors[floor] = mimage;
 
@@ -207,7 +207,7 @@ FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
     const int w = image->getWidth();
     const int h = image->getHeight();
 
-    RefMImage mimage = new Magick::Image(Magick::Geometry(image->getWidth(), image->getHeight()), TRANSPARENT);
+    RefMImage mimage = new Magick::Image(Magick::Geometry(image->getWidth(), image->getHeight()), COLOR_TRANSPARENT);
 
     /* get pixelcache of ImageIn */
 #if MagickLibVersion >= 0x700
