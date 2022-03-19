@@ -22,6 +22,7 @@
 #include "data_digits.h"
 #include "FXPixelBuffer.h"
 #include <Magick++.h>
+#include <alarm.hh>
 
 using namespace Tools;
 
@@ -469,6 +470,8 @@ long MahjonggWindow::onCmdClear(FXObject*,FXSelector,void*){
 
 long MahjonggWindow::onTimeout(FXObject*, FXSelector, void* ptr)
 {
+	Alarm::x_wait();
+
 	if( canvas ) {
 		canvas->redrawIfDirty();
 	}

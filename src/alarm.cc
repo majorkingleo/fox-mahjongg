@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "alarm.hh"
 
 void
@@ -54,35 +51,15 @@ Alarm::unschedule()
 
 
 void
-Alarm::x_wait(Display *display)
+Alarm::x_wait()
 {
-  fd_set fds;
-  int x_fd = ConnectionNumber(display);
-  FD_ZERO(&fds);
-  
-  while (1) {
-    Moment time = Moment::now();
-    
-    while (alarms && time >= alarms->_moment) {
-      Alarm *a = alarms;
-      alarms = a->_next;
-      a->_scheduled = false;
-      if (!a->_dead)
-	a->_hook->alarm(a);
-    }
-    
-    if (XPending(display))
-      return;
-    
-    FD_SET(x_fd, &fds);
-    int selectval;
-    if (alarms) {
-      struct timeval timeout = alarms->_moment - time;
-      selectval = select(x_fd + 1, &fds, 0, 0, &timeout);
-    } else
-      selectval = select(x_fd + 1, &fds, 0, 0, 0);
-    
-    if (selectval > 0 && FD_ISSET(x_fd, &fds))
-      return;
-  }
+	Moment time = Moment::now();
+
+	while (alarms && time >= alarms->_moment) {
+		Alarm *a = alarms;
+		alarms = a->_next;
+		a->_scheduled = false;
+		if (!a->_dead)
+			a->_hook->alarm(a);
+	}
 }

@@ -1,7 +1,7 @@
 #ifndef ALARM_HH
 #define ALARM_HH
 #include "moment.hh"
-#include <X11/Xlib.h>
+
 class Alarm;
 
 class AlarmHooks {
@@ -55,7 +55,7 @@ class Alarm {
   void schedule(const Moment &);
   void kill()				{ _dead = true; }
   
-  static void x_wait(Display *);
+  static void x_wait();
   
 };
 
