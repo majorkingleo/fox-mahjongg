@@ -152,6 +152,8 @@ Button::draw()
 	  _obj = window()->setImage( img, x(), y(), 0, _name );
   } else {
 	  _obj->setImage( img );
+	  _obj->setX( x() );
+	  _obj->setY( y() );
   }
 
   // window()->redraw();

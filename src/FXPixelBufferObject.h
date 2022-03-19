@@ -61,8 +61,8 @@ public:
 
 	const std::string & getName() const { return name; }
 
-	void setX( int x_ ) { x = x_; }
-	void setY( int y_ ) { y = y_; }
+	void setX( int x_ );
+	void setY( int y_ );
 
 	void setDirty();
 	void setImage( FXImage *image_ );

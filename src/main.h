@@ -61,12 +61,6 @@ private:
 	std::map<std::string,FXImage *> imageByName;
     std::map<FXImage*,std::string> nameByImagePtr; // just for debugging
 
-    FXCanvas *current;
-    FXCanvas *current_mask;
-    FXCanvas *current_result;
-
-    FXPixelBuffer *pixel_buffer;
-
     FXTabBook *tabbook;
     FXTabItem *tab_main;
     FXTabItem *tab_debug;
@@ -82,13 +76,13 @@ protected:
 public:
 
 	// Message handlers
-	long onPaint(FXObject*,FXSelector,void*);
 	long onMouseDown(FXObject*,FXSelector,void*);
 	long onMouseUp(FXObject*,FXSelector,void*);
 	long onTimeout(FXObject*,FXSelector,void*);
 	long onClose(FXObject*,FXSelector,void*);
 
 	void detach() override;
+	void layout() override;
 
 public:
 

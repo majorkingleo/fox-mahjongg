@@ -354,7 +354,7 @@ void FXPixelBuffer::resize( FXint width, FXint height )
 
 	// render everythin new
 	for( auto obj : objects ) {
-		obj->setDirty();
+		obj->setRedrawRequired();
 	}
 
 	redraw_required = true;
@@ -387,23 +387,4 @@ void FXPixelBuffer::redrawIfDirty()
 	}
 }
 
-/*
-Magick::Image FXPixelBuffer::createFlatImage( const Magick::Image & image )
-{
-    Geometry size(image.columns(), image.rows());
-    Color color("white");
-    Image white(size, color);
 
-    std::list<Image> images;
-    images.push_back(white);
-    images.push_back(image);
-
-    Image flattenedImage;
-    flattenImages(&flattenedImage, images.begin(), images.end());
-
-    flattenedImage.magick( "RGB" );
-    flattenedImage.modifyImage();
-
-    return flattenedImage;
-}
-*/

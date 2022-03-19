@@ -84,6 +84,25 @@ void FXPixelBufferObject::setDirty()
 	DEBUG( format( "%d: %s valid: %d", __FUNCTION__, name, mimage.valid() ));
 }
 
+
+void FXPixelBufferObject::setX( int x_ )
+{
+	if( x != x_ ) {
+		redraw_required = true;
+	}
+	x = x_;
+}
+
+void FXPixelBufferObject::setY( int y_ )
+{
+	if( y != y_ ) {
+		redraw_required = true;
+	}
+
+	y = y_;
+}
+
+
 FXPixelBufferBackgroundObject::FXPixelBufferBackgroundObject( FXPixelBuffer *pixel_buffer_,FXImage *image_, FXDC *dc_, int x_, int y_, int floor_, const std::string & name_ )
 : FXPixelBufferObject( pixel_buffer_, image_, x_, y_, floor_, name_ ),
   dc( dc_ )
@@ -91,7 +110,7 @@ FXPixelBufferBackgroundObject::FXPixelBufferBackgroundObject( FXPixelBuffer *pix
 
 void FXPixelBufferBackgroundObject::draw( RefMImage & target )
 {
-	if( !mimage.valid() ) {
+	if( !mimage.valid() || redraw_required ) {
 		FXImage *bg_image = pixel_buffer->createImage( target );
 
 		{

@@ -36,9 +36,6 @@ const unsigned TIMEOUT_VALUE = 2000;
 // Message Map for the Scribble Window class
 FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 
-		//________Message_Type_____________________ID____________Message_Handler_______
-		FXMAPFUNC(SEL_PAINT,             MahjonggWindow::ID_CANVAS, MahjonggWindow::onPaint),
-
 		FXMAPFUNC(SEL_LEFTBUTTONPRESS,   MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseDown),
 		FXMAPFUNC(SEL_LEFTBUTTONRELEASE, MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseUp),
 
@@ -74,8 +71,7 @@ MahjonggWindow::MahjonggWindow()
   layout_name(0),
   config_dir(),
   imageByName(),
-  nameByImagePtr(),
-  pixel_buffer(0)
+  nameByImagePtr()
 {}
 
 // Construct a MahjonggWindow
@@ -101,12 +97,11 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   layout_name(0),
   config_dir(),
   imageByName(),
-  nameByImagePtr(),
-  pixel_buffer(0)
+  nameByImagePtr()
 {
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(this,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
-			0,0,0,0,10,10,10,10);
+			0,0,0,0,0,0,0,0);
 
 	// Drawing canvas
 	canvas=new FXPixelBuffer(this,canvasFrame,this,ID_CANVAS,
@@ -195,6 +190,7 @@ void MahjonggWindow::create(){
 			fatal_error("layout %s corrupted", layout_name);
 	}
 
+#if 1
     int wid, hgt;
     board->tile_layout_size(&wid, &hgt);
 
@@ -202,30 +198,28 @@ void MahjonggWindow::create(){
 
     int width = wid + 38;
     int height = hgt + 38 + 56; // + Buttons
+    setWidth(width);
+    setHeight(height);
     canvas->resize(width, height );
    
     // automatically done by panel->resize()
     // board->set_size(width, height - board->y_pos());
     // board->center_layout();
     panel->resize(width,height);
-
+#else
+    canvas->resize(getWidth(), getHeight() );
+    panel->resize(getWidth(),getHeight());
+#endif
     game->start(time(0), solveable_boards );
     last_new_board = Moment::now();
     panel->set_visible( true );
 
 	panel->redraw_all();
-	canvas->onPaint( 0, 0, 0 );
-
-	if( pixel_buffer ) {
-		pixel_buffer->setTiledBackgroundImage( background, -1, getNameByImage( background ) );
-		pixel_buffer->setImage( getImageByName( "quit" ), 100, 100, 0, "quit" );
-	}
 
 	// Make the main window appear
 	show(PLACEMENT_SCREEN);
 	getApp()->addTimeout( this, ID_TIMER, TIMEOUT_VALUE );
 
-	// autoRepeat(0);
 }
 
 
@@ -254,15 +248,19 @@ long MahjonggWindow::onMouseUp(FXObject*,FXSelector,void* ptr){
 }
 
 
-// Paint the canvas
-long MahjonggWindow::onPaint(FXObject* obj,FXSelector sel,void* ptr){
 
-	// level->paint();
-	panel->redraw_all();
-	canvas->onPaint( obj, sel, ptr );
-	// panel->redraw();
+void MahjonggWindow::layout()
+{
+	FXMainWindow::layout();
 
-	return 1;
+	if( canvas ) {
+		canvas->resize(getWidth(), getHeight());
+	}
+
+	if( panel ) {
+		panel->resize(getWidth(),getHeight());
+		panel->redraw_all();
+	}
 }
 
 
