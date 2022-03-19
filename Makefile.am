@@ -154,15 +154,8 @@ cpputils_cpputilsshared_cpputilsformat_libcpputilsformat_a_SOURCES= \
 	cpputils/cpputilsshared/cpputilsformat/cwformat.cc
 
 liblcdf_liblcdf_a_SOURCES= \
-	liblcdf/clp.c \
-    liblcdf/fmalloc.c \
-    liblcdf/permstr.hh \
-    liblcdf/permstr.cc \
-    liblcdf/straccum.hh \
-    liblcdf/straccum.cc \
-    liblcdf/string.hh \
-    liblcdf/string.cc \
     liblcdf/vector.hh \
+    liblcdf/vectorv.hh \
     liblcdf/vectorv.cc
 	
 fox_mahjongg_LDADD = \

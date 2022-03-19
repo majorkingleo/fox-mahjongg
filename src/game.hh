@@ -1,7 +1,7 @@
 #ifndef GAME_HH
 #define GAME_HH
 #include <liblcdf/vector.hh>
-#include <liblcdf/inttypes.h>
+#include <stdint.h>
 #include <stdio.h>
 class Tile;
 class Tileset;
