@@ -45,12 +45,6 @@ private:
 	FXPixelBuffer     *canvas;                  // Canvas to draw into
 	int                mdflag;                  // Mouse button down?
 	FXColor            drawColor;               // Color for the line
-	// Ref<Level>         level;
-	int                level_count;
-	int                retry_count;
-	FXLabel          *level_label;
-	FXLabel          *retry_label;
-
 	int               move_mode;
 
 	Tileset *tileset;
@@ -65,7 +59,6 @@ private:
 	std::string config_dir;
 
 	std::map<std::string,FXImage *> imageByName;
-	std::map<std::string,FXBitmap *> bitmapMaskByName;
     std::map<FXImage*,std::string> nameByImagePtr; // just for debugging
 
     FXCanvas *current;
@@ -131,8 +124,6 @@ public:
 	}
 
 	FXImage *getImageByName( const std::string & image );
-	FXBitmap *getBitmapMaskByName( const std::string & image );
-	FXBitmap *createBitmapMaskFromImage( FXImage *image, const std::string & image_name = "" );
 
     std::string getNameByImage( FXImage *img ) const {
         auto it = nameByImagePtr.find( img );
@@ -147,10 +138,6 @@ public:
     void registerNameByImage( FXImage *img, const std::string & name ) {
         nameByImagePtr[img] = name;
     }
-
-    void setCurrentImage( FXImage *image );
-
-    void setCurrentImageMask( FXBitmap *bitmap );
 
 private:
 	Tileset *load_tileset(const char *tileset_name, const char *config_dir);

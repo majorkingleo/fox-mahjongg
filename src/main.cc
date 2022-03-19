@@ -62,10 +62,6 @@ MahjonggWindow::MahjonggWindow()
   canvas(0),
   mdflag(0),
   drawColor(0),
-  level_count(0),
-  retry_count(0),
-  level_label(0),
-  retry_label(0),
   move_mode(0),
   tileset(0),
   background(0),
@@ -78,14 +74,13 @@ MahjonggWindow::MahjonggWindow()
   layout_name(0),
   config_dir(),
   imageByName(),
-  bitmapMaskByName(),
   nameByImagePtr(),
   pixel_buffer(0)
 {}
 
 // Construct a MahjonggWindow
 MahjonggWindow::MahjonggWindow(FXApp *a)
-: FXMainWindow(a,"austromobil.at Breakout",NULL,NULL,
+: FXMainWindow(a,"FOX Mahjongg",NULL,NULL,
 		DECOR_TITLE | DECOR_CLOSE | DECOR_ALL, // DECOR_MINIMIZE,
 		0,0,1150,700),
   contents(0),
@@ -94,10 +89,6 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   canvas(0),
   mdflag(0),
   drawColor(0),
-  level_count(0),
-  retry_count(0),
-  level_label(0),
-  retry_label(0),
   move_mode(0),
   tileset(0),
   background(0),
@@ -110,7 +101,6 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   layout_name(0),
   config_dir(),
   imageByName(),
-  bitmapMaskByName(),
   nameByImagePtr(),
   pixel_buffer(0)
 {
@@ -127,7 +117,6 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	// Initialize private variables
 	drawColor=FXRGB(255,0,0);
 	mdflag=0;
-	level_count = LEVEL_START;
 	move_mode = 0;
 
 	solveable_boards = true;
@@ -144,12 +133,6 @@ MahjonggWindow::~MahjonggWindow()
 	}
 
 	imageByName.clear();
-
-	for( auto it : bitmapMaskByName ) {
-		delete it.second;
-	}
-
-	bitmapMaskByName.clear();
 }
 
 void MahjonggWindow::detach()
@@ -157,10 +140,6 @@ void MahjonggWindow::detach()
 	FXMainWindow::detach();
 
 	for( auto it : imageByName ) {
-		it.second->detach();
-	}
-
-	for( auto it : bitmapMaskByName ) {
 		it.second->detach();
 	}
 }
@@ -282,9 +261,6 @@ long MahjonggWindow::onPaint(FXObject* obj,FXSelector sel,void* ptr){
 	panel->redraw_all();
 	canvas->onPaint( obj, sel, ptr );
 	// panel->redraw();
-
-	setCurrentImage( getImageByName( "new" ) );
-	setCurrentImageMask( getBitmapMaskByName( "new" ) );
 
 	return 1;
 }
@@ -458,16 +434,6 @@ FXImage *MahjonggWindow::getImageByName( const std::string & image_name )
 	return it->second;
 }
 
-FXBitmap *MahjonggWindow::getBitmapMaskByName( const std::string & image_name )
-{
-	auto it = bitmapMaskByName.find( image_name );
-
-	if( it == bitmapMaskByName.end() ) {
-		throw REPORT_EXCEPTION( format( "no Button named %s", image_name ) );
-	}
-
-	return it->second;
-}
 
 FXImage* MahjonggWindow::createGifImage( const unsigned char* data, const std::string & name )
 {
@@ -494,18 +460,6 @@ void MahjonggWindow::loadButtonImages()
 	imageByName["new-lit"]    = createGifImage( button_08_gif, "new-lit" );
 	imageByName["quit-lit"]   = createGifImage( button_09_gif, "quit-lit" );
 	imageByName["undo-lit"]   = createGifImage( button_10_gif, "undo-lit" );
-
-    bitmapMaskByName["hint"]      = createBitmapMaskFromImage( imageByName["hint"], "hint" );
-    bitmapMaskByName["new"]       = createBitmapMaskFromImage( imageByName["new"], "new" );
-    bitmapMaskByName["quit"]      = createBitmapMaskFromImage( imageByName["quit"], "quit" );
-    bitmapMaskByName["rock"]      = createBitmapMaskFromImage( imageByName["rock"], "rock" );
-    bitmapMaskByName["undo"]      = createBitmapMaskFromImage( imageByName["undo"], "undo" );
-    bitmapMaskByName["clean"]     = createBitmapMaskFromImage( imageByName["clean"], "clean" );
-    bitmapMaskByName["clean-lit"] = createBitmapMaskFromImage( imageByName["clean-lit"], "clean-lit" );
-    bitmapMaskByName["hint-lit"]  = createBitmapMaskFromImage( imageByName["hint-lit"], "hint-lit" );
-    bitmapMaskByName["new-lit"]   = createBitmapMaskFromImage( imageByName["new-lit"], "new-lit" );
-    bitmapMaskByName["quit-lit"]  = createBitmapMaskFromImage( imageByName["quit-lit"], "quit-lit" );
-    bitmapMaskByName["undo-lit"]  = createBitmapMaskFromImage( imageByName["undo-lit"], "undo-lit" );
 }
 
 void MahjonggWindow::loadDigitImages()
@@ -520,94 +474,6 @@ void MahjonggWindow::loadDigitImages()
 	imageByName["7"]       = createGifImage( digit_07_gif, "7" );
 	imageByName["8"]       = createGifImage( digit_08_gif, "8" );
 	imageByName["9"]       = createGifImage( digit_09_gif, "9" );
-
-    bitmapMaskByName["0"]   = createBitmapMaskFromImage( imageByName["0"], "0" );
-    bitmapMaskByName["1"]   = createBitmapMaskFromImage( imageByName["1"], "1" );
-    bitmapMaskByName["2"]   = createBitmapMaskFromImage( imageByName["2"], "2" );
-    bitmapMaskByName["3"]   = createBitmapMaskFromImage( imageByName["3"], "3" );
-    bitmapMaskByName["4"]   = createBitmapMaskFromImage( imageByName["4"], "4" );
-    bitmapMaskByName["5"]   = createBitmapMaskFromImage( imageByName["5"], "5" );
-    bitmapMaskByName["6"]   = createBitmapMaskFromImage( imageByName["6"], "6" );
-    bitmapMaskByName["7"]   = createBitmapMaskFromImage( imageByName["7"], "7" );
-    bitmapMaskByName["8"]   = createBitmapMaskFromImage( imageByName["8"], "8" );
-    bitmapMaskByName["9"]   = createBitmapMaskFromImage( imageByName["9"], "9" );
-}
-
-FXBitmap* MahjonggWindow::createBitmapMaskFromImage( FXImage *image, const std::string & image_name )
-{
-	if( !image->getData() ) {
-        DEBUG( "image option IMAGE_KEEP not set" );
-        image->restore();
-    }
-
-	int width = image->getWidth();
-	int height = image->getHeight();
-    
-	FXBitmap* bitmap = new FXBitmap(getApp(), 0, BITMAP_KEEP|BITMAP_SHMI|BITMAP_SHMP );
-    bitmap->create();
-    
-    FXuchar *pixels = 0;
-    allocElms( pixels, width * height );
-	   
-    bitmap->setData( pixels, BITMAP_KEEP | BITMAP_OWNED, width, height );
-    
-	FXColor transparent_color = 0;
-
-	FXIcon *icon = dynamic_cast<FXIcon*>( image );
-
-	if( icon ) {
-		transparent_color = icon->getTransparentColor();
-	} else {
-		transparent_color = image->getPixel( 0, 0 );
-	}
-
-    DEBUG( format( "%s: transparent color: 0x%X", image_name, transparent_color ) );
-
-	for( unsigned x = 0; x < width; x++ ) {
-		for( unsigned y = 0; y < height; y++ ) {
-			FXColor color = image->getPixel( x, y );
-			bitmap->setPixel( x, y, ( color != transparent_color ) );
-        }
-    }
-
-    bitmap->render();
-
-	return bitmap;
-}
-
-void MahjonggWindow::setCurrentImage( FXImage *image ) {
-	FXDCWindow dc(current);
-	FXIcon *icon = dynamic_cast<FXIcon*>( image );
-
-	dc.setForeground( FXRGB(0,255,0));
-	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
-
-	if( icon ) {
-		dc.drawIcon( icon, 0, 0 );
-	} else {
-		dc.drawImage( image, 0, 0 );
-	}
-}
-
-void MahjonggWindow::setCurrentImageMask( FXBitmap *bitmap ) {
-	FXDCWindow dc(current_mask);
-
-	dc.setForeground( FXRGB(0,255,0));
-	dc.fillRectangle(0,0,current->getWidth(), current->getHeight() );
-
-	dc.drawBitmap( bitmap, 0, 0 );
-
-
-	FXDCWindow dc_res(current_result);
-	dc_res.drawImage( background, 0, 0 );
-	dc_res.setForeground( FXRGB(0,0,100));
-	dc_res.fillRectangle(0,0,current_result->getWidth(), current_result->getHeight() );
-
-
-	FXDCWindow dc_source(current);
-	dc_res.setClipMask( bitmap );
-	dc_res.setFunction( BLT_CLR );
-	dc_res.drawArea( background, 0, 0, 64, 64, 0, 0 );
 }
 
 void

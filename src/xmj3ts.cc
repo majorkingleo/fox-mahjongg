@@ -202,8 +202,6 @@ Xmj3Tileset::initialize_images()
     	  image->getWidth(),
     	  image->getHeight()));
 
-    _masks.push_back( _root->createBitmapMaskFromImage( image ) );
-
     if (strncmp(name.c_str(), "base", 4) == 0)
       map_one_image(name.c_str() + 4, imagei, itBase, genericity);
     else if (strncmp(name.c_str(), "selected", 8) == 0)
