@@ -156,9 +156,6 @@ cpputils_cpputilsshared_cpputilsformat_libcpputilsformat_a_SOURCES= \
 liblcdf_liblcdf_a_SOURCES= \
 	liblcdf/clp.c \
     liblcdf/fmalloc.c \
-    liblcdf/giffunc.c \
-	liblcdf/gifread.c \
-	liblcdf/gifx.c \
     liblcdf/permstr.hh \
     liblcdf/permstr.cc \
     liblcdf/straccum.hh \
@@ -166,11 +163,8 @@ liblcdf_liblcdf_a_SOURCES= \
     liblcdf/string.hh \
     liblcdf/string.cc \
     liblcdf/vector.hh \
-    liblcdf/vectorv.cc \
-	liblcdf/gif.h \
-	liblcdf/gifx.h 
+    liblcdf/vectorv.cc
 	
-
 fox_mahjongg_LDADD = \
 	tools/libtools.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \

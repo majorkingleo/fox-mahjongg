@@ -603,6 +603,7 @@ void MahjonggWindow::config_error( const std::string & error )
 
 Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *config_dir)
 {
+#if 0
 	int len = strlen(tileset_name) + strlen(config_dir) + 15;
 	char *buf = new char[len];
 	Gif_Stream *gfs;
@@ -618,6 +619,7 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 		gfs = Gif_FullReadFile(f, GIF_READ_COMPRESSED, 0, 0);
 		fclose(f);
 	}
+#endif
 
 	Tileset *tileset = 0;
 
@@ -666,10 +668,12 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 
 	// What if that's not a valid tileset?
 	if (!tileset) {
-		if (strcmp(tileset_name, "thick") == 0)
+		if (strcmp(tileset_name, "thick") == 0) {
 			config_error("can't load `thick' tileset!");
-		else if (f != 0)
+		}
+		/*else if (f != 0) {
 			error(format("tileset `%s' is invalid", tileset_name));
+		}*/
 		error(format("using default tileset `thick'"));
 		return load_tileset("thick", config_dir);
 	}
