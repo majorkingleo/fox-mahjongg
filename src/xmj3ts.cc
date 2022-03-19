@@ -460,10 +460,12 @@ void Xmj3Tileset::erase( const Tile * t, SwDrawable *drawable )
 {
 	if( t == NULL ) {
 		for( auto pair : _objects_by_tilenumber ) {
-			ObjectData *od = (ObjectData*)pair.second->getData();
-			delete od;
-			pair.second->setData(0);
-			drawable->window()->remove( pair.second );
+			if( pair.second ) {
+				ObjectData *od = (ObjectData*)pair.second->getData();
+				delete od;
+				pair.second->setData(0);
+				drawable->window()->remove( pair.second );
+			}
 		}
 		_objects_by_tilenumber.clear();
 		return;
