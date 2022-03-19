@@ -44,15 +44,7 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 	_mask_prev_mru(),
 	_mask_mru(0),
 	_masking(0),
-	_masking_gc(0),
 	_masking_tile(0),
-
-//	_copygc(0),
-//	_orgc(0),
-	_erasegc(0),
-//	_maskgc(0),
-	_mask_one_gc(0),
-	_mask_zero_gc(0),
 
     _selected(0),
 
@@ -84,8 +76,6 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 
   gcv.foreground = 97;
 #endif
-  DEBUG( format( "creating _erasegc in Window: %p", window()));
-  _erasegc = new FXDC( display() );
 #if 0
   gcv.foreground = 0UL;
   gcv.background = ~0UL;
@@ -93,24 +83,6 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
   _maskgc = XCreateGC(display(), window(),
 		      GCForeground | GCBackground | GCFunction, &gcv);
 #endif
-
-  /*
-  gcv.function = GXandInverted;
-  gcv.foreground = ~0UL;
-  _mask_zero_gc = XCreateGC(display(), _mask[0], GCFunction | GCForeground, &gcv);
-  */
-  _mask_zero_gc = new FXDC( display() );
-  _mask_zero_gc->setFunction( BLT_NOT_SRC_AND_DST );
-  _mask_zero_gc->setForeground( FXRGB(255,255,255) );
-
-  /*
-  gcv.function = GXor;
-  gcv.foreground = ~0UL;
-  _mask_one_gc = XCreateGC(display(), _mask[0], GCFunction | GCForeground, &gcv);
-  */
-  _mask_one_gc = new FXDC( display() );
-  _mask_one_gc->setFunction( BLT_SRC_XOR_DST );
-  _mask_one_gc->setForeground( FXRGB(255,255,255) );
 
   _hint = new Hint(this);
 }
@@ -127,12 +99,6 @@ Board::~Board()
     }
   }
   
-// delete _copygc;
-// delete _orgc;
-  delete _erasegc;
-//  delete _maskgc;
-  delete _mask_one_gc;
-  delete _mask_zero_gc;
 }
 
 void
@@ -448,6 +414,7 @@ void
 Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 		     int w, int h, int x, int y)
 {
+#if 0
 	DEBUG( format( "%s: pos %02dx%02d, w: %d h: %d", __FUNCTION__, x, y, w, h ));
     
   if (_masking < 0 && !_buffering) {
@@ -526,6 +493,7 @@ Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 	  dcbuffer.drawArea( image, src_y, src_y, w, h, x, y );
 
   }
+#endif
 }
 
 
@@ -534,10 +502,10 @@ Board::draw(Tile *t)
 {
   short x, y;
   position(t, &x, &y);
-
+/*
   if (_masking >= 0)
     _masking_gc = (t == _masking_tile ? _mask_one_gc : _mask_zero_gc);
-  
+*/
   if (!t->real())
     ;
   else if (t->obscured())
@@ -694,6 +662,41 @@ Board::draw_neighborhood(Tile *t, int erase)
   }
   buffer_off();
 #endif
+
+
+  short x, y;
+  position(t, &x, &y);
+
+  switch (erase)
+  {
+	  case 0:
+	  { // drawing new tile
+		  DEBUG( "drawing new tile" );
+		  mark_around(t, true, false);
+		  draw_marked();
+		  break;
+	  }
+
+	  case 1:
+	  { // erasing tile
+		  DEBUG( "erasing tile" );
+		  mark_around(t, true, true);
+		  draw_marked();
+		  copy_buffer();
+		  break;
+	  }
+
+	  case 2:
+	  { // highlighting/unhighlighting tile
+		  DEBUG( "highlighting/unhighlighting tile" );
+		  mark_around(t, true, false);
+		  draw_marked();
+		  _masking = -1;
+		  // now have correct mask; use it
+		  // draw(t);
+		  break;
+	  }
+  }
 }
 
 void
@@ -770,12 +773,7 @@ Board::remove_tile_hook(Game *g, Tile *t)
 void
 Board::draw_background()
 {
-	/*
-    FXDCWindow dc(window());
-    dc.setFillStyle( _erasegc->getFillStyle() );
-    dc.setTile( _erasegc->getTile() );
-    dc.fillRectangle( 0, 0, width(), height() );
-    */
+
 }
 
 

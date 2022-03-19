@@ -1,6 +1,6 @@
 #ifndef PANEL_HH
 #define PANEL_HH
-#include <X11/Xlib.h>
+
 #include "swgeneral.hh"
 class Tileset;
 class Button;
@@ -59,7 +59,7 @@ class Panel: public SwClippedWindow {
   };
   
   void tile_command(Game *, Tile *);
-  void command(Game *, Command, Button *, bool, FXuint = CurrentTime);
+  void command(Game *, Command, Button *, bool, FXuint = 0);
   void traversal_command(Game *, TraversalCommand);
   void traversal_take_command(Game *, bool);
   
@@ -97,13 +97,13 @@ class Panel: public SwClippedWindow {
   
   void draw_controls();
   
-  void bell() const				{ display()->beep(); }
-  void flush() const				{ display()->flush(); }
+  void bell() const;
+  void flush() const {}
   
   // events
-  void handle(Game *, XEvent *);
-  void key_press(Game *, KeySym, unsigned);
-  void click(Game *, int, int, unsigned, FXuint when );
+  // void handle(Game *, XEvent *);
+  // void key_press(Game *, KeySym, unsigned);
+  void click(Game *, int, int, FXint state, FXuint when, bool mouseUp );
   
   void set_visible( bool state ) {
 	  _visible = state;

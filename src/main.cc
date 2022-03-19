@@ -337,9 +337,7 @@ long MahjonggWindow::onMouseDown(FXObject*,FXSelector,void* ptr){
 	DEBUG( __FUNCTION__ );
 
 	FXEvent *ev=(FXEvent*)ptr;
-
-#warning "TODOOO shift"
-	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
+	panel->click( game, ev->win_x, ev->win_y, ev->state, ev->time, false );
 
 	return 1;
 }
@@ -351,9 +349,7 @@ long MahjonggWindow::onMouseUp(FXObject*,FXSelector,void* ptr){
 	DEBUG( __FUNCTION__ );
 
 	FXEvent *ev=(FXEvent*)ptr;
-
-#warning "TODOOO shift"
-	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
+	panel->click( game, ev->win_x, ev->win_y, ev->state, ev->time, true );
 
 	return 1;
 }
@@ -389,9 +385,7 @@ long MahjonggWindow::onMouseDownDebug(FXObject*,FXSelector,void* ptr){
 	DEBUG( __FUNCTION__ );
 
 	FXEvent *ev=(FXEvent*)ptr;
-
-#warning "TODOOO shift"
-	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
+	panel->click( game, ev->win_x, ev->win_y, 0, ev->time, false );
 
 	return 1;
 }
@@ -403,9 +397,7 @@ long MahjonggWindow::onMouseUpDebug(FXObject*,FXSelector,void* ptr){
 	DEBUG( __FUNCTION__ );
 
 	FXEvent *ev=(FXEvent*)ptr;
-
-#warning "TODOOO shift"
-	panel->click( game, ev->win_x, ev->win_y, 0, ev->time );
+	panel->click( game, ev->win_x, ev->win_y, 0, ev->time, true );
 
 	return 1;
 }
@@ -533,7 +525,7 @@ long MahjonggWindow::openurl(FXObject*,FXSelector,void*)
 	return 1;
 }
 
-/*
+#if 0
 long MahjonggWindow::onkeypress(FXObject*,FXSelector,void* ptr)
 {
 	FXEvent *ev = (FXEvent*) ptr;
@@ -556,17 +548,10 @@ long MahjonggWindow::onkeypress(FXObject*,FXSelector,void* ptr)
 	}
 #endif
 
-if( ev->code == KEY_space )
-{
-	if( running )
-		pause();
-	else
-		cont();
-}
-
 return 1;
 }
-*/
+#endif
+
 
 /*
 long MahjonggWindow::onkeyrelease(FXObject*,FXSelector,void* ptr)

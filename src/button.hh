@@ -15,7 +15,7 @@ class Button: public AlarmHooks, public SwWidget {
   Alarm _flash_alarm;
   
   void change_state(int);
-  bool handle_track_event(XEvent *);
+  // bool handle_track_event(XEvent *);
   
  public:
   
@@ -30,7 +30,7 @@ class Button: public AlarmHooks, public SwWidget {
   void draw();
   
   bool within(int, int) const;
-  bool track(Time);
+  bool track( FXuint time );
 
   void flash();
   void alarm();

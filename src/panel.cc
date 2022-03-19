@@ -409,19 +409,22 @@ Panel::traversal_command(Game *g, TraversalCommand command)
 
 
 void
-Panel::click(Game *g, int x, int y, unsigned state, FXuint when)
+Panel::click(Game *g, int x, int y, FXint state, FXuint when, bool mouseUp )
 {
-  if (Tile *t = _board->find_tile(x, y)) {
-	DEBUG( format("%s detected tile_command", __FUNCTION__ ) );
-    tile_command(g, t);
+	if( !mouseUp ) {
+		if (Tile *t = _board->find_tile(x, y)) {
+			DEBUG( format("%s detected tile_command", __FUNCTION__ ) );
+			tile_command(g, t);
+		}
+	}
 
-  } else if (hint_but->within(x, y)) {
+  if (hint_but->within(x, y)) {
 	DEBUG( format( "%s detected hint_command", __FUNCTION__ ) );
     command(g, comHint, hint_but, false, when);
 
   } else if (undo_but->within(x, y)) {
 	DEBUG( format( "%s detected shift_command", __FUNCTION__ ) );
-    command(g, state & ShiftMask ? comRedo : comUndo, undo_but, false, when);
+    command(g, state & SHIFTMASK ? comRedo : comUndo, undo_but, false, when);
 
   } else if (new_but->within(x, y)) {
 	DEBUG( format( "%s detected new_command", __FUNCTION__ ) );
@@ -442,7 +445,7 @@ Panel::click(Game *g, int x, int y, unsigned state, FXuint when)
   }
 }
 
-
+#if 0
 void
 Panel::key_press(Game *g, KeySym key, unsigned state)
 {
@@ -478,12 +481,13 @@ Panel::key_press(Game *g, KeySym key, unsigned state)
   else if (key == XK_Return || key == XK_KP_Enter)
     traversal_command(g, comTravTake);
 }
+#endif
 
-
+#if 0
 void
 Panel::handle(Game *game, XEvent *e)
 {
-#if 0
+
   switch (e->type) {
     
    case Expose:
@@ -526,5 +530,10 @@ Panel::handle(Game *game, XEvent *e)
     break;
     
   }
+}
 #endif
+
+void Panel::bell() const
+{
+	window()->getApp()->beep();
 }

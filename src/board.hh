@@ -41,16 +41,8 @@ class Board: public GameHooks, public SwWidget {
   int _mask_prev_mru[NMASK];
   int _mask_mru;
   int _masking;
-  FXDC *_masking_gc;
+  
   Tile *_masking_tile;
-  
-  // FXDCWindow *_copygc;
-  // FXDCWindow *_orgc;
-  FXDC *_erasegc;
-  // FXDCWindow *_maskgc;
-  FXDC *_mask_one_gc;
-  FXDC *_mask_zero_gc;
-  
   Tile *_selected;
   
   Hint *_hint;

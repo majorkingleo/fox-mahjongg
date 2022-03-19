@@ -45,7 +45,7 @@ Button::change_state(int new_state)
   }
 }
 
-
+#if 0
 bool
 Button::handle_track_event(XEvent *e)
 {
@@ -75,9 +75,10 @@ Button::handle_track_event(XEvent *e)
     
   }
 }
+#endif
 
 bool
-Button::track(Time time)
+Button::track( FXuint time )
 {
 #warning TODOOOO
 #if 0
