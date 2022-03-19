@@ -92,23 +92,8 @@ public:
 	long onPaint(FXObject*,FXSelector,void*);
 	long onMouseDown(FXObject*,FXSelector,void*);
 	long onMouseUp(FXObject*,FXSelector,void*);
-	long onMouseMove(FXObject*,FXSelector,void*);
-	long onCmdClear(FXObject*,FXSelector,void*);
 	long onTimeout(FXObject*,FXSelector,void*);
-	long openurl(FXObject*,FXSelector,void*);
-	long onkeypress(FXObject*,FXSelector,void*);
-	long onkeyrelease(FXObject*,FXSelector,void*);
 	long onClose(FXObject*,FXSelector,void*);
-
-	long onMouseDownDebug(FXObject*,FXSelector,void*);
-	long onMouseUpDebug(FXObject*,FXSelector,void*);
-	long onMouseMoveDebug(FXObject*,FXSelector,void*);
-
-
-	// void cont() { level->run(); running = 1; }
-	// Ref<Level> get_next_level( bool force = false );
-
-	// void autoRepeat(int state);
 
 	void detach() override;
 
@@ -117,11 +102,7 @@ public:
 	// Messages for our class
 	enum{
 		ID_CANVAS=FXMainWindow::ID_LAST,
-		ID_PIX_TEST,
-		ID_CLEAR,
 		ID_TIMER,
-		ID_TITLE,
-		ID_QUIT,
 		ID_LAST
 	};
 
