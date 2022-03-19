@@ -29,6 +29,7 @@ protected:
 	RefMImage mimage;
 	const std::string name;
 	void *data;
+	bool redraw_required;
 
 public:
 	FXPixelBufferObject( FXPixelBuffer *pixel_buffer_,
@@ -69,6 +70,9 @@ public:
 
 	void setData( void *data_ ) { data = data_; }
 	void *getData() { return data; }
+
+	bool redrawRequired() const { return redraw_required; }
+	void setRedrawRequired( bool state = true ) { redraw_required = state; }
 };
 
 class FXPixelBufferBackgroundObject : public FXPixelBufferObject

@@ -70,6 +70,8 @@ public:
 
 	void remove( FXPixelBufferObject *obj );
 
+	void redrawIfDirty();
+
 public:
 	RefMImage createImage( FXImage *image );
 	FXImage *createImage( RefMImage mimage );

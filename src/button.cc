@@ -153,7 +153,7 @@ Button::draw()
 	  _obj->setImage( img );
   }
 
-  window()->redraw();
+  // window()->redraw();
 
   DEBUG( format( "%s: %s", __FUNCTION__, _name ) );
 }

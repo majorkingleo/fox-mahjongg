@@ -361,6 +361,16 @@ void FXPixelBuffer::remove( FXPixelBufferObject *obj )
 	}
 }
 
+void FXPixelBuffer::redrawIfDirty()
+{
+	for( auto it = objects.begin(); it != objects.end(); it++ ) {
+		if( (*it)->redrawRequired() ) {
+			redraw();
+			break;
+		}
+	}
+}
+
 /*
 Magick::Image FXPixelBuffer::createFlatImage( const Magick::Image & image )
 {

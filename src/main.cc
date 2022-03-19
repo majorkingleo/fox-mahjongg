@@ -26,7 +26,7 @@
 using namespace Tools;
 
 const int LEVEL_START = 0;
-const unsigned TIMEOUT_VALUE = 20;
+const unsigned TIMEOUT_VALUE = 2000;
 
 
 
@@ -47,7 +47,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		FXMAPFUNC(SEL_MOTION,            MahjonggWindow::ID_PIX_TEST, MahjonggWindow::onMouseMoveDebug),
 
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_CLEAR,  MahjonggWindow::onCmdClear),
-		// FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
+		FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TITLE,  MahjonggWindow::openurl),
 		// FXMAPFUNC(SEL_KEYPRESS,          0,                         MahjonggWindow::onkeypress),
 		// FXMAPFUNC(SEL_KEYRELEASE,        0,                         MahjonggWindow::onkeyrelease),
@@ -323,7 +323,7 @@ void MahjonggWindow::create(){
 
 	// Make the main window appear
 	show(PLACEMENT_SCREEN);
-	// getApp()->addTimeout( TIMEOUT_VALUE, this, ID_TIMER );
+	getApp()->addTimeout( this, ID_TIMER, TIMEOUT_VALUE );
 
 	// autoRepeat(0);
 }
@@ -466,41 +466,18 @@ long MahjonggWindow::onCmdClear(FXObject*,FXSelector,void*){
 
 	return 1;
 }
-/*
+
 long MahjonggWindow::onTimeout(FXObject*, FXSelector, void* ptr)
 {
-	if( running )
-	{
-		if( move_mode < 0 )
-		{
-			level->move_board_left( abs( move_mode-- ) );
-
-			if( move_mode < -20 )
-				move_mode = -20;
-		}
-		else if( move_mode > 0 )
-		{
-			level->move_board_right( abs( move_mode++ ) );
-
-			if( move_mode > 20 )
-				move_mode = 20;
-		}
-	}
-
-	level->timeout();
-
-	if( level->finished() )
-	{
-		pause();
-		level = get_next_level();
+	if( canvas ) {
+		canvas->redrawIfDirty();
 	}
 
 	getApp()->flush();
-
-	getApp()->addTimeout( TIMEOUT_VALUE, this, ID_TIMER );
+	getApp()->addTimeout( this, ID_TIMER, TIMEOUT_VALUE );
 	return 1;
 }
-*/
+
 
 /*
 Ref<Level> MahjonggWindow::get_next_level( bool force )

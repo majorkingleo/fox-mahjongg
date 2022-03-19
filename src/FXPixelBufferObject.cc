@@ -19,7 +19,8 @@ FXPixelBufferObject::FXPixelBufferObject( FXPixelBuffer *pixel_buffer_, FXImage 
   image( image_ ),
   mimage(),
   name( name_ ),
-  data(0)
+  data(0),
+  redraw_required(true)
 {}
 
 FXPixelBufferObject::FXPixelBufferObject( FXPixelBuffer *pixel_buffer_, RefMImage image_, int x_, int y_, int floor_, const std::string & name_ )
@@ -30,7 +31,8 @@ FXPixelBufferObject::FXPixelBufferObject( FXPixelBuffer *pixel_buffer_, RefMImag
   image( 0 ),
   mimage( image_ ),
   name( name_ ),
-  data(0)
+  data(0),
+  redraw_required(true)
 {}
 
 FXPixelBufferObject::~FXPixelBufferObject()
@@ -49,6 +51,8 @@ void FXPixelBufferObject::draw( RefMImage & target )
 	}
 
 	target->composite(*mimage, x, y, Magick::OverCompositeOp);
+
+	redraw_required = false;
 }
 
 void FXPixelBufferObject::setImage( FXImage *image_ )
@@ -70,12 +74,13 @@ void FXPixelBufferObject::setImage( RefMImage image_ )
 	}
 
 	mimage = image_;
+	redraw_required = true;
 }
 
 void FXPixelBufferObject::setDirty()
 {
 	mimage = RefMImage();
-
+	redraw_required = true;
 	DEBUG( format( "%d: %s valid: %d", __FUNCTION__, name, mimage.valid() ));
 }
 
@@ -110,6 +115,7 @@ void FXPixelBufferBackgroundObject::draw( RefMImage & target )
 	DEBUG( format( "%s: target width: %d height: %d", __FUNCTION__, target->columns(), target->rows()));
 
 	target->composite(*mimage, x, y, Magick::OverCompositeOp);
+	redraw_required = false;
 }
 
 
