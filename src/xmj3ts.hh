@@ -81,8 +81,6 @@ protected:
   bool check() const;
   void initialize();
   
-  void draw(SwDrawable *, short, short, short, short);
-  
  public:
   
   Xmj3Tileset( MahjonggWindow *root, const TILE_DATA & tile_data );
@@ -97,7 +95,7 @@ protected:
   void draw_lit(const Tile *, SwDrawable *, short x, short y) override;
   void draw_obscured(const Tile *, SwDrawable *, short x, short y) override;
   void erase( const Tile * tile, SwDrawable *drawable ) override;
-  
+
  protected:
   FXPixelBuffer::RefMImage createImage( const Tile *t, SwDrawable *drawable, short background, short foreground );
   FXPixelBuffer::RefMImage createImage( const Tile *t, SwDrawable *drawable, short background );

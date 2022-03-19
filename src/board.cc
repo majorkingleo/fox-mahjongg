@@ -265,6 +265,7 @@ Board::center_layout()
 void
 Board::start_hook(Game *g)
 {
+  _tileset->erase(0,this);
   _tile_flags.assign(g->ntiles(), 0);
   if (_panel->visible()) {
     for (int i = 0; i < _display_order.size(); i++) {

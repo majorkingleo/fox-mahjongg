@@ -283,27 +283,6 @@ Xmj3Tileset::initialize()
                  image->getHeight()));
 }
 
-void
-Xmj3Tileset::draw(SwDrawable *drawable, short x, short y, short base,
-		  short face)
-{
-  if (base >= 0) {
-
-    drawable->draw_image(_images.at(base), _masks.at(base),
-			 _width + _xborder, _height + _yborder, x, y);
-  }
-  
-  if (face >= 0) {
-    
-    int dx = (_shadow & 1 ? _xborder : 0);
-    int dy = (_shadow & 2 ? _yborder : 0);
-
-    FXImage *img = _images.at(face);
-
-    drawable->draw_image( img, _masks[face],
-    		img->getWidth(), img->getHeight(), x + dx, y + dy);
-  }
-}
 
 void
 Xmj3Tileset::draw_normal(const Tile *t, SwDrawable *drawable, short x, short y)
@@ -479,6 +458,17 @@ FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *dr
 
 void Xmj3Tileset::erase( const Tile * t, SwDrawable *drawable )
 {
+	if( t == NULL ) {
+		for( auto pair : _objects_by_tilenumber ) {
+			ObjectData *od = (ObjectData*)pair.second->getData();
+			delete od;
+			pair.second->setData(0);
+			drawable->window()->remove( pair.second );
+		}
+		_objects_by_tilenumber.clear();
+		return;
+	}
+
 	// clear object data
 	if( _objects_by_tilenumber[t->number()] ) {
 		FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
@@ -486,5 +476,7 @@ void Xmj3Tileset::erase( const Tile * t, SwDrawable *drawable )
 		delete od;
 		obj->setData(0);
 		drawable->window()->remove( obj );
+		_objects_by_tilenumber[t->number()] = 0;
 	}
 }
+

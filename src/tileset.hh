@@ -62,7 +62,7 @@ class Tileset {
   virtual void draw_lit(const Tile *, SwDrawable *, short x, short y) = 0;
   virtual void draw_obscured(const Tile *, SwDrawable *, short x, short y) = 0;
   virtual void erase( const Tile * tile, SwDrawable *drawable ) = 0;
-  
+
   // Information about the normal tileset, called `ivory'.
   static const char *ivory_picture_name(int);
   static const int IVORY_NTILES = 144;
