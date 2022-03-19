@@ -31,7 +31,6 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
     _tile_flags(),
 
     _buffering(0),
-    _buffer(0),
 
     _buffer_w(0),
     _buffer_h(0),
@@ -64,25 +63,6 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 
   set_tileset(tileset);
   _game->add_hook(this);
-
-#warning TODOOO
-#if 0
-  _copygc = new FXDCWindow(window());
-  
-
-  XGCValues gcv;
-  gcv.function = GXor;
-  _orgc = XCreateGC(display(), window(), GCFunction, &gcv);
-
-  gcv.foreground = 97;
-#endif
-#if 0
-  gcv.foreground = 0UL;
-  gcv.background = ~0UL;
-  gcv.function = GXand;
-  _maskgc = XCreateGC(display(), window(),
-		      GCForeground | GCBackground | GCFunction, &gcv);
-#endif
 
   _hint = new Hint(this);
 }
@@ -122,12 +102,7 @@ Board::set_tileset(Tileset *ts)
   assert(!_buffering);
   _buffer_w = _tile_width + _tile_xborder;
   _buffer_h = _tile_height + _tile_yborder;
-  if (_buffer) {
-	  delete _buffer;
-  }
 
-  _buffer = new FXImage(display(), 0, IMAGE_DITHER|IMAGE_SHMI|IMAGE_SHMP, _buffer_w, _buffer_h );
-  _buffer->create();
 
   // create new masks
   for (int i = 0; i < NMASK; i++) {
@@ -360,9 +335,7 @@ Board::move(int x, int y)
 void
 Board::copy_buffer()
 {
-  if (_buffering) {
-    _panel->draw_image(_buffer, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
-  }
+
 }
 
 void

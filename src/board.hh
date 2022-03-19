@@ -28,7 +28,6 @@ class Board: public GameHooks, public SwWidget {
   Vector<short> _tile_flags;
   
   bool _buffering;
-  FXImage *_buffer;
   int _buffer_w;
   int _buffer_h;
   int _buffer_x;
