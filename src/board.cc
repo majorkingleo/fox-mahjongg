@@ -680,9 +680,9 @@ Board::draw_neighborhood(Tile *t, int erase)
 	  case 1:
 	  { // erasing tile
 		  DEBUG( "erasing tile" );
+		  _tileset->erase(t, this );
 		  mark_around(t, true, true);
 		  draw_marked();
-		  copy_buffer();
 		  break;
 	  }
 

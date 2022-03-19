@@ -91,11 +91,7 @@ FXPixelBufferBackgroundObject::FXPixelBufferBackgroundObject( FXPixelBuffer *pix
 
 void FXPixelBufferBackgroundObject::draw( RefMImage & target )
 {
-	DEBUG( "XXXXXXXXXXX paint bg image");
-
 	if( !mimage.valid() ) {
-		DEBUG( "XXXXXXXXXXX recreating bg image");
-
 		FXImage *bg_image = pixel_buffer->createImage( target );
 
 		{

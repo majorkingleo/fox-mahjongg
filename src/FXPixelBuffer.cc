@@ -76,6 +76,8 @@ void FXPixelBuffer::setBackground( FXImage *img, FXDC *dc, int floor, const std:
 	objects.push_back( new FXPixelBufferBackgroundObject(this, img, dc, 0, 0, floor, name ) );
 
 	getOrCreateFloor( floor );
+
+    redraw_required = true;
 }
 
 FXPixelBuffer::RefMImage FXPixelBuffer::getOrCreateFloor( int floor )
@@ -166,6 +168,8 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 
   delete buffer;
 
+  redraw_required = false;
+
   return 0;
 }
 
@@ -176,6 +180,8 @@ FXPixelBufferObject* FXPixelBuffer::setImage( FXImage *img, int x, int y, int fl
 
 	getOrCreateFloor( floor );
 
+    redraw_required = true;
+
 	return obj;
 }
 
@@ -185,6 +191,8 @@ FXPixelBufferObject* FXPixelBuffer::setImage( RefMImage img, int x, int y, int f
 	objects.push_back( obj );
 
 	getOrCreateFloor( floor );
+
+	redraw_required = true;
 
 	return obj;
 }
@@ -348,6 +356,8 @@ void FXPixelBuffer::resize( FXint width, FXint height )
 	for( auto obj : objects ) {
 		obj->setDirty();
 	}
+
+	redraw_required = true;
 }
 
 void FXPixelBuffer::remove( FXPixelBufferObject *obj )
@@ -356,6 +366,7 @@ void FXPixelBuffer::remove( FXPixelBufferObject *obj )
 		if( *it == obj ) {
 			objects.erase( it );
 			delete obj;
+			redraw_required = true;
 			break;
 		}
 	}
@@ -363,6 +374,11 @@ void FXPixelBuffer::remove( FXPixelBufferObject *obj )
 
 void FXPixelBuffer::redrawIfDirty()
 {
+	if( redraw_required ) {
+		redraw();
+		return;
+	}
+
 	for( auto it = objects.begin(); it != objects.end(); it++ ) {
 		if( (*it)->redrawRequired() ) {
 			redraw();

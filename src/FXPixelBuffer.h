@@ -39,6 +39,7 @@ private:
 	std::map<int,RefMImage>				floors;
 	std::vector<FXDC*>			 		owned_dc;
 	MahjonggWindow 				 		*root;
+	bool 								redraw_required;
 
 public:
 	long onPaint(FXObject*,FXSelector,void*);

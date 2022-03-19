@@ -476,3 +476,15 @@ FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *dr
 
 	return img_bg;
 }
+
+void Xmj3Tileset::erase( const Tile * t, SwDrawable *drawable )
+{
+	// clear object data
+	if( _objects_by_tilenumber[t->number()] ) {
+		FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
+		ObjectData *od = (ObjectData*)obj->getData();
+		delete od;
+		obj->setData(0);
+		drawable->window()->remove( obj );
+	}
+}
