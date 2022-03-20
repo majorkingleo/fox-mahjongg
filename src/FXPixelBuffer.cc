@@ -131,8 +131,10 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 	  int floor = it.first;
 
 	  for( FXPixelBufferObject *obj : objects ) {
-		  if( floor == obj->getFloor() ) {
-			  obj->draw( target );
+		  if( obj ) {
+			  if( floor == obj->getFloor() ) {
+				  obj->draw( target );
+			  }
 		  }
 	  }
   }
@@ -173,10 +175,38 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
   return 0;
 }
 
-FXPixelBufferObject* FXPixelBuffer::setImage( FXImage *img, int x, int y, int floor, const std::string & name )
+void FXPixelBuffer::insertObjectAt( FXPixelBufferObject *obj, int idx )
+{
+	if( idx == -1 ) {
+		objects.push_back( obj );
+		return;
+	}
+
+	if( objects.at(idx) == 0 ) {
+		objects[idx] = obj;
+		return;
+	}
+
+	if( objects.size() < idx ) {
+		objects.resize( idx+1 );
+	}
+
+	std::vector<FXPixelBufferObject*>::iterator it;
+	int i;
+
+	for( i = 0, it = objects.begin(); i <= idx; i++, it++ ) {
+		if( i == idx ) {
+			objects.insert(it,obj);
+			return;
+		}
+	}
+}
+
+FXPixelBufferObject* FXPixelBuffer::setImage( FXImage *img, int x, int y, int floor, const std::string & name, int idx )
 {
 	FXPixelBufferObject* obj = new FXPixelBufferObject(this, img, x, y, floor, name );
-	objects.push_back( obj );
+
+	insertObjectAt( obj, idx );
 
 	getOrCreateFloor( floor );
 
@@ -185,10 +215,11 @@ FXPixelBufferObject* FXPixelBuffer::setImage( FXImage *img, int x, int y, int fl
 	return obj;
 }
 
-FXPixelBufferObject* FXPixelBuffer::setImage( RefMImage img, int x, int y, int floor, const std::string & name )
+FXPixelBufferObject* FXPixelBuffer::setImage( RefMImage img, int x, int y, int floor, const std::string & name, int idx )
 {
 	FXPixelBufferObject* obj = new FXPixelBufferObject(this, img, x, y, floor, name );
-	objects.push_back( obj );
+
+	insertObjectAt( obj, idx );
 
 	getOrCreateFloor( floor );
 
@@ -352,24 +383,28 @@ void FXPixelBuffer::resize( FXint width, FXint height )
 		// DEBUG( format( "resized floor %d to: %dx%d", it.first, target->columns(), target->rows() ) );
 	}
 
-	// render everythin new
+	// render everything new
 	for( auto obj : objects ) {
-		obj->setRedrawRequired();
+		if( obj ) {
+			obj->setRedrawRequired();
+		}
 	}
 
 	redraw_required = true;
 }
 
-void FXPixelBuffer::remove( FXPixelBufferObject *obj )
+int FXPixelBuffer::remove( FXPixelBufferObject *obj )
 {
-	for( auto it = objects.begin(); it != objects.end(); it++ ) {
-		if( *it == obj ) {
-			objects.erase( it );
+	for( int i = 0; i < objects.size(); i++ ) {
+		if( obj == objects[i] ) {
+			objects[i] = 0;
 			delete obj;
 			redraw_required = true;
-			break;
+			return i;
 		}
 	}
+
+	return -1;
 }
 
 void FXPixelBuffer::redrawIfDirty()
@@ -380,9 +415,11 @@ void FXPixelBuffer::redrawIfDirty()
 	}
 
 	for( auto it = objects.begin(); it != objects.end(); it++ ) {
-		if( (*it)->redrawRequired() ) {
-			redraw();
-			break;
+		if( *it ) {
+			if( (*it)->redrawRequired() ) {
+				redraw();
+				break;
+			}
 		}
 	}
 }

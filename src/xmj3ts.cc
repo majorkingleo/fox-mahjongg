@@ -398,12 +398,14 @@ Xmj3Tileset::draw_obscured(const Tile *t, SwDrawable *drawable,
 FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *drawable, short background, short foreground )
 {
 	// clear object data
+	int insert_idx = -1;
+
 	if( _objects_by_tilenumber[t->number()] ) {
 		FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
 		ObjectData *od = (ObjectData*)obj->getData();
 		delete od;
 		obj->setData(0);
-		drawable->window()->remove( obj );
+		insert_idx = drawable->window()->remove( obj );
 	}
 
 	FXImage *img_bg = _images.at(background);
@@ -418,7 +420,7 @@ FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *dr
 
 	mimage_bg->composite(*mimage_fg, dx, dy, Magick::OverCompositeOp);
 
-	FXPixelBufferObject *obj = drawable->window()->setImage( mimage_bg, 0, 0, t->lev(), format( "Tile %d", t->number()) );
+	FXPixelBufferObject *obj = drawable->window()->setImage( mimage_bg, 0, 0, t->lev(), format( "Tile %d", t->number()), insert_idx );
 	_objects_by_tilenumber[t->number()] = obj;
 	ObjectData *od = new ObjectData();
 	od->img = mimage_bg;
@@ -432,18 +434,20 @@ FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *dr
 FXPixelBuffer::RefMImage Xmj3Tileset::createImage( const Tile *t, SwDrawable *drawable, short background )
 {
 	// clear object data
+	int insert_idx = -1;
+
 	if( _objects_by_tilenumber[t->number()] ) {
 		FXPixelBufferObject *obj = _objects_by_tilenumber[t->number()];
 		ObjectData *od = (ObjectData*)obj->getData();
 		delete od;
 		obj->setData(0);
-		drawable->window()->remove( obj );
+		insert_idx = drawable->window()->remove( obj );
 	}
 
 	FXPixelBuffer::RefMImage img_bg = drawable->window()->createImage( _images.at(background) );
 
 
-	FXPixelBufferObject *obj = drawable->window()->setImage( img_bg, 0, 0, t->lev(), format( "Tile %d", t->number()) );
+	FXPixelBufferObject *obj = drawable->window()->setImage( img_bg, 0, 0, t->lev(), format( "Tile %d", t->number()), insert_idx );
 	_objects_by_tilenumber[t->number()] = obj;
 	ObjectData *od = new ObjectData();
 	od->img = img_bg;

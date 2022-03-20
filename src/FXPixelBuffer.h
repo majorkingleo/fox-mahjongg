@@ -51,8 +51,8 @@ public:
 	void detach();
 	void create();
 
-	FXPixelBufferObject* setImage( FXImage *img, int x, int y, int floor, const std::string & name = "" );
-	FXPixelBufferObject* setImage( RefMImage img, int x, int y, int floor, const std::string & name = "" );
+	FXPixelBufferObject* setImage( FXImage *img, int x, int y, int floor, const std::string & name = "", int idx = -1 );
+	FXPixelBufferObject* setImage( RefMImage img, int x, int y, int floor, const std::string & name = "", int idx = -1 );
 	void setBackground( FXImage *img, FXDC *dc = NULL, int floor = -1, const std::string & name = "" );
 	void setTiledBackgroundImage( FXImage *image, int floor = -1, const std::string & name = "" );
 
@@ -69,7 +69,11 @@ public:
 
 	void resize( FXint width, FXint height ) override;
 
-	void remove( FXPixelBufferObject *obj );
+	/* returns the position of the removed object
+	 * in the object array
+	 * return -1 if not found
+	 */
+	int remove( FXPixelBufferObject *obj );
 
 	void redrawIfDirty();
 
@@ -77,6 +81,8 @@ public:
 	RefMImage createImage( FXImage *image );
 	FXImage *createImage( RefMImage mimage );
 
+private:
+	void insertObjectAt( FXPixelBufferObject *ob, int idx );
 };
 
 
