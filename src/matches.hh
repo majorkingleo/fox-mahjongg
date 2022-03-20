@@ -1,13 +1,17 @@
 #ifndef MATCHES_HH
 #define MATCHES_HH
+
 #include "swwidget.hh"
 #include "game.hh"
+#include <vector>
 
 class MatchCount: public SwWidget, public GameHooks {
 
   Game *_game;
   
   FXImage* _one_image;
+  std::vector<FXPixelBufferObject*> _objects;
+
   int _one_width;
   int _one_height;
 
