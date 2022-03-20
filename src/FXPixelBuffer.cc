@@ -25,7 +25,8 @@ Magick::Color FXPixelBuffer::COLOR_TRANSPARENT("transparent");
 FXPixelBuffer::FXPixelBuffer()
 : objects(),
   floors(),
-  owned_dc()
+  owned_dc(),
+  buffer(0)
 {
 
 }
@@ -35,7 +36,8 @@ FXPixelBuffer::FXPixelBuffer(MahjonggWindow *root_, FXComposite* p,FXObject* tgt
   objects(),
   floors(),
   owned_dc(),
-  root(root_)
+  root(root_),
+  buffer(0)
 {
 
 }
@@ -49,11 +51,18 @@ FXPixelBuffer::~FXPixelBuffer()
 	for( auto obj : objects ) {
 		delete obj;
 	}
+
+	if( buffer ) {
+		delete buffer;
+		buffer = 0;
+	}
 }
 
 void FXPixelBuffer::detach()
 {
-
+	if( buffer ) {
+		buffer->detach();
+	}
 }
 
 void FXPixelBuffer::create()
@@ -162,13 +171,15 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
   flattenedImage.modifyImage();
   // flattenedImage.write("out.png");
 
-  FXImage *buffer = createImage( RefMImage(&flattenedImage,false) );
+  if( !buffer ) {
+	  buffer = createImage( RefMImage(&flattenedImage,false) );
+  } else {
+	  updateImage( buffer, RefMImage(&flattenedImage,false) );
+  }
 
 
   FXDCWindow dc(this);
   dc.drawImage( buffer, 0, 0 );
-
-  delete buffer;
 
   redraw_required = false;
 
@@ -370,6 +381,12 @@ void FXPixelBuffer::resize( FXint width, FXint height )
 {
 	FXCanvas::resize(width, height);
 
+	/* Size changed, recreate image */
+	if( buffer ) {
+		delete buffer;
+		buffer = 0;
+	}
+
 	for( auto it : floors ) {
 		RefMImage target = it.second;
 
@@ -424,4 +441,62 @@ void FXPixelBuffer::redrawIfDirty()
 	}
 }
 
+void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
+{
+	const int w = mimage->columns();
+    const int h = mimage->rows();
 
+    if( image->getData() == 0 ) {
+    	FXColor *pixels = 0;
+    	allocElms( pixels, w * h  );
+    	image->setData( pixels, IMAGE_KEEP | IMAGE_OWNED, w, h );
+    }
+
+    /* get pixelcache of ImageIn */
+#if MagickLibVersion >= 0x700
+
+    mimage->type(TrueColorAlphaType);
+    mimage->modifyImage();
+
+    Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
+
+    for (int y = 0; y != h; ++y) {
+        for (int x = 0; x != w; ++x)
+        {
+            unsigned offset = mimage->channels() * ( w * y + x );
+
+            Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
+            ColorRBG rbg( color );
+
+            FXColor xc = FXRGBA( rbg.red()*255.0,
+            					 rbg.green()*255.0,
+            					 rbg.blue()*255.0,
+            					 rbg.alpha()*255.0 );
+            image->setPixel( x, y, xc );
+        }
+    }
+#else
+    mimage->type(Magick::TrueColorMatteType);
+    mimage->modifyImage();
+
+    Magick::PixelPacket *pixelsIn = mimage->getPixels(0, 0, w, h);
+
+    if( !pixelsIn ) {
+    	throw REPORT_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
+    }
+
+    for (int y = 0; y != h; ++y) {
+        for (int x = 0; x != w; ++x)
+        {
+        	Magick::ColorRGB rbg( Magick::Color(pixelsIn[w * y + x]) );
+            FXColor xc = FXRGBA( rbg.red()*255.0,
+            					 rbg.green()*255.0,
+            					 rbg.blue()*255.0,
+            					 rbg.alpha()*255.0 );
+
+            image->setPixel( x, y, xc );
+        }
+    }
+#endif
+    image->render();
+}

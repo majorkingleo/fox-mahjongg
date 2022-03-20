@@ -40,6 +40,7 @@ private:
 	std::vector<FXDC*>			 		owned_dc;
 	MahjonggWindow 				 		*root;
 	bool 								redraw_required;
+	FXImage								*buffer;
 
 public:
 	long onPaint(FXObject*,FXSelector,void*);
@@ -80,6 +81,7 @@ public:
 public:
 	RefMImage createImage( FXImage *image );
 	FXImage *createImage( RefMImage mimage );
+	void updateImage( FXImage *image, RefMImage mimage );
 
 private:
 	void insertObjectAt( FXPixelBufferObject *ob, int idx );
