@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "hint.hh"
 #include "game.hh"
 #include "board.hh"

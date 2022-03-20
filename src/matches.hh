@@ -8,7 +8,6 @@ class MatchCount: public SwWidget, public GameHooks {
   Game *_game;
   
   FXImage* _one_image;
-  FXBitmap* _one_mask;
   int _one_width;
   int _one_height;
 

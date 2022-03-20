@@ -15,7 +15,6 @@ class Button: public AlarmHooks, public SwWidget {
   Alarm _flash_alarm;
   
   void change_state(int);
-  // bool handle_track_event(XEvent *);
   
  public:
   

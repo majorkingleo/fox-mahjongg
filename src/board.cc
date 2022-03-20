@@ -290,86 +290,7 @@ void
 Board::draw_subimage(FXImage *image, FXBitmap *mask, int src_x, int src_y,
 		     int w, int h, int x, int y)
 {
-#if 0
-	DEBUG( format( "%s: pos %02dx%02d, w: %d h: %d", __FUNCTION__, x, y, w, h ));
-    
-  if (_masking < 0 && !_buffering) {
- 	DEBUG( format( "draw_subimage() for %s", root()->getNameByImage(image)) );
-    _panel->draw_subimage(image, mask, src_x, src_y, w, h, x, y);
-    return;
-  }
 
-  x -= _buffer_x;
-  y -= _buffer_y;
-  if (_masking >= 0 && mask) {
-	DEBUG( "here1" );
-
-	/*
-	 *    XCopyArea(display(), mask, _mask[_masking], _masking_gc,
-              src_x, src_y, w, h, x, y
-	 */
-	FXDCWindow dc(_mask[_masking]);
-	dc.setFunction( _masking_gc->getFunction() );
-	dc.setForeground( _masking_gc->getForeground() );
-	dc.setBackground( _masking_gc->getBackground() );
-
-	dc.drawArea( mask, src_x, src_y, w, h, x, y );
-
-  } else if (_masking >= 0) {
-
-	  DEBUG( "here2" );
-	  // XFillRectangle(display(), _mask[_masking], _masking_gc, x, y, w, h);
-	  FXDCWindow dc(_mask[_masking]);
-	  dc.setFunction( _masking_gc->getFunction() );
-	  dc.setForeground( _masking_gc->getForeground() );
-	  dc.setBackground( _masking_gc->getBackground() );
-
-	  dc.fillRectangle( x, y, w, h );
-
-  } else if (_buffering && mask) {
-
-	  DEBUG( "here3" );
-	  DEBUG( format( "XCopyPlane for %s at %dx%d", root()->getNameByImage(image), x, y ));
-	  // root()->setCurrentImage( image );
-    // XCopyPlane(display(), mask, _buffer, _maskgc, src_x, src_y, w, h, x, y, 1);
-
-	  {
-		  FXDCWindow dcbuffer( _buffer );
-		  /*
-	  	  	  	  gcv.foreground = 0UL;
-	  	  	  	  gcv.background = ~0UL;
-	  	  	  	  gcv.function = GXand;
-	  	  	  	  _maskgc = XCreateGC(display(), window(),
-			      GCForeground | GCBackground | GCFunction, &gcv);
-		   */
-		  dcbuffer.setForeground( 0 );
-		  dcbuffer.setBackground( FXRGB(255,255,255) );
-		  dcbuffer.setFunction( BLT_SRC_AND_DST );
-#warning "TODO XCopyPlane"
-		  dcbuffer.drawArea( mask, src_x, src_y, w, h, x, y );
-	  }
-
-	  // XCopyArea(display(), image, _buffer, _orgc, src_x, src_y, w, h, x, y);
-	  {
-		  FXDCWindow dcbuffer( _buffer );
-		  /*
-			  gcv.function = GXor;
-  	  	  	  _orgc = XCreateGC(display(), window(), GCFunction, &gcv);
-		   */
-		  dcbuffer.setFunction( BLT_SRC_OR_DST );
-		  dcbuffer.drawArea( image, src_x, src_y, w, h, x, y );
-	  }
-
-  } else {
-    // XCopyArea(display(), image, _buffer, _copygc, src_x, src_y, w, h, x, y);
-
-	  DEBUG( format("XCopyArea for %s %dx%d", root()->getNameByImage(image), x, y ) );
-	  FXDCWindow dcbuffer(_buffer);
-
-	  dcbuffer.drawArea( image, src_y, src_y, w, h, x, y );
-
-  }
-#endif
 }
 
 
@@ -378,10 +299,7 @@ Board::draw(Tile *t)
 {
   short x, y;
   position(t, &x, &y);
-/*
-  if (_masking >= 0)
-    _masking_gc = (t == _masking_tile ? _mask_one_gc : _mask_zero_gc);
-*/
+
   if (!t->real())
     ;
   else if (t->obscured())
@@ -443,103 +361,6 @@ Board::mark_around(Tile *t, bool up, bool down)
 void
 Board::draw_neighborhood(Tile *t, int erase)
 {
-#if 0
-  short x, y;
-  position(t, &x, &y);
-  buffer_on(x, y);
-  
-  switch (erase) {
-
-   case 0: {			// drawing new tile
-	 DEBUG( format("%s XCopyArea", __FUNCTION__) );
-	 /*
-     XCopyArea(display(), _panel->window(), _buffer, _copygc,
-	       _buffer_x, _buffer_y, _buffer_w, _buffer_h, 0, 0);
-	       */
-	 FXDCWindow dc(_buffer );
-	 dc.drawArea( _panel->window(), _buffer_x, _buffer_y, _buffer_w, _buffer_h, 0, 0 );
-
-     mark_around(t, true, false);
-     draw_marked();
-     copy_buffer();
-     break;
-   }
-
-   case 1: {			// erasing tile
-#warning "TODOOO Background drawing"
-	 DEBUG( "TODO: XSetTSOrigin");
-     // XSetTSOrigin(display(), _erasegc, -_buffer_x, -_buffer_y);
-     // XFillRectangle(display(), _buffer, _erasegc, 0, 0, _buffer_w, _buffer_h);
-     mark_around(t, true, true);
-     draw_marked();
-     copy_buffer();
-     break;
-   }
-
-   case 2: {			// highlighting/unhighlighting tile
-     // find cached mask
-     int themask = -1;
-
-     for (int i = 0; i < NMASK; i++)
-       if (_mask_tile[i] == t->number())
-	 themask = i;
-     
-     if (themask < 0) {
-       // couldn't find a prepared mask for this tile; create one
-       _masking = themask = lru_mask();
-       DEBUG( format("%s: XFillRectangle", __FUNCTION__) );
-
-       /*
-       XFillRectangle(display(), _mask[themask], _mask_zero_gc,
-		      0, 0, _buffer_w, _buffer_h);
-		      */
-       FXDCWindow dc( _mask[themask] );
-
-       dc.setFunction( _mask_zero_gc->getFunction() );
-       dc.setForeground( _mask_zero_gc->getForeground() );
-       dc.setBackground( _mask_zero_gc->getBackground() );
-
-       dc.fillRectangle( 0, 0, _buffer_w, _buffer_h );
-       _masking_tile = t;
-       
-       mark_around(t, true, false);
-       draw_marked();
-       
-       _masking = -1;
-     }
-     
-     // now have correct mask; use it
-     draw(t);
-#warning TODOOO
-     DEBUG( "TODO: XSetClipMask");
-     /*
-     XSetClipMask(display(), _copygc, _mask[themask]);
-     XSetClipOrigin(display(), _copygc, _buffer_x, _buffer_y);
-     XCopyArea(display(), _buffer, _panel->window(), _copygc,
-	       0, 0, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
-     XSetClipMask(display(), _copygc, None);
-     */
-
-     FXDCWindow dc(window());
-     dc.setClipMask( _mask[themask] );
-#warning "TODOO XSetClipOrigin"
-     // XSetClipOrigin(display(), _copygc, _buffer_x, _buffer_y);
-
-
-     // XCopyArea(display(), _buffer, _panel->window(), _copygc,
-	 //      0, 0, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
-     dc.drawArea( _buffer,  0, 0, _buffer_w, _buffer_h, _buffer_x, _buffer_y);
-
-     mark_mask_used(themask);
-     _mask_tile[themask] = t->number();
-     break;
-   }
-
-  }
-  buffer_off();
-#endif
-
-
   short x, y;
   position(t, &x, &y);
 

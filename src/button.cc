@@ -45,70 +45,9 @@ Button::change_state(int new_state)
   }
 }
 
-#if 0
-bool
-Button::handle_track_event(XEvent *e)
-{
-  switch (e->type) {
-      
-   case ButtonRelease:
-    return (e->xbutton.button != 1);
-      
-   case MotionNotify:
-     {
-       int x1 = x(), x2 = x() + width(), y1 = y(), y2 = y() + height();
-#warning TODOOO
-       // while (XCheckTypedEvent(display(), MotionNotify, e))
-	 /* nada */;
-       int xm = e->xmotion.x;
-       int ym = e->xmotion.y;
-       bool should_light = xm >= x1 && ym >= y1 && xm < x2 && ym < y2;
-       if (should_light != _state) {
-	 _state = should_light;
-	 draw();
-       }
-       return true;
-     }
-
-   default:
-    return true;
-    
-  }
-}
-#endif
-
 bool
 Button::track( FXuint time )
 {
-#warning TODOOOO
-#if 0
-  if (XGrabPointer(display(), window(), False,
-		   ButtonMotionMask | ButtonReleaseMask | OwnerGrabButtonMask,
-		   GrabModeAsync, GrabModeSync, None, None, time)
-	!= GrabSuccess)
-    return 0;
-
-  change_state(1);
-  _flash_alarm.kill();
-    
-  XEvent e;
-  bool more = true;
-  while (more) {
-    XNextEvent(display(), &e);
-    more = handle_track_event(&e);
-  }
-
-  bool was_lit = _state == 1;
-  change_state(0);
-  
-  XUngrabPointer(display(), CurrentTime);
-  XFlush(display());
-  while (XCheckMaskEvent(display(), ButtonReleaseMask | ButtonPressMask, &e))
-    /* nada */;
-
-  return was_lit;
-#endif
-
   if( _state == 0 ) {
 	 change_state(1);
   } else {
@@ -155,8 +94,6 @@ Button::draw()
 	  _obj->setX( x() );
 	  _obj->setY( y() );
   }
-
-  // window()->redraw();
 
   DEBUG( format( "%s: %s", __FUNCTION__, _name ) );
 }

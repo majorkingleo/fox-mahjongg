@@ -1,6 +1,3 @@
-#ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
 #include "traverse.hh"
 #include "board.hh"
 #include "tile.hh"

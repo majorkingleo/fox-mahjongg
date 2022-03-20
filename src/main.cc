@@ -190,7 +190,7 @@ void MahjonggWindow::create(){
 			fatal_error("layout %s corrupted", layout_name);
 	}
 
-#if 1
+
     int wid, hgt;
     board->tile_layout_size(&wid, &hgt);
 
@@ -206,10 +206,7 @@ void MahjonggWindow::create(){
     // board->set_size(width, height - board->y_pos());
     // board->center_layout();
     panel->resize(width,height);
-#else
-    canvas->resize(getWidth(), getHeight() );
-    panel->resize(getWidth(),getHeight());
-#endif
+
     game->start(time(0), solveable_boards );
     last_new_board = Moment::now();
     panel->set_visible( true );
@@ -488,7 +485,7 @@ fatal_error(const char *message, ...)
 static void usage( const std::string & prog )
 {
     std::cerr << "usage: "
-              << prog << " [URL] [clock.png]\n";
+              << prog << " [-debug]\n";
 }
 
 

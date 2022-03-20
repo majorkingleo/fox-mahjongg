@@ -5,14 +5,12 @@ MatchCount::MatchCount(SwWindow *window, const char *name)
   : SwWidget(window),
     _game(0),
     _one_image(0),
-    _one_mask(0),
     _one_width(0),
     _one_height(0),
     _count(0)
 {
 #warning TODOO
 	_one_image  = root()->getImageByName( name );
-	// _one_mask   = root()->getBitmapMaskByName( name );
     _one_width  = _one_image->getWidth();
     _one_height = _one_image->getHeight();
 }
@@ -51,7 +49,7 @@ MatchCount::draw(int new_count, bool fast_display)
     int y = (_count/side) * _one_height;
     for (int i = _count; i < new_count; i++) {
       int x = pos * _one_width;
-      draw_image(_one_image, _one_mask, _one_width, _one_height, x, y);
+      draw_image(_one_image, 0, _one_width, _one_height, x, y);
       if (++pos >= side) {
 	pos = 0;
 	y += _one_height;

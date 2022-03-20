@@ -39,39 +39,7 @@ SwWindow::draw_subimage(FXImage *source, FXBitmap *mask,
 			int x, int y)
 {
   if (source && width > 0 && height > 0) {
-#if 0
-      FXDCWindow image_gc(window());
-      /*      
-      if (mask) {          
-          // XSetClipMask(_display, image_gc, mask);
-          image_gc.setClipMask( mask );
-          
-          // TODO ?
-          // XSetClipOrigin(_display, image_gc, x - src_x, y - src_y);
-      }  else {      
-          image_gc.setClipRectangle( x, y, width, height );
-          }*/
-      
 
-      FXIcon *icon = dynamic_cast<FXIcon*>( source );
-
-      if( icon != 0 ) {
-          DEBUG( format("drawing icon transparent color: 0x%X OPAQUE: %d ALPHAGUESS: %d",
-                        icon->getTransparentColor(),
-                        icon->getOptions() & IMAGE_OPAQUE,
-                        icon->getOptions() & IMAGE_ALPHAGUESS));
-          image_gc.drawIcon( icon, x, y);
-          // _root->setCurrentImage( icon );
-      } else {
-          DEBUG( "drawing image" );
-          image_gc.drawImage( source, x, y);
-          // _root->setCurrentImage( source );
-      }
-      
-	  // image_gc->clearClipRectangle();
-      // XCopyArea(_display, source, _window, image_gc, src_x, src_y,
-      //      width, height, x, y);
-#endif
   }
 }
 
@@ -208,55 +176,4 @@ SwDrawable::draw_image(FXImage *src, FXBitmap *mask, int w, int h, int x, int y)
   draw_subimage(src, mask, 0, 0, w, h, x, y);
 }
 
-#if 0
-SwGifImage::SwGifImage(Gif_Stream *gfs, int image_number)
-: _gfs(0),
-  _gfi(0),
-  _made(false)
-{
-  initialize(gfs, Gif_GetImage(gfs, image_number));
-}
-
-SwGifImage::~SwGifImage()
-{
-  if (_gfi) {
-    _gfi->refcount--;
-    if (!_gfi->refcount) Gif_DeleteImage(_gfi);
-  }
-  _gfs->refcount--;
-  if (!_gfs->refcount) Gif_DeleteStream(_gfs);
-}
-
-void
-SwGifImage::initialize(Gif_Stream *gfs, Gif_Image *gfi)
-{
-  _gfs = gfs;
-  _gfi = gfi;
-  _gfs->refcount++;
-  if (_gfi) _gfi->refcount++;
-}
-
-void
-SwGifImage::create_pixmaps(SwDrawable *drawable)
-{
-  if (!_gfi) return;
-  Gif_XContext *gifx = drawable->get_gif_x_context();
-  Pixmap source = Gif_XImage(gifx, _gfs, _gfi);
-  Pixmap mask = None;
-  if (_gfi->transparent >= 0)
-    mask = Gif_XMask(gifx, _gfs, _gfi);
-  set_image(gifx->display, source, mask, _gfi->width, _gfi->height);
-  _made = true;
-}
-
-void
-SwGifImage::draw(SwDrawable *drawable, int x, int y)
-{
-  if (!_made)
-    create_pixmaps(drawable);
-  if (_source)
-    drawable->draw_subimage(_source, _mask, 0, 0, _width, _height, x, y);
-}
-
-#endif
 

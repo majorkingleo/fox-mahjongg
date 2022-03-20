@@ -136,35 +136,5 @@ class SwImage {
   
 };
 
-#if 0
-class SwGifImage: public SwImage {
-
-  Gif_Stream *_gfs;
-  Gif_Image *_gfi;
-  bool _made;
-  
-  void initialize(Gif_Stream *, Gif_Image *);
-  void create_pixmaps(SwDrawable *);
-  
- public:
-
-  SwGifImage( const SwGifImage & other ) = delete;
-  SwGifImage & operator=( const SwGifImage & other ) = delete;
-
-  SwGifImage(Gif_Stream *gfs, Gif_Image *gfi)
-  : _gfs(0),
-    _gfi(0),
-    _made(false)
-  {
-	  initialize(gfs, gfi);
-  }
-
-  SwGifImage(Gif_Stream *gfs, int n);
-  ~SwGifImage();
-
-  void draw(SwDrawable *, int x, int y);
-};
-#endif
-
 
 #endif
