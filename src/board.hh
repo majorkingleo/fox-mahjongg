@@ -1,9 +1,11 @@
 #ifndef BOARD_HH
 #define BOARD_HH
+
 #include "game.hh"
 #include "panel.hh"
 #include "swwidget.hh"
 #include "tile.hh"
+
 class Hint;
 
 class Board: public GameHooks, public SwWidget {
