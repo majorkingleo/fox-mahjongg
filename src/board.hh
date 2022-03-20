@@ -32,14 +32,6 @@ class Board: public GameHooks, public SwWidget {
   int _buffer_h;
   int _buffer_x;
   int _buffer_y;
-
-  static const int NMASK = 10;
-  FXBitmap *_mask[NMASK];
-  int _mask_tile[NMASK];
-  int _mask_next_mru[NMASK];
-  int _mask_prev_mru[NMASK];
-  int _mask_mru;
-  int _masking;
   
   Tile *_masking_tile;
   Tile *_selected;

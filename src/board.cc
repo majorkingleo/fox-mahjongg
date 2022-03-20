@@ -36,31 +36,12 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
     _buffer_h(0),
     _buffer_x(0),
     _buffer_y(0),
-
-    _mask(),
-	_mask_tile(),
-	_mask_next_mru(),
-	_mask_prev_mru(),
-	_mask_mru(0),
-	_masking(0),
-	_masking_tile(0),
-
     _selected(0),
 
     _hint(0),
 
     _display_order()
 {
-  // set up mask info
-  for (int i = 0; i < NMASK; i++) {
-    _mask[i] = 0;
-    _mask_prev_mru[i] = i - 1;
-    _mask_next_mru[i] = (i == NMASK - 1 ? -1 : i + 1);
-    _mask_tile[i] = -1;
-  }
-  _mask_mru = 0;
-  _masking = -1;
-
   set_tileset(tileset);
   _game->add_hook(this);
 
@@ -72,15 +53,6 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
 Board::~Board()
 {
   delete _hint;
-
-  // free mask info
-  for (int i = 0; i < NMASK; i++) {
-    if (_mask[i]) {
-      delete _mask[i];
-      _mask[i] = 0;
-    }
-  }
-  
 }
 
 void
@@ -104,18 +76,6 @@ Board::set_tileset(Tileset *ts)
   assert(!_buffering);
   _buffer_w = _tile_width + _tile_xborder;
   _buffer_h = _tile_height + _tile_yborder;
-
-
-  // create new masks
-  for (int i = 0; i < NMASK; i++) {
-    if (_mask[i]) {
-    	delete _mask[i];
-    }
-
-    _mask[i] = new FXBitmap(display(), 0, BITMAP_SHMI|BITMAP_SHMP, _buffer_w, _buffer_h );
-    _mask[i]->create();
-    ///_mask[i] = XCreatePixmap(display(), window(), _buffer_w, _buffer_h, 1);
-  }
 }
 
 
@@ -357,33 +317,6 @@ Board::buffer_off()
   _buffering = false;
 }
 
-
-// masking
-
-void
-Board::mark_mask_used(int maskno)
-{
-  if (_mask_mru != maskno) {
-    if (_mask_next_mru[maskno] != -1)
-      _mask_prev_mru[ _mask_next_mru[maskno] ] = _mask_prev_mru[maskno];
-    assert(_mask_prev_mru[maskno] != -1);
-    _mask_next_mru[ _mask_prev_mru[maskno] ] = _mask_next_mru[maskno];
-    
-    _mask_next_mru[maskno] = _mask_mru;
-    _mask_prev_mru[maskno] = -1;
-    _mask_prev_mru[_mask_mru] = maskno;
-    _mask_mru = maskno;
-  }
-}
-
-int
-Board::lru_mask() const
-{
-  int i = _mask_mru;
-  while (_mask_next_mru[i] != -1)
-    i = _mask_next_mru[i];
-  return i;
-}
 
 
 void
@@ -667,7 +600,6 @@ Board::draw_neighborhood(Tile *t, int erase)
 		  DEBUG( "highlighting/unhighlighting tile" );
 		  mark_around(t, true, false);
 		  draw_marked();
-		  _masking = -1;
 		  // now have correct mask; use it
 		  // draw(t);
 		  break;
@@ -724,12 +656,9 @@ void
 Board::add_tile_hook(Game *g, Tile *t)
 {
   assert(g == _game);
-  if (_redraw_live)
+  if (_redraw_live) {
     draw_neighborhood(t, 0);
-
-  // clear masking tiles
-  for (int i = 0; i < NMASK; i++)
-    _mask_tile[i] = -1;
+  }
 }
 
 void
@@ -740,10 +669,6 @@ Board::remove_tile_hook(Game *g, Tile *t)
   _tile_flags[t->number()] = 0;
   if (_redraw_live)
     draw_neighborhood(t, 1);
-
-  // clear masking tiles
-  for (int i = 0; i < NMASK; i++)
-    _mask_tile[i] = -1;
 }
 
 void
