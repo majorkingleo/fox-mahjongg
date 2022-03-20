@@ -27,12 +27,6 @@ class Board: public GameHooks, public SwWidget {
   short _tile_shadow;
   Vector<short> _tile_flags;
   
-  bool _buffering;
-  int _buffer_w;
-  int _buffer_h;
-  int _buffer_x;
-  int _buffer_y;
-  
   Tile *_masking_tile;
   Tile *_selected;
   

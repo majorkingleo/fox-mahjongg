@@ -30,12 +30,6 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
     _tile_shadow(0),
     _tile_flags(),
 
-    _buffering(0),
-
-    _buffer_w(0),
-    _buffer_h(0),
-    _buffer_x(0),
-    _buffer_y(0),
     _selected(0),
 
     _hint(0),
@@ -72,10 +66,6 @@ Board::set_tileset(Tileset *ts)
 		 _tile_xborder,
 		 _tile_shadow ) );
 
-
-  assert(!_buffering);
-  _buffer_w = _tile_width + _tile_xborder;
-  _buffer_h = _tile_height + _tile_yborder;
 }
 
 
@@ -292,29 +282,6 @@ Board::move(int x, int y)
 	     TILE_ROWS * _tile_height / 2);
   _layout_x = x;
   _layout_y = y;
-}
-
-
-void
-Board::copy_buffer()
-{
-
-}
-
-void
-Board::buffer_on(int x, int y)
-{
-  _buffer_x = x;
-  _buffer_y = y;
-  _buffering = true;
-}
-
-void
-Board::buffer_off()
-{
-  _buffer_x = 0;
-  _buffer_y = 0;
-  _buffering = false;
 }
 
 
