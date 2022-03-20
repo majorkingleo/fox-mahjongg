@@ -4,6 +4,7 @@
 
 class SwWidget: public SwDrawable {
 
+protected:
   SwWindow *_swwindow;
   
   int _x;

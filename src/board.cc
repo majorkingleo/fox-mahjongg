@@ -65,6 +65,8 @@ Board::Board(Panel *panel, Game *game, Tileset *tileset)
   _game->add_hook(this);
 
   _hint = new Hint(this);
+
+  _y = 38;
 }
 
 Board::~Board()
