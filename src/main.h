@@ -80,6 +80,7 @@ public:
 	long onMouseUp(FXObject*,FXSelector,void*);
 	long onTimeout(FXObject*,FXSelector,void*);
 	long onClose(FXObject*,FXSelector,void*);
+	long onKeypress(FXObject*,FXSelector,void*);
 
 	void detach() override;
 	void layout() override;

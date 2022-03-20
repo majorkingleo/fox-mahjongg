@@ -444,93 +444,56 @@ Panel::click(Game *g, int x, int y, FXint state, FXuint when, bool mouseUp )
   }
 }
 
-#if 0
+
 void
-Panel::key_press(Game *g, KeySym key, unsigned state)
+Panel::key_press(Game *g, FXint key, FXint state)
 {
-  if (key == XK_Escape)
-    command(g, comDeselect, 0, true);
-  else if (key == XK_H || key == XK_h)
-    command(g, comHint, hint_but, true);
-  else if (key == XK_R || key == XK_r
-	   || ((key == XK_U || key == XK_u) && (state & ShiftMask)))
-    command(g, comRedo, undo_but, true);
-  else if (key == XK_U || key == XK_u)
-    command(g, comUndo, undo_but, true);
-  else if ((key == XK_C || key == XK_c) && !(state & ControlMask))
-    command(g, comClean, clean_but, true);
-  else if (key == XK_Q || key == XK_q)
-    command(g, comQuit, quit_but, true);
-  else if ((key == XK_S || key == XK_s) && !(state & ControlMask))
-    command(g, comSolve, 0, true);
-  else if (key == XK_X || key == XK_x)
-    command(g, comCheckSolve, 0, true);
-  else if (key == XK_N || key == XK_n)
-    command(g, comNew, new_but, true);
-  else if (key == XK_Left)
-    traversal_command(g, comTravLeft);
-  else if (key == XK_Right)
-    traversal_command(g, comTravRight);
-  else if (key == XK_Up)
-    traversal_command(g, comTravUp);
-  else if (key == XK_Down)
-    traversal_command(g, comTravDown);
-  else if (key == XK_space)
-    traversal_command(g, comTravAnchor);
-  else if (key == XK_Return || key == XK_KP_Enter)
-    traversal_command(g, comTravTake);
+	if (key == KEY_Escape) {
+		command(g, comDeselect, 0, true);
+	}
+	else if (key == KEY_H || key == KEY_h) {
+		command(g, comHint, hint_but, true);
+	}
+	else if (key == KEY_R || key == KEY_r || ((key == KEY_U || key == KEY_u) && (state & SHIFTMASK))) {
+		command(g, comRedo, undo_but, true);
+	}
+	else if (key == KEY_U || key == KEY_u) {
+		command(g, comUndo, undo_but, true);
+	}
+	else if ((key == KEY_C || key == KEY_c) && !(state & CONTROLMASK)) {
+		command(g, comClean, clean_but, true);
+	}
+	else if (key == KEY_Q || key == KEY_q) {
+		command(g, comQuit, quit_but, true);
+	}
+	else if ((key == KEY_S || key == KEY_s) && !(state & CONTROLMASK)) {
+		command(g, comSolve, 0, true);
+	}
+	else if (key == KEY_X || key == KEY_x) {
+		command(g, comCheckSolve, 0, true);
+	}
+	else if (key == KEY_N || key == KEY_n) {
+		command(g, comNew, new_but, true);
+	}
+	else if (key == KEY_Left) {
+		traversal_command(g, comTravLeft);
+	}
+	else if (key == KEY_Right) {
+		traversal_command(g, comTravRight);
+	}
+	else if (key == KEY_Up) {
+		traversal_command(g, comTravUp);
+	}
+	else if (key == KEY_Down) {
+		traversal_command(g, comTravDown);
+	}
+	else if (key == KEY_space) {
+		traversal_command(g, comTravAnchor);
+	}
+	else if (key == KEY_Return || key == KEY_KP_Enter) {
+		traversal_command(g, comTravTake);
+	}
 }
-#endif
-
-#if 0
-void
-Panel::handle(Game *game, XEvent *e)
-{
-
-  switch (e->type) {
-    
-   case Expose:
-    invalidate(e->xexpose.x, e->xexpose.y,
-	       e->xexpose.width, e->xexpose.height);
-    break;
-    
-   case ButtonPress:
-    if (e->xbutton.button == 1)
-      click(game, e->xbutton.x, e->xbutton.y, e->xbutton.state, e->xbutton.time);
-    /*else if (e->xbutton.button == 2)
-      scan_mark(e->xbutton.x, e->xbutton.y);*/
-    break;
-    
-   case MotionNotify:
-    /*if (e->xmotion.state & Button2Mask)
-      scan_dragto(e->xmotion.x, e->xmotion.y);*/
-    break;
-    
-   case KeyPress:
-    key_press(game, XKeycodeToKeysym(display(), e->xkey.keycode, 0),
-	      e->xkey.state);
-    break;
-    
-   case ConfigureNotify:
-    resize(e->xconfigure.width, e->xconfigure.height);
-    break;
-    
-   case MapNotify:
-    if (_window_width < 0) {
-      XWindowAttributes attr;
-      XGetWindowAttributes(display(), window(), &attr);
-      resize(attr.width, attr.height);
-    }
-    _visible = true;
-    break;
-
-   case UnmapNotify:
-    _visible = false;
-    break;
-    
-  }
-}
-#endif
 
 void Panel::bell() const
 {

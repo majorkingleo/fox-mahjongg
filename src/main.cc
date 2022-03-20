@@ -38,6 +38,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 
 		FXMAPFUNC(SEL_LEFTBUTTONPRESS,   MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseDown),
 		FXMAPFUNC(SEL_LEFTBUTTONRELEASE, MahjonggWindow::ID_CANVAS, MahjonggWindow::onMouseUp),
+		FXMAPFUNC(SEL_KEYPRESS,          MahjonggWindow::ID_CANVAS, MahjonggWindow::onKeypress),
 
 		FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
 		FXMAPFUNC(SEL_CLOSE,             0,                         MahjonggWindow::onClose),
@@ -469,6 +470,16 @@ void MahjonggWindow::loadDigitImages()
 	imageByName["7"]       = createGifImage( digit_07_gif, "7" );
 	imageByName["8"]       = createGifImage( digit_08_gif, "8" );
 	imageByName["9"]       = createGifImage( digit_09_gif, "9" );
+}
+
+long MahjonggWindow::onKeypress(FXObject*,FXSelector,void* ptr){
+
+	DEBUG( __FUNCTION__ );
+
+	FXEvent *ev=(FXEvent*)ptr;
+	panel->key_press( game, ev->code, ev->state );
+
+	return 1;
 }
 
 void

@@ -101,8 +101,7 @@ class Panel: public SwClippedWindow {
   void flush() const {}
   
   // events
-  // void handle(Game *, XEvent *);
-  // void key_press(Game *, KeySym, unsigned);
+  void key_press(Game *, FXint key, FXint state);
   void click(Game *, int, int, FXint state, FXuint when, bool mouseUp );
   
   void set_visible( bool state ) {
