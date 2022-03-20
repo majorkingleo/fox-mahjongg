@@ -27,7 +27,7 @@
 using namespace Tools;
 
 const int LEVEL_START = 0;
-const unsigned TIMEOUT_VALUE = 2000;
+const unsigned TIMEOUT_VALUE = 100 * 1000000; // 100ms
 
 
 
