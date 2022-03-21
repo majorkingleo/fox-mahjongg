@@ -352,9 +352,13 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
     	throw REPORT_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
     }
 
-    for (int y = 0; y != h; ++y) {
-        for (int x = 0; x != w; ++x)
-        {
+#pragma omp parallel
+    {
+#pragma omp for
+    	for (int y = 0; y < h; ++y) {
+    		for (int x = 0; x < w; ++x)
+    		{
+    			/*
         	Magick::ColorRGB rbg( Magick::Color(pixelsIn[w * y + x]) );
             FXColor xc = FXRGBA( rbg.red()*255.0,
             					 rbg.green()*255.0,
@@ -362,7 +366,15 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
             					 rbg.alpha()*255.0 );
 
             image->setPixel( x, y, xc );
-        }
+    			 */
+    			FXint blue  = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].blue) * 255;
+    			FXint green = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].green) * 255;
+    			FXint red   = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].red) * 255;
+    			FXint alpha = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].opacity) * 255;
+
+    			image->setPixel( x, y, FXRGBA(red,green,blue,alpha) );
+    		}
+    	}
     }
 #endif
     image->render();
