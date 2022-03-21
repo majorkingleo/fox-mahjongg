@@ -24,6 +24,8 @@
 #include "FXPixelBuffer.h"
 #include <Magick++.h>
 #include <alarm.hh>
+#include "data_background_default.h"
+#include "data_background_green.h"
 
 using namespace Tools;
 
@@ -43,6 +45,9 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 
 		FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
 		FXMAPFUNC(SEL_CLOSE,             0,                         MahjonggWindow::onClose),
+
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_DEFAULT, MahjonggWindow::onChangeBackgroundDefault),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	MahjonggWindow::onChangeBackgroundGreen),
 };
 
 
@@ -113,6 +118,13 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     new FXMenuCommand(filemenu,"&Quit the application",NULL,getApp(),FXApp::ID_QUIT);
     new FXMenuTitle(menubar,"&File",NULL,filemenu);
 
+
+    FXMenuPane *background=new FXMenuPane(this);
+    mc_background_default = new FXMenuRadio(background,"Default",this,ID_BACKGROUND_DEFAULT);
+    mc_background_green = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
+
+    new FXMenuTitle(menubar,"&Background",NULL,background);
+
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(this,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
 			0,0,0,0,0,0,0,0);
@@ -163,12 +175,16 @@ void MahjonggWindow::create(){
 	// Create the windows
 	FXMainWindow::create();
 
+	readRegistry();
+
 	loadButtonImages();
 	loadDigitImages();
+	loadBackgroundImages();
 
 
 	tileset = load_tileset("thick", config_dir.c_str());
-	background = load_background("default", config_dir.c_str());
+	// background = load_background("default", config_dir.c_str());
+	background = getImageByName( background_name );
 	game = new Game(tileset);
 
 	background->create();
@@ -299,6 +315,18 @@ long MahjonggWindow::onClose(FXObject*obj,FXSelector sel,void* ptr )
 
 	return FXMainWindow::onCmdClose( obj, sel, ptr );
 }
+
+// Close window
+FXbool MahjonggWindow::close(FXbool notify)
+{
+
+  // Save settings
+  writeRegistry();
+
+  // Perform normal close stuff
+  return FXMainWindow::close(notify);
+}
+
 
 void MahjonggWindow::error( const std::string & error )
 {
@@ -489,6 +517,12 @@ void MahjonggWindow::loadDigitImages()
 	imageByName["9"]       = createGifImage( digit_09_gif, "9" );
 }
 
+void MahjonggWindow::loadBackgroundImages()
+{
+	imageByName["background_default"]= createGifImage( background_default_gif, "background_default" );
+	imageByName["background_green"]= createGifImage( background_green_gif, "background_green" );
+}
+
 long MahjonggWindow::onKeypress(FXObject*,FXSelector,void* ptr){
 
 	DEBUG( __FUNCTION__ );
@@ -497,6 +531,43 @@ long MahjonggWindow::onKeypress(FXObject*,FXSelector,void* ptr){
 	panel->key_press( game, ev->code, ev->state );
 
 	return 1;
+}
+
+long MahjonggWindow::onChangeBackgroundDefault(FXObject* obj,FXSelector sel, void* ptr)
+{
+	if( panel ) {
+		panel->set_background(getImageByName("background_default"));
+		mc_background_green->setCheck(false);
+	}
+	return 1;
+}
+
+long MahjonggWindow::onChangeBackgroundGreen(FXObject* obj,FXSelector sel, void* ptr)
+{
+	if( panel ) {
+		panel->set_background(getImageByName("background_green"));
+		mc_background_default->setCheck(false);
+	}
+	return 1;
+}
+
+void MahjonggWindow::writeRegistry()
+{
+	getApp()->reg().writeBoolEntry("SETTINGS","background_default", mc_background_default->getCheck() );
+	getApp()->reg().writeBoolEntry("SETTINGS","background_green", mc_background_green->getCheck() );
+}
+
+void MahjonggWindow::readRegistry()
+{
+	if( getApp()->reg().readBoolEntry("SETTINGS","background_default", false ) ) {
+		mc_background_default->setCheck( true );
+		background_name = "background_default";
+	}
+
+	if( getApp()->reg().readBoolEntry("SETTINGS","background_green", true ) ) {
+		mc_background_green->setCheck( true );
+		background_name = "background_green";
+	}
 }
 
 void
@@ -593,7 +664,5 @@ int main(int argc,char *argv[]){
 	// Run the application
 	return application.run();
 }
-
-
 
 

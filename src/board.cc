@@ -61,6 +61,10 @@ void Board::set_tileset(Tileset *ts)
 
 void Board::set_background(FXImage *background)
 {
+	auto obj = window()->getObjectByName( "background" );
+	if( obj ) {
+		window()->remove( obj );
+	}
 	window()->setTiledBackgroundImage(background, -1, "background");
 }
 

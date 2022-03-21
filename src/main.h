@@ -64,6 +64,11 @@ private:
     FXMenuBar *menubar;
     FXIcon *icon_xmahjongg;
 
+    FXMenuRadio *mc_background_default;
+    FXMenuRadio *mc_background_green;
+
+    std::string background_name;
+
 protected:
 	MahjonggWindow();
 	~MahjonggWindow();
@@ -79,9 +84,13 @@ public:
 	long onTimeout(FXObject*,FXSelector,void*);
 	long onClose(FXObject*,FXSelector,void*);
 	long onKeypress(FXObject*,FXSelector,void*);
+	long onChangeBackgroundDefault(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeBackgroundGreen(FXObject* obj,FXSelector sel,void* ptr);
 
 	void detach() override;
 	void layout() override;
+
+	FXbool close(FXbool notify) override;
 
 public:
 
@@ -89,6 +98,8 @@ public:
 	enum{
 		ID_CANVAS=FXMainWindow::ID_LAST,
 		ID_TIMER,
+		ID_BACKGROUND_DEFAULT,
+		ID_BACKGROUND_GREEN,
 		ID_LAST
 	};
 
@@ -144,7 +155,11 @@ private:
 
 	void loadButtonImages();
 	void loadDigitImages();
+	void loadBackgroundImages();
 	FXImage* createGifImage( const unsigned char* data, const std::string & name );
+
+	void readRegistry();
+	void writeRegistry();
 };
 
 

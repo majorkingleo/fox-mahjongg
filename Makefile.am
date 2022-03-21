@@ -58,7 +58,12 @@ fox_mahjongg_SOURCES=\
 		src/data_buttons.cc \
 		src/data_digits.h \
 		src/data_digits.cc \
+		src/data_xmahjongg.h \
 		src/data_xmahjongg.cc \
+		src/data_background_default.h \
+		src/data_background_default.cc \
+		src/data_background_green.h \
+		src/data_background_green.cc \
 		src/FXPixelBuffer.h \
 		src/FXPixelBuffer.cc \
 		src/FXPixelBufferObject.h \
@@ -71,7 +76,11 @@ BUILT_SOURCES=src/data_tiles_thick.cc \
 			  src/data_digits.h \
 			  src/data_digits.cc \
 			  src/data_xmahjongg.h \
-			  src/data_xmahjongg.cc
+			  src/data_xmahjongg.cc \
+			  src/data_background_default.h \
+			  src/data_background_default.cc \
+			  src/data_background_green.h \
+			  src/data_background_green.cc			  
 			  
 
 src/data_tiles_thick.cc: share/tiles/thick.gif
@@ -102,6 +111,17 @@ src/data_xmahjongg.h: src/data_xmahjongg.cc
 src/data_xmahjongg.cc: images/xmahjongg.gif
 	reswrap -o src/data_xmahjongg.cc -i data_xmahjongg.h --suffix _gif images/xmahjongg.gif
 	reswrap -o src/data_xmahjongg.h -h --suffix _gif images/xmahjongg.gif
+	
+	
+src/data_background_default.h: src/data_background_default.cc
+src/data_background_default.cc: share/backgrounds/default.gif
+	reswrap -o src/data_background_default.cc -i data_background_default.h --suffix _gif --prefix background_ share/backgrounds/default.gif
+	reswrap -o src/data_background_default.h -h --suffix _gif --prefix background_ share/backgrounds/default.gif	
+
+src/data_background_green.h: src/data_background_green.cc
+src/data_background_green.cc: share/backgrounds/green.gif
+	reswrap -o src/data_background_green.cc -i data_background_green.h --suffix _gif --prefix background_ share/backgrounds/green.gif
+	reswrap -o src/data_background_green.h -h --suffix _gif --prefix background_ share/backgrounds/green.gif
 
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \

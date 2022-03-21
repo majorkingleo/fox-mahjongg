@@ -415,8 +415,10 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
 FXPixelBufferObject* FXPixelBuffer::getObjectByName( const std::string & name )
 {
 	for( auto obj : objects ) {
-		if( obj->getName() == name ) {
-			return obj;
+		if( obj ) {
+			if( obj->getName() == name ) {
+				return obj;
+			}
 		}
 	}
 

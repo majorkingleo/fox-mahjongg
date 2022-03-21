@@ -6,3 +6,7 @@ data_digits.cc
 data_digits.h
 data_xmahjongg.cc
 data_xmahjongg.h
+data_background_default.cc
+data_background_default.h
+data_background_green.cc
+data_background_green.h
