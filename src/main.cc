@@ -74,7 +74,8 @@ MahjonggWindow::MahjonggWindow()
   config_dir(),
   imageByName(),
   nameByImagePtr(),
-  menubar(0)
+  menubar(0),
+  icon_xmahjongg(0)
 {}
 
 // Construct a MahjonggWindow
@@ -101,9 +102,10 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   config_dir(),
   imageByName(),
   nameByImagePtr(),
-  menubar(0)
+  menubar(0),
+  icon_xmahjongg(0)
 {
-	FXIcon *icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
+	icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
 	setIcon( icon_xmahjongg );
 
 	menubar=new FXMenuBar(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED);
@@ -140,6 +142,8 @@ MahjonggWindow::~MahjonggWindow()
 	}
 
 	imageByName.clear();
+
+	delete icon_xmahjongg;
 }
 
 void MahjonggWindow::detach()
@@ -149,6 +153,8 @@ void MahjonggWindow::detach()
 	for( auto it : imageByName ) {
 		it.second->detach();
 	}
+
+	icon_xmahjongg->detach();
 }
 
 // Create and initialize 

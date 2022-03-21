@@ -62,6 +62,7 @@ private:
     std::map<FXImage*,std::string> nameByImagePtr; // just for debugging
 
     FXMenuBar *menubar;
+    FXIcon *icon_xmahjongg;
 
 protected:
 	MahjonggWindow();
