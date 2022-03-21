@@ -100,10 +100,10 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared/cpputilsformat \
 	-I$(top_srcdir)/src  \
 	-DNOWAMAS \
-	-std=c++11 \
 	-I$(top_srcdir)/liblcdf \
 	$(AUXLIBS_CFLAGS)  \
-	$(LIBMAGICK_CFLAGS)
+	$(LIBMAGICK_CFLAGS) \
+	-std=c++11
 
 noinst_LIBRARIES=tools/libtools.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
@@ -166,12 +166,14 @@ fox_mahjongg_LDADD = \
 
 LIBS= \
 	$(AUXLIBS_LIBS) \
-	$(LIBMAGICK_LIBS)
-
+	$(LIBMAGICK_LIBS)	
+	
+AM_LDFLAGS= -fopenmp	
+	
 if MINGW
-AM_LDFLAGS = -mwindows
+AM_LDFLAGS += -mwindows
 # with -std=c++11 WIN32 is disabled (_WIN32) would be the valid one, so we define it in mingw.
 AM_CPPFLAGS += -DWIN32
 else
-AM_LDFLAGS = -lX11
+AM_LDFLAGS += -lX11
 endif

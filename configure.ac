@@ -15,7 +15,21 @@ AC_DEFUN([CXX_FLAGS_CHECK],
   AC_LANG_POP([C++])
 ])
 
-
+dnl @synopsis LD_FLAGS_CHECK [compiler flags]                                        
+dnl @summary check whether linker supports given C++ flags or not                   
+AC_DEFUN([LD_FLAGS_CHECK],                                                            
+[dnl                                                                                  
+  AC_MSG_CHECKING([if $CXX supports $1])
+  AC_LANG_PUSH([C++])
+  ac_saved_ldflags="$LDFLAGS"                                                       
+  LDFLAGS="-Werror $1"                                                               
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([])],                                            
+    [AC_MSG_RESULT([yes])],                                                           
+    [AC_MSG_ERROR([no])]                                                              
+  )                                                                                   
+  LDFLAGS="$ac_saved_ldflags"                                                       
+  AC_LANG_POP([C++])
+])
 
 
 AC_INIT(fox-mahjongg, 0.1)
@@ -39,7 +53,12 @@ AM_PROG_AR
 AC_PROG_CXX
 AC_LANG(C++)
 AC_PROG_INSTALL
-CXX_FLAGS_CHECK([-std=gnu++11])
+
+ac_extra_cxxx_flags=""
+EXTRA_LDFLAGS=""
+
+CXX_FLAGS_CHECK([-std=c++11])
+CXX_FLAGS_CHECK([-fopenmp])
 
 PKG_CHECK_MODULES([AUXLIBS], [fox17])
 PKG_CHECK_MODULES([LIBMAGICK], [Magick++])

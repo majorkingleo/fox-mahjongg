@@ -10,6 +10,10 @@
 #include <cpp_util.h>
 #include <main.h>
 
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
+
 using namespace Tools;
 
 FXDEFMAP(FXPixelBuffer) FXPixelBufferMap[]={
@@ -441,6 +445,17 @@ void FXPixelBuffer::redrawIfDirty()
 	}
 }
 
+static unsigned long get_microtime()
+{
+    struct timeval tv1;
+    struct timezone tz1;
+
+    gettimeofday(&tv1,&tz1);
+
+    return (unsigned long)(tv1.tv_sec * 1000 + tv1.tv_usec / 1000) ;
+}
+
+
 void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
 {
 	const int w = mimage->columns();
@@ -485,18 +500,37 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
     	throw REPORT_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
     }
 
-    for (int y = 0; y != h; ++y) {
-        for (int x = 0; x != w; ++x)
-        {
-        	Magick::ColorRGB rbg( Magick::Color(pixelsIn[w * y + x]) );
-            FXColor xc = FXRGBA( rbg.red()*255.0,
-            					 rbg.green()*255.0,
-            					 rbg.blue()*255.0,
-            					 rbg.alpha()*255.0 );
+    unsigned long start_time = get_microtime();
 
-            image->setPixel( x, y, xc );
-        }
+#pragma omp parallel
+    {
+#pragma omp for
+    	for ( int y = 0; y < h; ++y ) {
+    		for ( int x = 0; x < w; ++x )
+    		{
+    			/*
+    			Magick::ColorRGB rbg( pixelsIn[w * y + x] );
+    			FXColor xc = FXRGBA( rbg.red()*255.0,
+    					rbg.green()*255.0,
+    					rbg.blue()*255.0,
+    					rbg.alpha()*255.0 );
+    					image->setPixel( x, y, xc );
+    			*/
+
+    			FXint blue  = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].blue) * 255;
+    			FXint green = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].green) * 255;
+    			FXint red   = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].red) * 255;
+    			FXint alpha = Magick::Color::scaleQuantumToDouble(pixelsIn[w * y + x].opacity) * 255;
+
+    			image->setPixel( x, y, FXRGBA(red,green,blue,alpha) );
+    		}
+    	}
     }
+
+
+
+    std::cout << " duration: " << (get_microtime() - start_time) << "ms" << std::endl;
+
 #endif
     image->render();
 }
