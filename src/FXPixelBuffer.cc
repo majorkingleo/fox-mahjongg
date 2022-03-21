@@ -16,6 +16,16 @@
 
 using namespace Tools;
 
+static unsigned long get_microtime()
+{
+    struct timeval tv1;
+    struct timezone tz1;
+
+    gettimeofday(&tv1,&tz1);
+
+    return (unsigned long)(tv1.tv_sec * 1000 + tv1.tv_usec / 1000) ;
+}
+
 FXDEFMAP(FXPixelBuffer) FXPixelBufferMap[]={
 		FXMAPFUNC(SEL_PAINT,0,FXPixelBuffer::onPaint)
 };
@@ -121,6 +131,8 @@ int FXPixelBuffer::getHighestFloor() const
 // Canvas is an object drawn by another
 long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 {
+	 unsigned long start_time_function = get_microtime();
+
   // FXCanvas::onPaint( obj, sel, ptr );
 
   // detect size change
@@ -152,7 +164,7 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 	  }
   }
 
-
+  unsigned long start_time = get_microtime();
 
   std::list<Magick::Image> images;
 
@@ -167,12 +179,16 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 
   DEBUG( format( "%s: window size: %dx%d", __FUNCTION__, getWidth(),getHeight() ) );
 
+
   Magick::Image flattenedImage( Magick::Geometry(getWidth(),getHeight()), Magick::Color("transparent") );
   flattenedImage.type(Magick::TrueColorMatteType);
 
   Magick::flattenImages(&flattenedImage, images.begin(), images.end());
 
   flattenedImage.modifyImage();
+
+  DEBUG( format( "duration flatten Images: %0.3fms", (get_microtime() - start_time) / 1000.0 ) );
+
   // flattenedImage.write("out.png");
 
   if( !buffer ) {
@@ -186,6 +202,8 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
   dc.drawImage( buffer, 0, 0 );
 
   redraw_required = false;
+
+  DEBUG( format( "duration repainting: %0.3fms", (get_microtime() - start_time_function) / 1000.0 ) );
 
   return 0;
 }
@@ -282,11 +300,14 @@ FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
     mimage->type(Magick::TrueColorMatteType);
     Magick::PixelPacket *pixelsOut = mimage->getPixels(0, 0, w, h);
 
-    for (int y = 0; y != h; ++y) {
-        for (int x = 0; x != w; ++x)
-        {
-            FXColor xc = image->getPixel(x,y);
-
+#pragma omp parallel
+    {
+#pragma omp for
+    	for (int y = 0; y < h; ++y) {
+    		for (int x = 0; x < w; ++x)
+    		{
+    			FXColor xc = image->getPixel(x,y);
+    			/*
             Magick::ColorRGB color(FXREDVAL(xc)/255.0,
             					   FXGREENVAL(xc)/255.0,
             					   FXBLUEVAL(xc)/255.0 );
@@ -298,7 +319,16 @@ FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
             // std::cout << "alpha: " << color.alpha() << " FX: " << alpha << " Green: " << (int)FXGREENVAL(xc) << std::endl;
 
             pixelsOut[w * y + x] = color;
-        }
+    			 */
+
+    			pixelsOut[w * y + x].red     = Magick::Color::scaleDoubleToQuantum(FXREDVAL(xc)/255.0);
+    			pixelsOut[w * y + x].green   = Magick::Color::scaleDoubleToQuantum(FXGREENVAL(xc)/255.0);
+    			pixelsOut[w * y + x].blue    = Magick::Color::scaleDoubleToQuantum(FXBLUEVAL(xc)/255.0);
+
+    			FXuint alpha = FXALPHAVAL(xc);
+    			pixelsOut[w * y + x].opacity = Magick::Color::scaleDoubleToQuantum( 1 - alpha / 255.0 );
+    		}
+    	}
     }
 #endif
 
@@ -457,17 +487,6 @@ void FXPixelBuffer::redrawIfDirty()
 	}
 }
 
-static unsigned long get_microtime()
-{
-    struct timeval tv1;
-    struct timezone tz1;
-
-    gettimeofday(&tv1,&tz1);
-
-    return (unsigned long)(tv1.tv_sec * 1000 + tv1.tv_usec / 1000) ;
-}
-
-
 void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
 {
 	const int w = mimage->columns();
@@ -541,7 +560,7 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
 
 
 
-    std::cout << " duration: " << (get_microtime() - start_time) << "ms" << std::endl;
+    DEBUG( format( "duration converting Image to FXImage: %0.3fms", (get_microtime() - start_time) / 1000.0 ) );
 
 #endif
     image->render();
