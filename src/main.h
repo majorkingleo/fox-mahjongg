@@ -61,10 +61,7 @@ private:
 	std::map<std::string,FXImage *> imageByName;
     std::map<FXImage*,std::string> nameByImagePtr; // just for debugging
 
-    FXTabBook *tabbook;
-    FXTabItem *tab_main;
-    FXTabItem *tab_debug;
-
+    FXMenuBar *menubar;
 
 protected:
 	MahjonggWindow();

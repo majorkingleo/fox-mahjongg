@@ -20,6 +20,7 @@
 #include "tiles_thick.h"
 #include "data_buttons.h"
 #include "data_digits.h"
+#include "data_xmahjongg.h"
 #include "FXPixelBuffer.h"
 #include <Magick++.h>
 #include <alarm.hh>
@@ -72,7 +73,8 @@ MahjonggWindow::MahjonggWindow()
   layout_name(0),
   config_dir(),
   imageByName(),
-  nameByImagePtr()
+  nameByImagePtr(),
+  menubar(0)
 {}
 
 // Construct a MahjonggWindow
@@ -98,8 +100,17 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   layout_name(0),
   config_dir(),
   imageByName(),
-  nameByImagePtr()
+  nameByImagePtr(),
+  menubar(0)
 {
+	FXIcon *icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
+	setIcon( icon_xmahjongg );
+
+	menubar=new FXMenuBar(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED);
+    FXMenuPane *filemenu=new FXMenuPane(this);
+    new FXMenuCommand(filemenu,"&Quit the application",NULL,getApp(),FXApp::ID_QUIT);
+    new FXMenuTitle(menubar,"&File",NULL,filemenu);
+
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(this,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
 			0,0,0,0,0,0,0,0);
@@ -200,7 +211,7 @@ void MahjonggWindow::create(){
     int width = wid + 38;
     int height = hgt + 38 + 56; // + Buttons
     setWidth(width);
-    setHeight(height);
+    setHeight(height + menubar->getHeight());
     canvas->resize(width, height );
    
     // automatically done by panel->resize()
@@ -252,11 +263,11 @@ void MahjonggWindow::layout()
 	FXMainWindow::layout();
 
 	if( canvas ) {
-		canvas->resize(getWidth(), getHeight());
+		canvas->resize(getWidth(), getHeight() - menubar->getHeight());
 	}
 
 	if( panel ) {
-		panel->resize(getWidth(),getHeight());
+		panel->resize(getWidth(),getHeight() - menubar->getHeight());
 		panel->redraw_all();
 	}
 }

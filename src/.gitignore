@@ -4,3 +4,5 @@ data_tiles_thick.cc
 data_tiles_thick.h
 data_digits.cc
 data_digits.h
+data_xmahjongg.cc
+data_xmahjongg.h
