@@ -26,6 +26,7 @@
 #include <alarm.hh>
 #include "data_background_default.h"
 #include "data_background_green.h"
+#include <string_utils.h>
 
 using namespace Tools;
 
@@ -46,8 +47,9 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
 		FXMAPFUNC(SEL_CLOSE,             0,                         MahjonggWindow::onClose),
 
-		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_DEFAULT, MahjonggWindow::onChangeBackgroundDefault),
-		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	MahjonggWindow::onChangeBackgroundGreen),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_DEFAULT,     MahjonggWindow::onChangeBackgroundDefault),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	    MahjonggWindow::onChangeBackgroundGreen),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE, 	MahjonggWindow::onChangeBackgroundUserImage),
 };
 
 
@@ -120,8 +122,9 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
 
     FXMenuPane *background=new FXMenuPane(this);
-    mc_background_default = new FXMenuRadio(background,"Default",this,ID_BACKGROUND_DEFAULT);
-    mc_background_green = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
+    mc_background_default    = new FXMenuRadio(background,"Default",this,ID_BACKGROUND_DEFAULT);
+    mc_background_green      = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
+    mc_background_user_image = new FXMenuRadio(background,"User defined",this,ID_BACKGROUND_USER_IMAGE);
 
     new FXMenuTitle(menubar,"&Background",NULL,background);
 
@@ -184,7 +187,19 @@ void MahjonggWindow::create(){
 
 	tileset = load_tileset("thick", config_dir.c_str());
 	// background = load_background("default", config_dir.c_str());
-	background = getImageByName( background_name );
+
+	if( !background_image_name.empty() ) {
+		background = load_background(background_image_name);
+	}
+
+	if( !background && !background_name.empty() ) {
+		background = getImageByName( background_name );
+	}
+
+	if( !background ) {
+		background = getImageByName( "background_default" );
+	}
+
 	game = new Game(tileset);
 
 	background->create();
@@ -441,6 +456,40 @@ FXImage* MahjonggWindow::load_background(const char *background_name, const char
 	return img;
 }
 
+FXImage* MahjonggWindow::load_background(const std::string & background_image )
+{
+	std::string::size_type pos = background_image.rfind( '.' );
+
+	if( pos == std::string::npos || background_image.size() - pos > 5 ) {
+		return 0;
+	}
+
+	std::string ext = toupper(background_image.substr( pos + 1 ));
+
+	FXImage *img = 0;
+
+	if( ext == "GIF" ) {
+		img = new FXGIFImage(getApp(),nullptr,IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+	} else if( ext == "PNG" ) {
+		img = new FXPNGImage(getApp(),nullptr,IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+	} else if( ext == "JPG" || ext == "JPEG" ) {
+		img = new FXJPGImage(getApp(),nullptr,IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+	} else {
+		return 0;
+	}
+
+	FXFileStream stream;
+
+	if(stream.open(background_image.c_str(),FXStreamLoad)){
+		getApp()->beginWaitCursor();
+		img->loadPixels(stream);
+		stream.close();
+		getApp()->endWaitCursor();
+	}
+
+	return img;
+}
+
 
 void MahjonggWindow::make_panel_images(Panel *p)
 {
@@ -464,12 +513,17 @@ Button *MahjonggWindow::new_button(Panel *panel, const char *name)
   return but;
 }
 
-FXImage *MahjonggWindow::getImageByName( const std::string & image_name )
+FXImage *MahjonggWindow::getImageByName( const std::string & image_name, bool throw_exception )
 {
 	auto it = imageByName.find( image_name );
 
 	if( it == imageByName.end() ) {
-		throw REPORT_EXCEPTION( format( "no Button named %s", image_name ) );
+		if( !throw_exception ) {
+			DEBUG( format( "cannot find image: %s", image_name ) );
+			return 0;
+		} else {
+			throw REPORT_EXCEPTION( format( "no Button named %s", image_name ) );
+		}
 	}
 
 	return it->second;
@@ -538,6 +592,7 @@ long MahjonggWindow::onChangeBackgroundDefault(FXObject* obj,FXSelector sel, voi
 	if( panel ) {
 		panel->set_background(getImageByName("background_default"));
 		mc_background_green->setCheck(false);
+		mc_background_user_image->setCheck(false);
 	}
 	return 1;
 }
@@ -547,6 +602,33 @@ long MahjonggWindow::onChangeBackgroundGreen(FXObject* obj,FXSelector sel, void*
 	if( panel ) {
 		panel->set_background(getImageByName("background_green"));
 		mc_background_default->setCheck(false);
+		mc_background_user_image->setCheck(false);
+	}
+	return 1;
+}
+
+long MahjonggWindow::onChangeBackgroundUserImage(FXObject* obj,FXSelector sel, void* ptr)
+{
+	if( panel ) {
+		FXString s = FXFileDialog::getOpenFilename( this, "Choose Background Image",
+													last_file_open_path.c_str(),
+													"*");
+
+		if( s == FXString::null ) {
+			return 1;
+		}
+
+		FXImage *img = load_background( s.text() );
+
+		if( img ) {
+			img->create();
+			last_file_open_path = s.text();
+			background_image_name = s.text();
+			imageByName[s.text()] = img;
+			panel->set_background(img);
+			mc_background_default->setCheck(false);
+			mc_background_green->setCheck(false);
+		}
 	}
 	return 1;
 }
@@ -555,6 +637,9 @@ void MahjonggWindow::writeRegistry()
 {
 	getApp()->reg().writeBoolEntry("SETTINGS","background_default", mc_background_default->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","background_green", mc_background_green->getCheck() );
+	getApp()->reg().writeBoolEntry("SETTINGS","background_user_image", mc_background_user_image->getCheck() );
+	getApp()->reg().writeStringEntry( "SETTING", "last_file_open_path", last_file_open_path.c_str() );
+	getApp()->reg().writeStringEntry( "SETTING", "background_image_name", background_image_name.c_str() );
 }
 
 void MahjonggWindow::readRegistry()
@@ -562,12 +647,28 @@ void MahjonggWindow::readRegistry()
 	if( getApp()->reg().readBoolEntry("SETTINGS","background_default", false ) ) {
 		mc_background_default->setCheck( true );
 		background_name = "background_default";
+		background_image_name = "";
 	}
 
 	if( getApp()->reg().readBoolEntry("SETTINGS","background_green", true ) ) {
 		mc_background_green->setCheck( true );
 		background_name = "background_green";
+		background_image_name = "";
 	}
+
+	if( getApp()->reg().readBoolEntry("SETTINGS","background_user_image", false ) ) {
+		background_name = "";
+
+		background_image_name = getApp()->reg().readStringEntry( "SETTING", "background_image_name", "" );
+
+		if( !background_image_name.empty() ) {
+			mc_background_user_image->setCheck( true );
+		}
+	}
+
+	last_file_open_path   = getApp()->reg().readStringEntry( "SETTING", "last_file_open_path", "" );
+
+
 }
 
 void

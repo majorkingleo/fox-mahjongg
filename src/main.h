@@ -66,8 +66,11 @@ private:
 
     FXMenuRadio *mc_background_default;
     FXMenuRadio *mc_background_green;
+    FXMenuRadio *mc_background_user_image;
 
     std::string background_name;
+    std::string last_file_open_path;
+    std::string background_image_name;
 
 protected:
 	MahjonggWindow();
@@ -86,6 +89,7 @@ public:
 	long onKeypress(FXObject*,FXSelector,void*);
 	long onChangeBackgroundDefault(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeBackgroundGreen(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeBackgroundUserImage(FXObject* obj,FXSelector sel,void* ptr);
 
 	void detach() override;
 	void layout() override;
@@ -100,6 +104,7 @@ public:
 		ID_TIMER,
 		ID_BACKGROUND_DEFAULT,
 		ID_BACKGROUND_GREEN,
+		ID_BACKGROUND_USER_IMAGE,
 		ID_LAST
 	};
 
@@ -127,7 +132,7 @@ public:
 		solveable_boards = value;
 	}
 
-	FXImage *getImageByName( const std::string & image );
+	FXImage *getImageByName( const std::string & image, bool throw_exception = true );
 
     std::string getNameByImage( FXImage *img ) const {
         auto it = nameByImagePtr.find( img );
@@ -146,6 +151,7 @@ public:
 private:
 	Tileset *load_tileset(const char *tileset_name, const char *config_dir);
 	FXImage* load_background(const char *background_name, const char *config_dir );
+	FXImage* load_background(const std::string & background_image );
 
 	void error( const std::string & error );
 	void config_error( const std::string & error );
