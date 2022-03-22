@@ -1,8 +1,4 @@
 
-#if (defined _WIN32 || defined WIN32)
-// Windows native  : Exclude file
-#else
-
 #include "cppdir.h"
 
 #undef OUT
@@ -20,7 +16,7 @@ extern "C" {
 #include <vector>
 #include <cstdlib>
 
-#ifdef _WIN32
+#ifdef _WIN32 && !defined(WIN32)
 #define WIN32
 #endif //_WIN32
 
@@ -806,5 +802,3 @@ bool CppDir::is_in_dir( const std::string &path, const std::string &dir )
 
   return false;
 }
-
-#endif // WIN32 && _MSC_VER_
