@@ -10,5 +10,11 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 cd "$DIR"
 
+if ! test -d dist ; then
+	mkdir dist
+	( cd dist && cp -u /usr/x86_64-w64-mingw32/sys-root/mingw/bin/*.dll dist )
+	( cd dist && ln -s ../fox-mahjongg.exe . )
+fi
+
 ISCC="/home/martin/.wine/drive_c/Program Files (x86)/Inno Setup 6/ISCC.exe"
 wine "${ISCC}" FOX-Mahjongg.iss

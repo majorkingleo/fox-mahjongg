@@ -26,8 +26,8 @@ PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=z:\home\martin\workspace\fox-mahjongg-win32
 OutputBaseFilename=FOX-Mahjongg-installer-{#MyAppVersion}
-Compression=lzma
-SolidCompression=yes
+Compression=bzip
+SolidCompression=no
 WizardStyle=modern
 
 [Languages]
@@ -38,22 +38,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\dbus-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\icudata56.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\icui18n56.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\icuio56.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\icule56.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\iculx56.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\icutest56.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\icutu56.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\icuuc56.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libbz2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libcairo-2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libcroco-0.6-3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libcrypto-10.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libdbus-1-3.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libdjvulibre-21.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libffi-6.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libfftw3-3.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libfftw3f-3.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -63,48 +51,26 @@ Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libfreetype-6.dll"; De
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libgcc_s_seh-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libgdk_pixbuf-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libgio-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libGLESv2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libglib-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libgmodule-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libgmp-10.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libgobject-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libgomp-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libharfbuzz-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libintl-8.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libjasper-4.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libjpeg-8.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5Archive.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5Auth.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5AuthCore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5BluezQt.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5Codecs.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5ConfigCore.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5ConfigGui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5ConfigWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5CoreAddons.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5GuiAddons.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5I18n.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5IconThemes.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5ItemViews.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5Kirigami2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libKF5WidgetsAddons.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\liblcms2-2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\liblzma-5.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libMagick++-Q16-7.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libMagickCore-Q16-7.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libMagickWand-Q16-7.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libmpc-3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libmpfr-4.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpango-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpangocairo-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpangoft2-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpangowin32-1.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpixman-1-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpkgconf-3.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpng16-16.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\librsvg-2-2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libsqlite3-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libssl-10.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libssp-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libtiff-5.dll"; DestDir: "{app}"; Flags: ignoreversion
