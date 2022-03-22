@@ -131,7 +131,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/liblcdf \
 	$(AUXLIBS_CFLAGS)  \
 	$(LIBMAGICK_CFLAGS) \
-	-std=c++11
+	-std=c++11 \
+	-fopenmp
 
 noinst_LIBRARIES=tools/libtools.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
