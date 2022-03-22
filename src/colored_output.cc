@@ -26,7 +26,7 @@ ColoredOutput::ColoredOutput()
 	}
 	else
 	{
-		std::cout << "TERM: " << pcTerm << std::endl;
+		// std::cout << "TERM: " << pcTerm << std::endl;
 	}
 #endif
 }
