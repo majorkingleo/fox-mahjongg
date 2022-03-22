@@ -162,7 +162,7 @@ private:
 	void loadButtonImages();
 	void loadDigitImages();
 	void loadBackgroundImages();
-	FXImage* createGifImage( const unsigned char* data, const std::string & name );
+	FXImage* createGifImage( const unsigned char* data, const std::string & name, bool transparent = true );
 
 	void readRegistry();
 	void writeRegistry();

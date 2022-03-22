@@ -530,9 +530,16 @@ FXImage *MahjonggWindow::getImageByName( const std::string & image_name, bool th
 }
 
 
-FXImage* MahjonggWindow::createGifImage( const unsigned char* data, const std::string & name )
+FXImage* MahjonggWindow::createGifImage( const unsigned char* data, const std::string & name, bool transparent )
 {
-	FXImage* img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP  );
+	FXImage* img = 0;
+
+	if( !transparent ) {
+	 img = new FXGIFImage( getApp(), data, IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP  );
+	} else {
+	 img = new FXGIFIcon( getApp(), data, 0, IMAGE_KEEP | IMAGE_ALPHAGUESS | IMAGE_SHMI | IMAGE_SHMP  );
+	}
+
 	img->create();
 
     if( !name.empty() ) {
@@ -573,8 +580,8 @@ void MahjonggWindow::loadDigitImages()
 
 void MahjonggWindow::loadBackgroundImages()
 {
-	imageByName["background_default"]= createGifImage( background_default_gif, "background_default" );
-	imageByName["background_green"]= createGifImage( background_green_gif, "background_green" );
+	imageByName["background_default"]= createGifImage( background_default_gif, "background_default", false );
+	imageByName["background_green"]= createGifImage( background_green_gif, "background_green", false );
 }
 
 long MahjonggWindow::onKeypress(FXObject*,FXSelector,void* ptr){
