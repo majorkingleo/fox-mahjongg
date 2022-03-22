@@ -9,12 +9,16 @@ OutDebug::OutDebug()
 : Debug(),
   colored_output(true)
 {
+#ifdef WIN32
+	colored_output = false;
+#else
 	char *pcTerm =  getenv( "TERM");
 
 	if( pcTerm == NULL || !isatty(fileno(stdout)))
 	{
 		colored_output = false;
 	}
+#endif
 }
 
 

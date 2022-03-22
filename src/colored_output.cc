@@ -15,6 +15,9 @@
 ColoredOutput::ColoredOutput()
 : colored_output( true )
 {
+#ifdef WIN32
+	colored_output = false;
+#else
 	char *pcTerm =  getenv( "TERM");
 
 	if( pcTerm == NULL || !isatty(fileno(stdout)) )
@@ -23,8 +26,9 @@ ColoredOutput::ColoredOutput()
 	}
 	else
 	{
-		// std::cout << "TERM: " << pcTerm << std::endl;
+		std::cout << "TERM: " << pcTerm << std::endl;
 	}
+#endif
 }
 
 std::string ColoredOutput::color_output( Color color, const std::string & text ) const
