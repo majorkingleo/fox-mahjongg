@@ -27,6 +27,7 @@
 #include "data_background_default.h"
 #include "data_background_green.h"
 #include <string_utils.h>
+#include <cppdir.h>
 
 using namespace Tools;
 
@@ -47,9 +48,10 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
 		FXMAPFUNC(SEL_CLOSE,             0,                         MahjonggWindow::onClose),
 
-		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_DEFAULT,     MahjonggWindow::onChangeBackgroundDefault),
-		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	    MahjonggWindow::onChangeBackgroundGreen),
-		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE, 	MahjonggWindow::onChangeBackgroundUserImage),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_DEFAULT,     	MahjonggWindow::onChangeBackgroundDefault),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	    	MahjonggWindow::onChangeBackgroundGreen),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE, 		MahjonggWindow::onChangeBackgroundUserImage),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE_DIR, 	MahjonggWindow::onChangeBackgroundUserImageDir),
 };
 
 
@@ -112,6 +114,13 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   menubar(0),
   icon_xmahjongg(0)
 {
+	known_image_extensions.insert( "GIF" );
+	known_image_extensions.insert( "PNG" );
+	known_image_extensions.insert( "JPG" );
+	known_image_extensions.insert( "JPEG" );
+
+	srand( time(0) );
+
 	icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
 	setIcon( icon_xmahjongg );
 
@@ -122,9 +131,10 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
 
     FXMenuPane *background=new FXMenuPane(this);
-    mc_background_default    = new FXMenuRadio(background,"Default",this,ID_BACKGROUND_DEFAULT);
-    mc_background_green      = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
-    mc_background_user_image = new FXMenuRadio(background,"User defined",this,ID_BACKGROUND_USER_IMAGE);
+    mc_background_default        = new FXMenuRadio(background,"Default",this,ID_BACKGROUND_DEFAULT);
+    mc_background_green          = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
+    mc_background_user_image     = new FXMenuRadio(background,"User defined",this,ID_BACKGROUND_USER_IMAGE);
+    mc_background_user_image_dir = new FXMenuRadio(background,"User defined image directory",this,ID_BACKGROUND_USER_IMAGE_DIR);
 
     new FXMenuTitle(menubar,"&Background",NULL,background);
 
@@ -184,9 +194,14 @@ void MahjonggWindow::create(){
 	loadDigitImages();
 	loadBackgroundImages();
 
+	if( mc_background_user_image_dir->getCheck() ) {
+		loadRandomImageFromPath( background_image_path );
+	}
 
 	tileset = load_tileset("thick", config_dir.c_str());
 	// background = load_background("default", config_dir.c_str());
+
+	DEBUG( format( "background_image_name: %s", background_image_name ) );
 
 	if( !background_image_name.empty() ) {
 		background = load_background(background_image_name);
@@ -456,15 +471,22 @@ FXImage* MahjonggWindow::load_background(const char *background_name, const char
 	return img;
 }
 
-FXImage* MahjonggWindow::load_background(const std::string & background_image )
+std::string MahjonggWindow::getFileExt( const std::string & file_name )
 {
-	std::string::size_type pos = background_image.rfind( '.' );
+	std::string::size_type pos = file_name.rfind( '.' );
 
-	if( pos == std::string::npos || background_image.size() - pos > 5 ) {
-		return 0;
+	if( pos == std::string::npos || file_name.size() - pos > 5 ) {
+		return "";
 	}
 
-	std::string ext = toupper(background_image.substr( pos + 1 ));
+	std::string ext = toupper(file_name.substr( pos + 1 ));
+
+	return ext;
+}
+
+FXImage* MahjonggWindow::load_background(const std::string & background_image )
+{
+	std::string ext = getFileExt( background_image );
 
 	FXImage *img = 0;
 
@@ -600,6 +622,7 @@ long MahjonggWindow::onChangeBackgroundDefault(FXObject* obj,FXSelector sel, voi
 		panel->set_background(getImageByName("background_default"));
 		mc_background_green->setCheck(false);
 		mc_background_user_image->setCheck(false);
+		mc_background_user_image_dir->setCheck(false);
 	}
 	return 1;
 }
@@ -610,6 +633,7 @@ long MahjonggWindow::onChangeBackgroundGreen(FXObject* obj,FXSelector sel, void*
 		panel->set_background(getImageByName("background_green"));
 		mc_background_default->setCheck(false);
 		mc_background_user_image->setCheck(false);
+		mc_background_user_image_dir->setCheck(false);
 	}
 	return 1;
 }
@@ -620,9 +644,8 @@ long MahjonggWindow::onChangeBackgroundUserImage(FXObject* obj,FXSelector sel, v
 		FXString s = FXFileDialog::getOpenFilename( this, "Choose Background Image",
 													last_file_open_path.c_str(),
 													"*");
-
 		if( s == FXString::null ) {
-			return 1;
+			return 0;
 		}
 
 		FXImage *img = load_background( s.text() );
@@ -635,7 +658,46 @@ long MahjonggWindow::onChangeBackgroundUserImage(FXObject* obj,FXSelector sel, v
 			panel->set_background(img);
 			mc_background_default->setCheck(false);
 			mc_background_green->setCheck(false);
+			mc_background_user_image_dir->setCheck(false);
 		}
+	}
+	return 1;
+}
+
+long MahjonggWindow::onChangeBackgroundUserImageDir(FXObject* obj,FXSelector sel, void* ptr)
+{
+	DEBUG( __FUNCTION__ );
+
+	if( panel ) {
+		FXString s = FXFileDialog::getOpenDirectory( this, "Choose Background Image",
+													last_file_open_path.c_str());
+
+		DEBUG( format( "directory: %s", s.text() ));
+
+		if( s == FXString::null ) {
+			return 1;
+		}
+
+
+		if( loadRandomImageFromPath( s.text() ) ) {
+			background_image_path = s.text();
+
+			FXImage *img = load_background( background_image_name );
+
+			if( img ) {
+				img->create();
+				last_file_open_path = s.text();
+				background_image_path = s.text();
+				imageByName[s.text()] = img;
+				panel->set_background(img);
+				mc_background_default->setCheck(false);
+				mc_background_green->setCheck(false);
+				mc_background_user_image->setCheck(false);
+			}
+
+		}
+
+
 	}
 	return 1;
 }
@@ -645,8 +707,10 @@ void MahjonggWindow::writeRegistry()
 	getApp()->reg().writeBoolEntry("SETTINGS","background_default", mc_background_default->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","background_green", mc_background_green->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","background_user_image", mc_background_user_image->getCheck() );
-	getApp()->reg().writeStringEntry( "SETTING", "last_file_open_path", last_file_open_path.c_str() );
-	getApp()->reg().writeStringEntry( "SETTING", "background_image_name", background_image_name.c_str() );
+	getApp()->reg().writeBoolEntry("SETTINGS","background_user_image_dir", mc_background_user_image_dir->getCheck() );
+	getApp()->reg().writeStringEntry( "SETTINGS", "last_file_open_path", last_file_open_path.c_str() );
+	getApp()->reg().writeStringEntry( "SETTINGS", "background_image_name", background_image_name.c_str() );
+	getApp()->reg().writeStringEntry( "SETTINGS", "background_image_path", background_image_path.c_str() );
 }
 
 void MahjonggWindow::readRegistry()
@@ -666,16 +730,67 @@ void MahjonggWindow::readRegistry()
 	if( getApp()->reg().readBoolEntry("SETTINGS","background_user_image", false ) ) {
 		background_name = "";
 
-		background_image_name = getApp()->reg().readStringEntry( "SETTING", "background_image_name", "" );
+		background_image_name = getApp()->reg().readStringEntry( "SETTINGS", "background_image_name", "" );
 
 		if( !background_image_name.empty() ) {
 			mc_background_user_image->setCheck( true );
 		}
 	}
 
+	if( getApp()->reg().readBoolEntry("SETTINGS","background_user_image_dir", false ) ) {
+		background_name = "";
+
+		background_image_path = getApp()->reg().readStringEntry( "SETTINGS", "background_image_path", "" );
+
+		if( !background_image_path.empty() ) {
+
+			if( loadRandomImageFromPath( background_image_path ) ) {
+				mc_background_user_image_dir->setCheck( true );
+			}
+		}
+	}
+
 	last_file_open_path   = getApp()->reg().readStringEntry( "SETTING", "last_file_open_path", "" );
+}
 
+bool MahjonggWindow::loadRandomImageFromPath( const std::string & image_dir )
+{
+	CppDir::Directory dir( image_dir );
 
+	if( !dir ) {
+		DEBUG( format( "not a directory %s", background_image_path ));
+		return false;
+	}
+
+	std::vector<std::string> usable_files;
+
+	for( auto & file : dir.get_files() ) {
+		std::string ext = getFileExt( file.get_name() );
+
+		if( known_image_extensions.find( ext ) == known_image_extensions.end() ) {
+			continue;
+		}
+
+		std::string image_file = file.get_full_path();
+
+		DEBUG( format( "found image: %s", image_file ) );
+
+		usable_files.push_back( image_file );
+	}
+
+	if( usable_files.empty() ) {
+		return false;
+	}
+
+	int max = usable_files.size() - 1;
+	int min = 0;
+
+	const int range = max - min + 1;
+	int num = rand() % range + min;
+
+	background_image_name = usable_files.at(num);
+
+	return true;
 }
 
 void

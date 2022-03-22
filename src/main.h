@@ -23,6 +23,7 @@
 #include "tileset.hh"
 #include <string>
 #include <map>
+#include <set>
 
 
 class Panel;
@@ -67,10 +68,14 @@ private:
     FXMenuRadio *mc_background_default;
     FXMenuRadio *mc_background_green;
     FXMenuRadio *mc_background_user_image;
+    FXMenuRadio *mc_background_user_image_dir;
 
     std::string background_name;
     std::string last_file_open_path;
     std::string background_image_name;
+    std::string background_image_path;
+
+    std::set<std::string> known_image_extensions;
 
 protected:
 	MahjonggWindow();
@@ -90,6 +95,7 @@ public:
 	long onChangeBackgroundDefault(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeBackgroundGreen(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeBackgroundUserImage(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeBackgroundUserImageDir(FXObject* obj,FXSelector sel,void* ptr);
 
 	void detach() override;
 	void layout() override;
@@ -105,6 +111,7 @@ public:
 		ID_BACKGROUND_DEFAULT,
 		ID_BACKGROUND_GREEN,
 		ID_BACKGROUND_USER_IMAGE,
+		ID_BACKGROUND_USER_IMAGE_DIR,
 		ID_LAST
 	};
 
@@ -166,6 +173,10 @@ private:
 
 	void readRegistry();
 	void writeRegistry();
+
+	bool loadRandomImageFromPath( const std::string & image_dir );
+
+	std::string getFileExt( const std::string & file_name );
 };
 
 
