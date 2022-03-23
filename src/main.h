@@ -31,6 +31,7 @@ class Gif_Stream;
 class MatchCount;
 class Button;
 class FXPixelBuffer;
+class FXRadioGroup;
 
 // Main Window
 class MahjonggWindow : public FXMainWindow {
@@ -76,6 +77,8 @@ private:
     std::string background_image_path;
 
     std::set<std::string> known_image_extensions;
+
+    FXRadioGroup *radio_group_background_image;
 
 protected:
 	MahjonggWindow();

@@ -28,6 +28,7 @@
 #include "data_background_green.h"
 #include <string_utils.h>
 #include <cppdir.h>
+#include "FXRadioGroup.h"
 
 using namespace Tools;
 
@@ -84,7 +85,8 @@ MahjonggWindow::MahjonggWindow()
   imageByName(),
   nameByImagePtr(),
   menubar(0),
-  icon_xmahjongg(0)
+  icon_xmahjongg(0),
+  radio_group_background_image(0)
 {}
 
 // Construct a MahjonggWindow
@@ -112,7 +114,8 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   imageByName(),
   nameByImagePtr(),
   menubar(0),
-  icon_xmahjongg(0)
+  icon_xmahjongg(0),
+  radio_group_background_image(0)
 {
 	known_image_extensions.insert( "GIF" );
 	known_image_extensions.insert( "PNG" );
@@ -120,6 +123,8 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	known_image_extensions.insert( "JPEG" );
 
 	srand( time(0) );
+
+	radio_group_background_image = new FXRadioGroup();
 
 	icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
 	setIcon( icon_xmahjongg );
@@ -135,6 +140,11 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     mc_background_green          = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
     mc_background_user_image     = new FXMenuRadio(background,"User defined",this,ID_BACKGROUND_USER_IMAGE);
     mc_background_user_image_dir = new FXMenuRadio(background,"User defined image directory",this,ID_BACKGROUND_USER_IMAGE_DIR);
+
+    radio_group_background_image->add( mc_background_default );
+    radio_group_background_image->add( mc_background_green );
+    radio_group_background_image->add( mc_background_user_image );
+    radio_group_background_image->add( mc_background_user_image_dir );
 
     new FXMenuTitle(menubar,"&Background",NULL,background);
 
@@ -169,6 +179,7 @@ MahjonggWindow::~MahjonggWindow()
 	imageByName.clear();
 
 	delete icon_xmahjongg;
+	delete radio_group_background_image;
 }
 
 void MahjonggWindow::detach()
@@ -618,33 +629,37 @@ long MahjonggWindow::onKeypress(FXObject*,FXSelector,void* ptr){
 
 long MahjonggWindow::onChangeBackgroundDefault(FXObject* obj,FXSelector sel, void* ptr)
 {
+	FXRadioGroup::SavePoint save_point( radio_group_background_image->getSavePoint() );
+
 	if( panel ) {
 		panel->set_background(getImageByName("background_default"));
-		mc_background_green->setCheck(false);
-		mc_background_user_image->setCheck(false);
-		mc_background_user_image_dir->setCheck(false);
+		radio_group_background_image->setCheck( mc_background_default );
+		save_point.commit();
 	}
 	return 1;
 }
 
 long MahjonggWindow::onChangeBackgroundGreen(FXObject* obj,FXSelector sel, void* ptr)
 {
+	FXRadioGroup::SavePoint save_point( radio_group_background_image->getSavePoint() );
+
 	if( panel ) {
 		panel->set_background(getImageByName("background_green"));
-		mc_background_default->setCheck(false);
-		mc_background_user_image->setCheck(false);
-		mc_background_user_image_dir->setCheck(false);
+		radio_group_background_image->setCheck( mc_background_green );
+		save_point.commit();
 	}
 	return 1;
 }
 
 long MahjonggWindow::onChangeBackgroundUserImage(FXObject* obj,FXSelector sel, void* ptr)
 {
+	FXRadioGroup::SavePoint save_point( radio_group_background_image->getSavePoint() );
+
 	if( panel ) {
 		FXString s = FXFileDialog::getOpenFilename( this, "Choose Background Image",
 													last_file_open_path.c_str(),
 													"*");
-		if( s == FXString::null ) {
+		if( s == FXString::null || s.text() == last_file_open_path ) {
 			return 0;
 		}
 
@@ -656,9 +671,8 @@ long MahjonggWindow::onChangeBackgroundUserImage(FXObject* obj,FXSelector sel, v
 			background_image_name = s.text();
 			imageByName[s.text()] = img;
 			panel->set_background(img);
-			mc_background_default->setCheck(false);
-			mc_background_green->setCheck(false);
-			mc_background_user_image_dir->setCheck(false);
+			radio_group_background_image->setCheck( mc_background_user_image );
+			save_point.commit();
 		}
 	}
 	return 1;
@@ -667,6 +681,7 @@ long MahjonggWindow::onChangeBackgroundUserImage(FXObject* obj,FXSelector sel, v
 long MahjonggWindow::onChangeBackgroundUserImageDir(FXObject* obj,FXSelector sel, void* ptr)
 {
 	DEBUG( __FUNCTION__ );
+	FXRadioGroup::SavePoint save_point( radio_group_background_image->getSavePoint() );
 
 	if( panel ) {
 		FXString s = FXFileDialog::getOpenDirectory( this, "Choose Background Image",
@@ -675,7 +690,7 @@ long MahjonggWindow::onChangeBackgroundUserImageDir(FXObject* obj,FXSelector sel
 		DEBUG( format( "directory: %s", s.text() ));
 
 		if( s == FXString::null ) {
-			return 1;
+			return 0;
 		}
 
 
@@ -690,9 +705,8 @@ long MahjonggWindow::onChangeBackgroundUserImageDir(FXObject* obj,FXSelector sel
 				background_image_path = s.text();
 				imageByName[s.text()] = img;
 				panel->set_background(img);
-				mc_background_default->setCheck(false);
-				mc_background_green->setCheck(false);
-				mc_background_user_image->setCheck(false);
+				radio_group_background_image->setCheck( mc_background_user_image_dir );
+				save_point.commit();
 			}
 
 		}
@@ -716,13 +730,13 @@ void MahjonggWindow::writeRegistry()
 void MahjonggWindow::readRegistry()
 {
 	if( getApp()->reg().readBoolEntry("SETTINGS","background_default", false ) ) {
-		mc_background_default->setCheck( true );
+		radio_group_background_image->setCheck( mc_background_default );
 		background_name = "background_default";
 		background_image_name = "";
 	}
 
 	if( getApp()->reg().readBoolEntry("SETTINGS","background_green", true ) ) {
-		mc_background_green->setCheck( true );
+		radio_group_background_image->setCheck( mc_background_green );
 		background_name = "background_green";
 		background_image_name = "";
 	}
@@ -733,7 +747,7 @@ void MahjonggWindow::readRegistry()
 		background_image_name = getApp()->reg().readStringEntry( "SETTINGS", "background_image_name", "" );
 
 		if( !background_image_name.empty() ) {
-			mc_background_user_image->setCheck( true );
+			radio_group_background_image->setCheck( mc_background_user_image );
 		}
 	}
 
@@ -745,7 +759,7 @@ void MahjonggWindow::readRegistry()
 		if( !background_image_path.empty() ) {
 
 			if( loadRandomImageFromPath( background_image_path ) ) {
-				mc_background_user_image_dir->setCheck( true );
+				radio_group_background_image->setCheck( mc_background_user_image_dir );
 			}
 		}
 	}
