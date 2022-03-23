@@ -33,6 +33,10 @@ Game::Game(Tileset *ts)
     _left_count(new int[_nmatches])
 {
   _user_moves.push_back(0);
+
+  // reset the null tile, it is possible marked
+  // can happen, you recreate the complete board
+  the_null_tile = Tile();
 }
 
 
@@ -599,3 +603,11 @@ Game::relayout()
   for (int j = 0; j < _hooks.size(); j++)
     _hooks[j]->layout_hook(this);
 }
+
+Tile *&
+Game::grid(short r, short c, short l) const
+{
+  assert(r>=0 && r<TILE_ROWS && c>=0 && c<TILE_COLS && l>=0 && l<TILE_LEVS);
+  return _grid[ (r * TILE_LEVS + l) * TILE_COLS + c ];
+}
+

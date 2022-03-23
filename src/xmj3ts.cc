@@ -22,7 +22,6 @@ Xmj3Tileset::Xmj3Tileset( MahjonggWindow *root, const TILE_DATA & tile_data )
     _obscured_ref(),
 
     _images(),
-    _masks(),
     _tile_data( tile_data ),
     _root( root ),
     _objects_by_tilenumber()
@@ -42,10 +41,6 @@ Xmj3Tileset::~Xmj3Tileset()
 	for (int i = 0; i < _images.size(); i++) {
 		if (_images[i]) {
 			delete  _images[i];
-		}
-
-		if (_masks[i]) {
-			delete _masks[i];
 		}
 	}
 }

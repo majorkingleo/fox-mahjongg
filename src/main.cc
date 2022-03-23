@@ -18,6 +18,7 @@
 #include <arg.h>
 #include <cpp_util.h>
 #include "tiles_thick.h"
+#include "tiles_thin.h"
 #include "data_buttons.h"
 #include "data_digits.h"
 #include "data_xmahjongg.h"
@@ -53,6 +54,9 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	    	MahjonggWindow::onChangeBackgroundGreen),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE, 		MahjonggWindow::onChangeBackgroundUserImage),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE_DIR, 	MahjonggWindow::onChangeBackgroundUserImageDir),
+
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_THICK, 				MahjonggWindow::onChangeTilesetThick),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_THIN, 				MahjonggWindow::onChangeTilesetThin),
 };
 
 
@@ -86,7 +90,8 @@ MahjonggWindow::MahjonggWindow()
   nameByImagePtr(),
   menubar(0),
   icon_xmahjongg(0),
-  radio_group_background_image(0)
+  radio_group_background_image(0),
+  radio_group_tileset(0)
 {}
 
 // Construct a MahjonggWindow
@@ -115,7 +120,8 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   nameByImagePtr(),
   menubar(0),
   icon_xmahjongg(0),
-  radio_group_background_image(0)
+  radio_group_background_image(0),
+  radio_group_tileset(0)
 {
 	known_image_extensions.insert( "GIF" );
 	known_image_extensions.insert( "PNG" );
@@ -125,6 +131,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	srand( time(0) );
 
 	radio_group_background_image = new FXRadioGroup();
+	radio_group_tileset 		 = new FXRadioGroup();
 
 	icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
 	setIcon( icon_xmahjongg );
@@ -147,6 +154,19 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     radio_group_background_image->add( mc_background_user_image_dir );
 
     new FXMenuTitle(menubar,"&Background",NULL,background);
+
+
+
+
+    FXMenuPane *tileset = new FXMenuPane(this);
+    mc_tileset_thick    = new FXMenuRadio(tileset,"Thick",this,ID_TILESET_THICK);
+    mc_tileset_thin     = new FXMenuRadio(tileset,"Thin",this,ID_TILESET_THIN);
+
+    radio_group_tileset->add( mc_tileset_thick );
+    radio_group_tileset->add( mc_tileset_thin );
+
+    new FXMenuTitle(menubar,"&Tileset",NULL,tileset);
+
 
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(this,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
@@ -178,8 +198,11 @@ MahjonggWindow::~MahjonggWindow()
 
 	imageByName.clear();
 
+	releaseBoard();
+
 	delete icon_xmahjongg;
 	delete radio_group_background_image;
+	delete radio_group_tileset;
 }
 
 void MahjonggWindow::detach()
@@ -204,6 +227,36 @@ void MahjonggWindow::create(){
 	loadButtonImages();
 	loadDigitImages();
 	loadBackgroundImages();
+
+	reloadBoard();
+
+	// Make the main window appear
+	show(PLACEMENT_SCREEN);
+	getApp()->addTimeout( this, ID_TIMER, TIMEOUT_VALUE );
+}
+
+void MahjonggWindow::releaseBoard()
+{
+	if( panel ) {
+		delete panel->board();
+		delete panel->new_but;
+		delete panel->undo_but;
+		delete panel->quit_but;
+		delete panel->hint_but;
+		delete panel->clean_but;
+	}
+
+	delete panel;   panel = 0;
+	delete game;    game = 0;
+	delete tileset; tileset = 0;
+	delete matches; matches = 0;
+
+	canvas->clear();
+}
+
+void MahjonggWindow::reloadBoard()
+{
+	releaseBoard();
 
 	if( mc_background_user_image_dir->getCheck() ) {
 		loadRandomImageFromPath( background_image_path );
@@ -266,35 +319,28 @@ void MahjonggWindow::create(){
 	}
 
 
-    int wid, hgt;
-    board->tile_layout_size(&wid, &hgt);
+	int wid, hgt;
+	board->tile_layout_size(&wid, &hgt);
 
-    DEBUG( format( "Board size: %dx%d", wid, hgt ) );
+	DEBUG( format( "Board size: %dx%d", wid, hgt ) );
 
-    int width = wid + 38;
-    int height = hgt + 38 + 56; // + Buttons
-    setWidth(width);
-    setHeight(height + menubar->getHeight());
-    canvas->resize(width, height );
-   
-    // automatically done by panel->resize()
-    // board->set_size(width, height - board->y_pos());
-    // board->center_layout();
-    panel->resize(width,height);
+	int width = wid + 38;
+	int height = hgt + 38 + 56; // + Buttons
+	setWidth(width);
+	setHeight(height + menubar->getHeight());
+	canvas->resize(width, height );
 
-    game->start(time(0), solveable_boards );
-    last_new_board = Moment::now();
-    panel->set_visible( true );
+	// automatically done by panel->resize()
+	// board->set_size(width, height - board->y_pos());
+	// board->center_layout();
+	panel->resize(width,height);
+
+	game->start(time(0), solveable_boards );
+	last_new_board = Moment::now();
+	panel->set_visible( true );
 
 	panel->redraw_all();
-
-	// Make the main window appear
-	show(PLACEMENT_SCREEN);
-	getApp()->addTimeout( this, ID_TIMER, TIMEOUT_VALUE );
-
 }
-
-
 
 // Mouse button was pressed somewhere
 long MahjonggWindow::onMouseDown(FXObject*,FXSelector,void* ptr){
@@ -402,7 +448,14 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 
 	Tileset *tileset = 0;
 
-	tileset = load_tileset_thick( this );
+	if( mc_tileset_thick->getCheck() ) {
+		tileset = load_tileset_thick( this );
+	} else  if( mc_tileset_thin->getCheck() ) {
+		tileset = load_tileset_thin( this );
+	} else {
+		tileset = load_tileset_thick( this );
+	}
+	//tileset = load_tileset_thin( this );
 #if 0
 	// Xmahjongg tileset?
 	if (gfs && !tileset && Gif_ImageCount(gfs) > 1)
@@ -725,6 +778,9 @@ void MahjonggWindow::writeRegistry()
 	getApp()->reg().writeStringEntry( "SETTINGS", "last_file_open_path", last_file_open_path.c_str() );
 	getApp()->reg().writeStringEntry( "SETTINGS", "background_image_name", background_image_name.c_str() );
 	getApp()->reg().writeStringEntry( "SETTINGS", "background_image_path", background_image_path.c_str() );
+
+	getApp()->reg().writeBoolEntry("SETTINGS","tileset_thick", mc_tileset_thick->getCheck() );
+	getApp()->reg().writeBoolEntry("SETTINGS","tileset_thin", mc_tileset_thin->getCheck() );
 }
 
 void MahjonggWindow::readRegistry()
@@ -765,6 +821,14 @@ void MahjonggWindow::readRegistry()
 	}
 
 	last_file_open_path   = getApp()->reg().readStringEntry( "SETTING", "last_file_open_path", "" );
+
+
+	if( getApp()->reg().readBoolEntry("SETTINGS","tileset_thick", true ) ) {
+		radio_group_tileset->setCheck( mc_tileset_thick );
+	}
+	else if( getApp()->reg().readBoolEntry("SETTINGS","tileset_thin", false ) ) {
+		radio_group_tileset->setCheck( mc_tileset_thin );
+	}
 }
 
 bool MahjonggWindow::loadRandomImageFromPath( const std::string & image_dir )
@@ -806,6 +870,21 @@ bool MahjonggWindow::loadRandomImageFromPath( const std::string & image_dir )
 
 	return true;
 }
+
+
+long MahjonggWindow::onChangeTilesetThick(FXObject* obj,FXSelector sel,void* ptr)
+{
+	radio_group_tileset->setCheck( mc_tileset_thick );
+	reloadBoard();
+}
+
+long MahjonggWindow::onChangeTilesetThin(FXObject* obj,FXSelector sel,void* ptr)
+{
+	radio_group_tileset->setCheck( mc_tileset_thin );
+	reloadBoard();
+}
+
+
 
 void
 fatal_error(const char *message, ...)

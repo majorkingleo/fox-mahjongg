@@ -58,13 +58,7 @@ FXPixelBuffer::FXPixelBuffer(MahjonggWindow *root_, FXComposite* p,FXObject* tgt
 
 FXPixelBuffer::~FXPixelBuffer()
 {
-	for( auto dc : owned_dc ) {
-		delete dc;
-	}
-
-	for( auto obj : objects ) {
-		delete obj;
-	}
+	clear();
 
 	if( buffer ) {
 		delete buffer;
@@ -566,4 +560,20 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
 
 #endif
     image->render();
+}
+
+void FXPixelBuffer::clear()
+{
+	for( auto it = objects.begin(); it != objects.end(); it++ ) {
+		delete *it;
+	}
+
+	objects.clear();
+	floors.clear();
+
+	for( FXDC *dc : owned_dc ) {
+		delete dc;
+	}
+
+	owned_dc.clear();
 }

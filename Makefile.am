@@ -50,10 +50,14 @@ fox_mahjongg_SOURCES=\
 		src/xmj3ts.hh \
 		src/xmj3ts.cc  \
 		src/random.cc \
-		src/data_tiles_thick.cc \
 		src/data_tiles_thick.h \
+		src/data_tiles_thick.cc \
+		src/data_tiles_thin.h \
+		src/data_tiles_thin.cc \
 		src/tiles_thick.h \
 		src/tiles_thick.cc \
+		src/tiles_thin.h \
+		src/tiles_thin.cc \
 		src/data_buttons.h \
 		src/data_buttons.cc \
 		src/data_digits.h \
@@ -73,6 +77,8 @@ fox_mahjongg_SOURCES=\
 		
 BUILT_SOURCES=src/data_tiles_thick.cc \
 			  src/data_tiles_thick.h \
+			  src/data_tiles_thin.cc \
+			  src/data_tiles_thin.h \
 			  src/data_buttons.h \
 			  src/data_buttons.cc \
 			  src/data_digits.h \
@@ -92,6 +98,16 @@ src/data_tiles_thick.cc: share/tiles/thick.gif
 	reswrap -o src/data_tiles_thick.h -h --suffix _gif share/tiles/thick/tiles_thick_*.gif
 		
 src/data_tiles_thick.h: src/data_tiles_thick.cc
+
+
+src/data_tiles_thin.cc: share/tiles/thin.gif
+	mkdir -p share/tiles/thin
+	convert share/tiles/thin.gif share/tiles/thin/tiles_thin_%02d.gif
+	reswrap -o src/data_tiles_thin.cc -i data_tiles_thin.h --suffix _gif share/tiles/thin/tiles_thin_*.gif
+	reswrap -o src/data_tiles_thin.h -h --suffix _gif share/tiles/thin/tiles_thin_*.gif
+		
+src/data_tiles_thin.h: src/data_tiles_thin.cc
+
 
 src/data_buttons.cc: images/buttons.gif
 	mkdir -p images/buttons

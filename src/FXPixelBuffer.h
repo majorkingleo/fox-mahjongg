@@ -78,6 +78,8 @@ public:
 
 	void redrawIfDirty();
 
+	void clear();
+
 public:
 	RefMImage createImage( FXImage *image );
 	FXImage *createImage( RefMImage mimage );

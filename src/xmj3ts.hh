@@ -66,9 +66,6 @@ protected:
   Vector<short> _obscured_ref;
   
   Vector<FXImage*> _images;
-  Vector<FXBitmap*> _masks;
-  
-
 
   TILE_DATA _tile_data;
 

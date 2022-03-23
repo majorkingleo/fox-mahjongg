@@ -80,6 +80,12 @@ private:
 
     FXRadioGroup *radio_group_background_image;
 
+
+    FXMenuRadio *mc_tileset_thick;
+    FXMenuRadio *mc_tileset_thin;
+
+    FXRadioGroup *radio_group_tileset;
+
 protected:
 	MahjonggWindow();
 	~MahjonggWindow();
@@ -100,6 +106,9 @@ public:
 	long onChangeBackgroundUserImage(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeBackgroundUserImageDir(FXObject* obj,FXSelector sel,void* ptr);
 
+	long onChangeTilesetThick(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeTilesetThin(FXObject* obj,FXSelector sel,void* ptr);
+
 	void detach() override;
 	void layout() override;
 
@@ -115,6 +124,8 @@ public:
 		ID_BACKGROUND_GREEN,
 		ID_BACKGROUND_USER_IMAGE,
 		ID_BACKGROUND_USER_IMAGE_DIR,
+		ID_TILESET_THICK,
+		ID_TILESET_THIN,
 		ID_LAST
 	};
 
@@ -180,6 +191,9 @@ private:
 	bool loadRandomImageFromPath( const std::string & image_dir );
 
 	std::string getFileExt( const std::string & file_name );
+
+	void reloadBoard();
+	void releaseBoard();
 };
 
 

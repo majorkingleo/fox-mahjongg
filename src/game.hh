@@ -144,13 +144,6 @@ extern void zrand_seed(uint32_t);
 extern uint32_t zrand();
 
 
-inline Tile *&
-Game::grid(short r, short c, short l) const
-{
-  assert(r>=0 && r<TILE_ROWS && c>=0 && c<TILE_COLS && l>=0 && l<TILE_LEVS);
-  return _grid[ (r * TILE_LEVS + l) * TILE_COLS + c ];
-}
-
 inline int
 Game::free_count(int i)
 {
