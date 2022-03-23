@@ -16,7 +16,7 @@ extern "C" {
 #include <vector>
 #include <cstdlib>
 
-#ifdef _WIN32 && !defined(WIN32)
+#if defined(_WIN32) && !defined(WIN32)
 #define WIN32
 #endif //_WIN32
 
