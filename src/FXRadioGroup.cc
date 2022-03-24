@@ -56,8 +56,6 @@ void FXRadioGroup::setCheck( FXMenuRadio *ele )
 		}
 	}
 
-	std::cout << "checking: " << ele->getText().text() << std::endl;
-
 	current_checked_element = ele;
 	ele->setCheck( true );
 }

@@ -876,12 +876,14 @@ long MahjonggWindow::onChangeTilesetThick(FXObject* obj,FXSelector sel,void* ptr
 {
 	radio_group_tileset->setCheck( mc_tileset_thick );
 	reloadBoard();
+	return 1;
 }
 
 long MahjonggWindow::onChangeTilesetThin(FXObject* obj,FXSelector sel,void* ptr)
 {
 	radio_group_tileset->setCheck( mc_tileset_thin );
 	reloadBoard();
+	return 1;
 }
 
 
