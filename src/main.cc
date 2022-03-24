@@ -901,6 +901,7 @@ long MahjonggWindow::onChangeTilesetSmall(FXObject* obj,FXSelector sel,void* ptr
 {
 	radio_group_tileset->setCheck( mc_tileset_small );
 	reloadBoard();
+	return 1;
 }
 
 void
