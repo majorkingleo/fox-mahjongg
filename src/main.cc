@@ -19,6 +19,7 @@
 #include <cpp_util.h>
 #include "tiles_thick.h"
 #include "tiles_thin.h"
+#include "tiles_small.h"
 #include "data_buttons.h"
 #include "data_digits.h"
 #include "data_xmahjongg.h"
@@ -57,6 +58,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_THICK, 				MahjonggWindow::onChangeTilesetThick),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_THIN, 				MahjonggWindow::onChangeTilesetThin),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_SMALL, 				MahjonggWindow::onChangeTilesetSmall),
 };
 
 
@@ -161,9 +163,11 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     FXMenuPane *tileset = new FXMenuPane(this);
     mc_tileset_thick    = new FXMenuRadio(tileset,"Thick",this,ID_TILESET_THICK);
     mc_tileset_thin     = new FXMenuRadio(tileset,"Thin",this,ID_TILESET_THIN);
+    mc_tileset_small    = new FXMenuRadio(tileset,"Small",this,ID_TILESET_SMALL);
 
     radio_group_tileset->add( mc_tileset_thick );
     radio_group_tileset->add( mc_tileset_thin );
+    radio_group_tileset->add( mc_tileset_small );
 
     new FXMenuTitle(menubar,"&Tileset",NULL,tileset);
 
@@ -326,8 +330,9 @@ void MahjonggWindow::reloadBoard()
 
 	int width = wid + 38;
 	int height = hgt + 38 + 56; // + Buttons
-	setWidth(width);
-	setHeight(height + menubar->getHeight());
+	// setWidth(width);
+	// setHeight(height + menubar->getHeight());
+	resize(width, height + menubar->getHeight());
 	canvas->resize(width, height );
 
 	// automatically done by panel->resize()
@@ -452,6 +457,8 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 		tileset = load_tileset_thick( this );
 	} else  if( mc_tileset_thin->getCheck() ) {
 		tileset = load_tileset_thin( this );
+	} else  if( mc_tileset_small->getCheck() ) {
+		tileset = load_tileset_small( this );
 	} else {
 		tileset = load_tileset_thick( this );
 	}
@@ -781,6 +788,7 @@ void MahjonggWindow::writeRegistry()
 
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_thick", mc_tileset_thick->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_thin", mc_tileset_thin->getCheck() );
+	getApp()->reg().writeBoolEntry("SETTINGS","tileset_small", mc_tileset_small->getCheck() );
 }
 
 void MahjonggWindow::readRegistry()
@@ -828,6 +836,9 @@ void MahjonggWindow::readRegistry()
 	}
 	else if( getApp()->reg().readBoolEntry("SETTINGS","tileset_thin", false ) ) {
 		radio_group_tileset->setCheck( mc_tileset_thin );
+	}
+	else if( getApp()->reg().readBoolEntry("SETTINGS","tileset_small", false ) ) {
+		radio_group_tileset->setCheck( mc_tileset_small );
 	}
 }
 
@@ -886,7 +897,11 @@ long MahjonggWindow::onChangeTilesetThin(FXObject* obj,FXSelector sel,void* ptr)
 	return 1;
 }
 
-
+long MahjonggWindow::onChangeTilesetSmall(FXObject* obj,FXSelector sel,void* ptr)
+{
+	radio_group_tileset->setCheck( mc_tileset_small );
+	reloadBoard();
+}
 
 void
 fatal_error(const char *message, ...)

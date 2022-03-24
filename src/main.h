@@ -83,6 +83,7 @@ private:
 
     FXMenuRadio *mc_tileset_thick;
     FXMenuRadio *mc_tileset_thin;
+    FXMenuRadio *mc_tileset_small;
 
     FXRadioGroup *radio_group_tileset;
 
@@ -108,6 +109,7 @@ public:
 
 	long onChangeTilesetThick(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetThin(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeTilesetSmall(FXObject* obj,FXSelector sel,void* ptr);
 
 	void detach() override;
 	void layout() override;
@@ -126,6 +128,7 @@ public:
 		ID_BACKGROUND_USER_IMAGE_DIR,
 		ID_TILESET_THICK,
 		ID_TILESET_THIN,
+		ID_TILESET_SMALL,
 		ID_LAST
 	};
 

@@ -12,3 +12,5 @@ data_background_green.cc
 data_background_green.h
 data_tiles_thin.h
 data_tiles_thin.cc
+data_tiles_small.h
+data_tiles_small.cc
