@@ -62,6 +62,8 @@ fox_mahjongg_SOURCES=\
 		src/tiles_gnome2.cc \
 		src/tiles_dorwhite.h \
 		src/tiles_dorwhite.cc \
+		src/tiles_dorothys.h \
+		src/tiles_dorothys.cc \
 		src/FXPixelBuffer.h \
 		src/FXPixelBuffer.cc \
 		src/FXPixelBufferObject.h \
@@ -124,6 +126,13 @@ generated/data_tiles_dorwhite.cc: share/tiles/dorwhite.gif
 		
 generated/data_tiles_dorwhite.h: generated/data_tiles_dorwhite.cc
 
+
+
+generated/data_tiles_dorothys.cc: share/tiles/dorothys.gif
+	reswrap -o generated/data_tiles_dorothys.cc -i data_tiles_dorothys.h --suffix _gif --prefix tiles_ share/tiles/dorothys.gif
+	reswrap -o generated/data_tiles_dorothys.h -h --suffix _gif --prefix tiles_ share/tiles/dorothys.gif
+		
+generated/data_tiles_dorothys.h: generated/data_tiles_dorothys.cc
 
 
 
@@ -244,6 +253,8 @@ BUILT_SOURCES=\
 	generated/data_tiles_gnome2.cc \
 	generated/data_tiles_dorwhite.h \
 	generated/data_tiles_dorwhite.cc \
+	generated/data_tiles_dorothys.h \
+	generated/data_tiles_dorothys.cc \
 	generated/data_buttons.h \
 	generated/data_buttons.cc \
 	generated/data_digits.h \
@@ -270,6 +281,8 @@ generated_libgenerated_a_SOURCES=\
 	generated/data_tiles_gnome2.cc \
 	generated/data_tiles_dorwhite.h \
 	generated/data_tiles_dorwhite.cc \
+	generated/data_tiles_dorothys.h \
+	generated/data_tiles_dorothys.cc \
 	generated/data_buttons.h \
 	generated/data_buttons.cc \
 	generated/data_digits.h \

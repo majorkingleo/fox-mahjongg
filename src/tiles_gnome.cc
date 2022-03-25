@@ -4,7 +4,7 @@
  *  Created on: 24.02.2022
  *      Author: martin
  */
-#include <tiles_small.h>
+#include <tiles_gnome.h>
 #include <data_tiles_gnome.h>
 #include "gmjts.hh"
 #include <iostream>
