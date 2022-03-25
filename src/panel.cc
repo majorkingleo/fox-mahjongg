@@ -11,6 +11,7 @@
 #include "main.h"
 #include "debug.h"
 #include <format.h>
+#include "FXPixelBuffer.h"
 
 using namespace Tools;
 

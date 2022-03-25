@@ -16,10 +16,6 @@
 #include "moment.hh"
 #include "fx.h"
 #include "game.hh"
-#include <xmj3ts.hh>
-#include <gmjts.hh>
-#include <kdets.hh>
-#include <kmjts.hh>
 #include "tileset.hh"
 #include <string>
 #include <map>
@@ -84,6 +80,7 @@ private:
     FXMenuRadio *mc_tileset_thick;
     FXMenuRadio *mc_tileset_thin;
     FXMenuRadio *mc_tileset_small;
+    FXMenuRadio *mc_tileset_gnome;
 
     FXRadioGroup *radio_group_tileset;
 
@@ -110,6 +107,7 @@ public:
 	long onChangeTilesetThick(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetThin(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetSmall(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeTilesetGnome(FXObject* obj,FXSelector sel,void* ptr);
 
 	void detach() override;
 	void layout() override;
@@ -129,6 +127,7 @@ public:
 		ID_TILESET_THICK,
 		ID_TILESET_THIN,
 		ID_TILESET_SMALL,
+		ID_TILESET_GNOME,
 		ID_LAST
 	};
 

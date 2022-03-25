@@ -14,3 +14,5 @@ data_tiles_thin.h
 data_tiles_thin.cc
 data_tiles_small.h
 data_tiles_small.cc
+data_tiles_gnome.h
+data_tiles_gnome.cc

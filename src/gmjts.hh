@@ -2,12 +2,27 @@
 #define GMJTS_HH
 #include "fx.h"
 #include "tileset.hh"
+#include <map>
+#include "FXPixelBuffer.h"
 
-#if 0
-class MahjonggWindow;
 
 class GnomeMjTileset: public Tileset {
   
+	struct ObjectData
+	{
+		FXPixelBuffer::RefMImage img;
+		short which;
+
+		ObjectData()
+		: img(),
+		  which(-1)
+		{}
+
+		~ObjectData()
+		{}
+	};
+
+
   enum ImageError {
     ieNone = 0,
     ieBadGif,
@@ -16,19 +31,24 @@ class GnomeMjTileset: public Tileset {
   
   int _image_error;
   
-  Vector<FXImage*> _images;
-  Vector<FXImage*> _masks;
+  std::vector<FXPixelBuffer::RefMImage> _images;
   
-  void initialize_images();
+  MahjonggWindow *_root;
+  std::map<int,FXPixelBufferObject*> _objects_by_tilenumber;
+
+  FXPixelBuffer::RefMImage _base_image;
+  FXPixelBuffer*  		   _pixelbuffer;
+  int					   _border;
+
+  void initialize_images( const unsigned char *gif_data );
   void check_images();
   bool check() const;
   void initialize();
-  
-  void draw(SwDrawable *, short, short, short);
+
   
  public:
   
-  GnomeMjTileset( MahjonggWindow *root );
+  GnomeMjTileset( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, const unsigned char* gif_data, int border = 4, int shadow = 1 );
   ~GnomeMjTileset();
   
   GnomeMjTileset( const GnomeMjTileset & other ) = delete;
@@ -36,10 +56,14 @@ class GnomeMjTileset: public Tileset {
 
   bool ok() const override { return true; }
 
-  void draw_normal(const Tile *, SwDrawable *, short x, short y);
-  void draw_lit(const Tile *, SwDrawable *, short x, short y);
-  void draw_obscured(const Tile *, SwDrawable *, short x, short y);
+  void draw_normal(const Tile *, SwDrawable *, short x, short y) override;
+  void draw_lit(const Tile *, SwDrawable *, short x, short y) override;
+  void draw_obscured(const Tile *, SwDrawable *, short x, short y) override;
+  void erase( const Tile * tile, SwDrawable *drawable ) override;
   
+ private:
+  FXPixelBuffer::RefMImage createImage( const Tile *t, SwDrawable *drawable, short which );
+
 };
 #endif
-#endif
+

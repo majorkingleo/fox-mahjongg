@@ -1,6 +1,7 @@
 #include "matches.hh"
 #include "main.h"
 #include <debug.h>
+#include "FXPixelBuffer.h"
 
 using namespace Tools;
 
