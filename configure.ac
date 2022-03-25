@@ -32,7 +32,7 @@ AC_DEFUN([LD_FLAGS_CHECK],
 ])
 
 
-AC_INIT(fox-mahjongg, 0.1)
+AC_INIT(fox-mahjongg, 0.3)
 AM_INIT_AUTOMAKE([subdir-objects -Wall])
 
 
