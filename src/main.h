@@ -64,6 +64,7 @@ private:
 
     FXMenuRadio *mc_background_default;
     FXMenuRadio *mc_background_green;
+    FXMenuRadio *mc_background_blue;
     FXMenuRadio *mc_background_user_image;
     FXMenuRadio *mc_background_user_image_dir;
 
@@ -101,6 +102,7 @@ public:
 	long onKeypress(FXObject*,FXSelector,void*);
 	long onChangeBackgroundDefault(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeBackgroundGreen(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeBackgroundBlue(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeBackgroundUserImage(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeBackgroundUserImageDir(FXObject* obj,FXSelector sel,void* ptr);
 
@@ -122,6 +124,7 @@ public:
 		ID_TIMER,
 		ID_BACKGROUND_DEFAULT,
 		ID_BACKGROUND_GREEN,
+		ID_BACKGROUND_BLUE,
 		ID_BACKGROUND_USER_IMAGE,
 		ID_BACKGROUND_USER_IMAGE_DIR,
 		ID_TILESET_THICK,

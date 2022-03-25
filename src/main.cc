@@ -29,6 +29,7 @@
 #include <alarm.hh>
 #include "data_background_default.h"
 #include "data_background_green.h"
+#include "data_background_blue.h"
 #include <string_utils.h>
 #include <cppdir.h>
 #include "FXRadioGroup.h"
@@ -55,6 +56,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_DEFAULT,     	MahjonggWindow::onChangeBackgroundDefault),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	    	MahjonggWindow::onChangeBackgroundGreen),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_BLUE, 	    	MahjonggWindow::onChangeBackgroundBlue),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE, 		MahjonggWindow::onChangeBackgroundUserImage),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_USER_IMAGE_DIR, 	MahjonggWindow::onChangeBackgroundUserImageDir),
 
@@ -150,11 +152,13 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     FXMenuPane *background=new FXMenuPane(this);
     mc_background_default        = new FXMenuRadio(background,"Default",this,ID_BACKGROUND_DEFAULT);
     mc_background_green          = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
+    mc_background_blue           = new FXMenuRadio(background,"Blue",this,ID_BACKGROUND_BLUE);
     mc_background_user_image     = new FXMenuRadio(background,"User defined",this,ID_BACKGROUND_USER_IMAGE);
     mc_background_user_image_dir = new FXMenuRadio(background,"User defined image directory",this,ID_BACKGROUND_USER_IMAGE_DIR);
 
     radio_group_background_image->add( mc_background_default );
     radio_group_background_image->add( mc_background_green );
+    radio_group_background_image->add( mc_background_blue );
     radio_group_background_image->add( mc_background_user_image );
     radio_group_background_image->add( mc_background_user_image_dir );
 
@@ -682,6 +686,7 @@ void MahjonggWindow::loadBackgroundImages()
 {
 	imageByName["background_default"]= createGifImage( background_default_gif, "background_default", false );
 	imageByName["background_green"]= createGifImage( background_green_gif, "background_green", false );
+	imageByName["background_blue"]= createGifImage( background_blue_gif, "background_blue", false );
 }
 
 long MahjonggWindow::onKeypress(FXObject*,FXSelector,void* ptr){
@@ -713,6 +718,18 @@ long MahjonggWindow::onChangeBackgroundGreen(FXObject* obj,FXSelector sel, void*
 	if( panel ) {
 		panel->set_background(getImageByName("background_green"));
 		radio_group_background_image->setCheck( mc_background_green );
+		save_point.commit();
+	}
+	return 1;
+}
+
+long MahjonggWindow::onChangeBackgroundBlue(FXObject* obj,FXSelector sel, void* ptr)
+{
+	FXRadioGroup::SavePoint save_point( radio_group_background_image->getSavePoint() );
+
+	if( panel ) {
+		panel->set_background(getImageByName("background_blue"));
+		radio_group_background_image->setCheck( mc_background_blue );
 		save_point.commit();
 	}
 	return 1;
@@ -787,6 +804,7 @@ void MahjonggWindow::writeRegistry()
 {
 	getApp()->reg().writeBoolEntry("SETTINGS","background_default", mc_background_default->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","background_green", mc_background_green->getCheck() );
+	getApp()->reg().writeBoolEntry("SETTINGS","background_blue", mc_background_blue->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","background_user_image", mc_background_user_image->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","background_user_image_dir", mc_background_user_image_dir->getCheck() );
 	getApp()->reg().writeStringEntry( "SETTINGS", "last_file_open_path", last_file_open_path.c_str() );
@@ -807,9 +825,15 @@ void MahjonggWindow::readRegistry()
 		background_image_name = "";
 	}
 
-	if( getApp()->reg().readBoolEntry("SETTINGS","background_green", true ) ) {
+	if( getApp()->reg().readBoolEntry("SETTINGS","background_green", false ) ) {
 		radio_group_background_image->setCheck( mc_background_green );
 		background_name = "background_green";
+		background_image_name = "";
+	}
+
+	if( getApp()->reg().readBoolEntry("SETTINGS","background_blue", true ) ) {
+		radio_group_background_image->setCheck( mc_background_blue );
+		background_name = "background_blue";
 		background_image_name = "";
 	}
 

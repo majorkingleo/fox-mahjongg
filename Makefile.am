@@ -76,6 +76,8 @@ fox_mahjongg_SOURCES=\
 		src/data_background_default.cc \
 		src/data_background_green.h \
 		src/data_background_green.cc \
+		src/data_background_blue.h \
+		src/data_background_blue.cc \
 		src/FXPixelBuffer.h \
 		src/FXPixelBuffer.cc \
 		src/FXPixelBufferObject.h \
@@ -100,7 +102,9 @@ BUILT_SOURCES=src/data_tiles_thick.cc \
 			  src/data_background_default.h \
 			  src/data_background_default.cc \
 			  src/data_background_green.h \
-			  src/data_background_green.cc			  	 
+			  src/data_background_green.cc \
+			  src/data_background_blue.h \
+			  src/data_background_blue.cc		  	 
 			  
 
 src/data_tiles_thick.cc: share/tiles/thick.gif
@@ -174,6 +178,12 @@ src/data_background_green.h: src/data_background_green.cc
 src/data_background_green.cc: share/backgrounds/green.gif
 	reswrap -o src/data_background_green.cc -i data_background_green.h --suffix _gif --prefix background_ share/backgrounds/green.gif
 	reswrap -o src/data_background_green.h -h --suffix _gif --prefix background_ share/backgrounds/green.gif
+
+
+src/data_background_blue.h: src/data_background_blue.cc
+src/data_background_blue.cc: share/backgrounds/blue.gif
+	reswrap -o src/data_background_blue.cc -i data_background_blue.h --suffix _gif --prefix background_ share/backgrounds/blue.gif
+	reswrap -o src/data_background_blue.h -h --suffix _gif --prefix background_ share/backgrounds/blue.gif
 
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \
