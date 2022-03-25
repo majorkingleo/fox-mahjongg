@@ -16,5 +16,7 @@ data_tiles_small.h
 data_tiles_small.cc
 data_tiles_gnome.h
 data_tiles_gnome.cc
+data_tiles_gnome2.h
+data_tiles_gnome2.cc
 data_background_blue.cc
 data_background_blue.h

@@ -58,6 +58,8 @@ fox_mahjongg_SOURCES=\
 		src/data_tiles_small.cc \
 		src/data_tiles_gnome.h \
 		src/data_tiles_gnome.cc \
+		src/data_tiles_gnome2.h \
+		src/data_tiles_gnome2.cc \
 		src/tiles_thick.h \
 		src/tiles_thick.cc \
 		src/tiles_thin.h \
@@ -66,6 +68,8 @@ fox_mahjongg_SOURCES=\
 		src/tiles_small.cc \
 		src/tiles_gnome.h \
 		src/tiles_gnome.cc \
+		src/tiles_gnome2.h \
+		src/tiles_gnome2.cc \
 		src/data_buttons.h \
 		src/data_buttons.cc \
 		src/data_digits.h \
@@ -93,6 +97,8 @@ BUILT_SOURCES=src/data_tiles_thick.cc \
 			  src/data_tiles_small.h \
 			  src/data_tiles_gnome.h \
 			  src/data_tiles_gnome.cc \
+			  src/data_tiles_gnome2.h \
+			  src/data_tiles_gnome2.cc \
 			  src/data_buttons.h \
 			  src/data_buttons.cc \
 			  src/data_digits.h \
@@ -145,6 +151,12 @@ src/data_tiles_gnome.cc: share/tiles/gnome.gif
 src/data_tiles_gnome.h: src/data_tiles_gnome.cc
 
 
+
+src/data_tiles_gnome2.cc: share/tiles/gnome2.gif
+	reswrap -o src/data_tiles_gnome2.cc -i data_tiles_gnome2.h --suffix _gif --prefix tiles_ share/tiles/gnome2.gif
+	reswrap -o src/data_tiles_gnome2.h -h --suffix _gif --prefix tiles_ share/tiles/gnome2.gif
+		
+src/data_tiles_gnome2.h: src/data_tiles_gnome2.cc
 
 
 src/data_buttons.cc: images/buttons.gif
