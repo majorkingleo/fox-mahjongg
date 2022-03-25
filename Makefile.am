@@ -60,6 +60,8 @@ fox_mahjongg_SOURCES=\
 		src/tiles_gnome.cc \
 		src/tiles_gnome2.h \
 		src/tiles_gnome2.cc \
+		src/tiles_dorwhite.h \
+		src/tiles_dorwhite.cc \
 		src/FXPixelBuffer.h \
 		src/FXPixelBuffer.cc \
 		src/FXPixelBufferObject.h \
@@ -113,6 +115,16 @@ generated/data_tiles_gnome2.cc: share/tiles/gnome2.gif
 	reswrap -o generated/data_tiles_gnome2.h -h --suffix _gif --prefix tiles_ share/tiles/gnome2.gif
 		
 generated/data_tiles_gnome2.h: generated/data_tiles_gnome2.cc
+
+
+
+generated/data_tiles_dorwhite.cc: share/tiles/dorwhite.gif
+	reswrap -o generated/data_tiles_dorwhite.cc -i data_tiles_dorwhite.h --suffix _gif --prefix tiles_ share/tiles/dorwhite.gif
+	reswrap -o generated/data_tiles_dorwhite.h -h --suffix _gif --prefix tiles_ share/tiles/dorwhite.gif
+		
+generated/data_tiles_dorwhite.h: generated/data_tiles_dorwhite.cc
+
+
 
 
 generated/data_buttons.cc: images/buttons.gif
@@ -230,6 +242,8 @@ BUILT_SOURCES=\
 	generated/data_tiles_gnome.cc \
 	generated/data_tiles_gnome2.h \
 	generated/data_tiles_gnome2.cc \
+	generated/data_tiles_dorwhite.h \
+	generated/data_tiles_dorwhite.cc \
 	generated/data_buttons.h \
 	generated/data_buttons.cc \
 	generated/data_digits.h \
@@ -254,6 +268,8 @@ generated_libgenerated_a_SOURCES=\
 	generated/data_tiles_gnome.cc \
 	generated/data_tiles_gnome2.h \
 	generated/data_tiles_gnome2.cc \
+	generated/data_tiles_dorwhite.h \
+	generated/data_tiles_dorwhite.cc \
 	generated/data_buttons.h \
 	generated/data_buttons.cc \
 	generated/data_digits.h \
