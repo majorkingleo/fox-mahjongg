@@ -85,6 +85,7 @@ private:
     FXMenuRadio *mc_tileset_gnome2;
     FXMenuRadio *mc_tileset_dorwhite;
     FXMenuRadio *mc_tileset_dorothys;
+    FXMenuRadio *mc_tileset_real;
 
     FXRadioGroup *radio_group_tileset;
 
@@ -116,6 +117,7 @@ public:
 	long onChangeTilesetGnome2(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetDorwhite(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetDorothys(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeTilesetReal(FXObject* obj,FXSelector sel,void* ptr);
 
 	void detach() override;
 	void layout() override;
@@ -140,6 +142,7 @@ public:
 		ID_TILESET_GNOME2,
 		ID_TILESET_DORWHITE,
 		ID_TILESET_DOROTHYS,
+		ID_TILESET_REAL,
 		ID_LAST
 	};
 

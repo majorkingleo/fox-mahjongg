@@ -64,6 +64,8 @@ fox_mahjongg_SOURCES=\
 		src/tiles_dorwhite.cc \
 		src/tiles_dorothys.h \
 		src/tiles_dorothys.cc \
+		src/tiles_real.h \
+		src/tiles_real.cc \
 		src/FXPixelBuffer.h \
 		src/FXPixelBuffer.cc \
 		src/FXPixelBufferObject.h \
@@ -133,6 +135,15 @@ generated/data_tiles_dorothys.cc: share/tiles/dorothys.gif
 	reswrap -o generated/data_tiles_dorothys.h -h --suffix _gif --prefix tiles_ share/tiles/dorothys.gif
 		
 generated/data_tiles_dorothys.h: generated/data_tiles_dorothys.cc
+
+
+
+
+generated/data_tiles_real.cc: share/tiles/real.gif
+	reswrap -o generated/data_tiles_real.cc -i data_tiles_real.h --suffix _gif --prefix tiles_ share/tiles/real*.gif
+	reswrap -o generated/data_tiles_real.h -h --suffix _gif --prefix tiles_ share/tiles/real*.gif
+		
+generated/data_tiles_real.h: generated/data_tiles_real.cc
 
 
 
@@ -240,33 +251,7 @@ liblcdf_liblcdf_a_SOURCES= \
     liblcdf/vectorv.hh \
     liblcdf/vectorv.cc
     
-BUILT_SOURCES=\
-	generated/data_tiles_thick.cc \
-	generated/data_tiles_thick.h \
-	generated/data_tiles_thin.cc \
-	generated/data_tiles_thin.h \
-	generated/data_tiles_small.cc \
-	generated/data_tiles_small.h \
-	generated/data_tiles_gnome.h \
-	generated/data_tiles_gnome.cc \
-	generated/data_tiles_gnome2.h \
-	generated/data_tiles_gnome2.cc \
-	generated/data_tiles_dorwhite.h \
-	generated/data_tiles_dorwhite.cc \
-	generated/data_tiles_dorothys.h \
-	generated/data_tiles_dorothys.cc \
-	generated/data_buttons.h \
-	generated/data_buttons.cc \
-	generated/data_digits.h \
-	generated/data_digits.cc \
-	generated/data_xmahjongg.h \
-	generated/data_xmahjongg.cc \
-	generated/data_background_default.h \
-	generated/data_background_default.cc \
-	generated/data_background_green.h \
-	generated/data_background_green.cc \
-	generated/data_background_blue.h \
-	generated/data_background_blue.cc	    
+
 
 generated_libgenerated_a_SOURCES=\
 	generated/data_tiles_thick.h \
@@ -283,6 +268,8 @@ generated_libgenerated_a_SOURCES=\
 	generated/data_tiles_dorwhite.cc \
 	generated/data_tiles_dorothys.h \
 	generated/data_tiles_dorothys.cc \
+	generated/data_tiles_real.h \
+	generated/data_tiles_real.cc \
 	generated/data_buttons.h \
 	generated/data_buttons.cc \
 	generated/data_digits.h \
@@ -295,6 +282,9 @@ generated_libgenerated_a_SOURCES=\
 	generated/data_background_green.cc \
 	generated/data_background_blue.h \
 	generated/data_background_blue.cc
+	
+BUILT_SOURCES=\
+	 $(generated_libgenerated_a_SOURCES)
 		
 fox_mahjongg_LDADD = \
 	tools/libtools.a \

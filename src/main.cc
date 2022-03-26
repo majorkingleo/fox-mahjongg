@@ -24,6 +24,7 @@
 #include "tiles_gnome2.h"
 #include "tiles_dorwhite.h"
 #include "tiles_dorothys.h"
+#include "tiles_real.h"
 #include "data_buttons.h"
 #include "data_digits.h"
 #include "data_xmahjongg.h"
@@ -70,6 +71,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_GNOME2,				MahjonggWindow::onChangeTilesetGnome2),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_DORWHITE,			MahjonggWindow::onChangeTilesetDorwhite),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_DOROTHYS,			MahjonggWindow::onChangeTilesetDorothys),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_REAL,				MahjonggWindow::onChangeTilesetReal),
 };
 
 
@@ -181,6 +183,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     mc_tileset_gnome2   = new FXMenuRadio(tileset,"Gnome2",this,ID_TILESET_GNOME2);
     mc_tileset_dorwhite = new FXMenuRadio(tileset,"Dorwhite",this,ID_TILESET_DORWHITE);
     mc_tileset_dorothys = new FXMenuRadio(tileset,"Dorothys",this,ID_TILESET_DOROTHYS);
+    mc_tileset_real 	= new FXMenuRadio(tileset,"Real",this,ID_TILESET_REAL);
 
     radio_group_tileset->add( mc_tileset_thick );
     radio_group_tileset->add( mc_tileset_thin );
@@ -189,6 +192,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     radio_group_tileset->add( mc_tileset_gnome2 );
     radio_group_tileset->add( mc_tileset_dorwhite );
     radio_group_tileset->add( mc_tileset_dorothys );
+    radio_group_tileset->add( mc_tileset_real );
 
     new FXMenuTitle(menubar,"&Tileset",NULL,tileset);
 
@@ -485,9 +489,11 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 	} else  if( mc_tileset_gnome2->getCheck() ) {
 		tileset = load_tileset_gnome2( this, canvas );
 	} else  if( mc_tileset_dorwhite->getCheck() ) {
-			tileset = load_tileset_dorwhite( this, canvas );
+		tileset = load_tileset_dorwhite( this, canvas );
 	} else  if( mc_tileset_dorothys->getCheck() ) {
-			tileset = load_tileset_dorothys( this, canvas );
+		tileset = load_tileset_dorothys( this, canvas );
+	} else  if( mc_tileset_real->getCheck() ) {
+		tileset = load_tileset_real( this, canvas );
 	} else {
 		tileset = load_tileset_thick( this );
 	}
@@ -836,6 +842,7 @@ void MahjonggWindow::writeRegistry()
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_gnome2",   	mc_tileset_gnome2->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_dorwhite",	mc_tileset_dorwhite->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_dorothys",	mc_tileset_dorothys->getCheck() );
+	getApp()->reg().writeBoolEntry("SETTINGS","tileset_real",		mc_tileset_real->getCheck() );
 }
 
 void MahjonggWindow::readRegistry()
@@ -904,6 +911,9 @@ void MahjonggWindow::readRegistry()
 	}
 	else if( getApp()->reg().readBoolEntry("SETTINGS","tileset_dorothys", false ) ) {
 		radio_group_tileset->setCheck( mc_tileset_dorothys );
+	}
+	else if( getApp()->reg().readBoolEntry("SETTINGS","tileset_real", false ) ) {
+		radio_group_tileset->setCheck( mc_tileset_real );
 	}
 }
 
@@ -997,6 +1007,12 @@ long MahjonggWindow::onChangeTilesetDorothys(FXObject* obj,FXSelector sel,void* 
 	return 1;
 }
 
+long MahjonggWindow::onChangeTilesetReal(FXObject* obj,FXSelector sel,void* ptr)
+{
+	radio_group_tileset->setCheck( mc_tileset_real);
+	reloadBoard();
+	return 1;
+}
 
 void
 fatal_error(const char *message, ...)
