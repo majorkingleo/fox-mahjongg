@@ -144,27 +144,7 @@ extern void zrand_seed(uint32_t);
 extern uint32_t zrand();
 
 
-inline int
-Game::free_count(int i)
-{
-  assert(i >= 0 && i < nmatches());
-  if (_bad_free_count) make_free_count();
-  return _free_count[i];
-}
 
-inline int
-Game::left_count(int i) const
-{
-  assert(i >= 0 && i < nmatches());
-  return _left_count[i];
-}
-
-inline int
-Game::possible_moves()
-{
-  if (_possible_moves < 0) count_possible_moves();
-  return _possible_moves;
-}
 
 extern void fatal_error(const char *, ...);
 extern void error(const char *, ...);
