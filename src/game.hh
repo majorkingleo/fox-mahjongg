@@ -3,6 +3,8 @@
 #include <liblcdf/vector.hh>
 #include <stdint.h>
 #include <stdio.h>
+#include <string>
+
 class Tile;
 class Tileset;
 class Game;
@@ -90,6 +92,10 @@ class Game {
   bool layout_kyodai_file(FILE *);
   bool layout_kmahjongg_file(FILE *);
   
+  bool layout_young( const std::string & file_content );
+  bool layout_kyodai( const std::string & file_content );
+  bool layout_kmahjongg( const std::string & file_content );
+
   static Tile the_null_tile;
   
  public:
@@ -115,6 +121,10 @@ class Game {
   
   void layout_default();
   int layout_file(const char *);
+
+  /* returns -1 on system error, 0 on other error, 1 on no error */
+  int layout(const std::string & layout_file_contentet );
+
   void relayout();
   
   void start(uint32_t, bool);

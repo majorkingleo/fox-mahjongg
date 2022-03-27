@@ -5,6 +5,11 @@
 #include <cstdio>
 #include <cstring>
 #include <cctype>
+#include <string_utils.h>
+#include <debug.h>
+#include <format.h>
+
+using namespace Tools;
 
 Tile Game::the_null_tile;
 
@@ -513,6 +518,48 @@ bool Game::layout_kyodai_file(FILE *f)
 	return true;
 }
 
+bool Game::layout_kyodai(const std::string & file_content )
+{
+	std::vector<std::string> sl = split_and_strip_simple( file_content, "\n" );
+	// skip `Kyodai 3.0'
+	// skip board identifier
+
+	if( sl.size() != 3 ) {
+		DEBUG( format( "invalid number of lines. %d", sl.size() ) );
+		return false;
+	}
+
+	std::string buffer = sl[2];
+	const char *c = buffer.c_str();
+
+	for (int lev = 0; lev < 5; lev++) {
+		for (int row = 0; row < 20; row++) {
+			for (int col = 0; col < 34; col++) {
+
+				while (isspace(*c)) {
+					c++;
+
+					if( *c == 0 ) {
+						break;
+					}
+				}
+				if (*c == '0')
+					/* don't place a tile */;
+				else if (*c == '1') {
+					if (!place_tile(row + 2, col + 2, lev))
+						return false;
+				}
+				else {
+					fprintf(stderr, "bad character");
+					return false;
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
 bool Game::layout_young_file(FILE *f)
 {
 	char buffer[BUFSIZ];
@@ -528,6 +575,22 @@ bool Game::layout_young_file(FILE *f)
 	}
 	return true;
 }
+
+bool Game::layout_young( const std::string & file_content )
+{
+	std::vector<std::string> sl = split_and_strip_simple( file_content, "\n");
+	for( std::string & line : sl ) {
+
+		int r, c, l;
+		if (sscanf(line.c_str(), " %d %d %d", &r, &c, &l) == 3) {
+			if (!place_tile(r + 2, c + 2, l)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 
 bool Game::layout_kmahjongg_file(FILE *f)
 {
@@ -565,6 +628,47 @@ bool Game::layout_kmahjongg_file(FILE *f)
 		l++;
 	}
 
+	return true;
+}
+
+
+bool Game::layout_kmahjongg( const std::string & file_content )
+{
+#if 0
+	char buf[BUFSIZ];
+
+	// check for `kmahjongg-layout'
+	buf[0] = 0;
+	fgets(buf, BUFSIZ, f);
+	if (memcmp(buf, "kmahjongg-layout-v1", 19) != 0) {
+		fprintf(stderr, "not a kmahjongg layout file\n");
+		return false;
+	}
+
+	// now read file
+	int l = 0;
+	while (!feof(f) && l < TILE_LEVS - 1) {
+		for (int r = 0; r < 16 && !feof(f); r++) {
+			buf[0] = 0;
+			fgets(buf, BUFSIZ, f);
+			for (int c = 0; c < TILE_COLS - 3 && buf[c] && !isspace(buf[c]); c++) {
+				if (buf[c] == '1') {
+					if (!place_tile(r + 2, c + 2, l))
+						return false;
+				}
+				else if (buf[c] == '2' || buf[c] == '3' || buf[c] == '4' || buf[c] == '.') {
+					/* ok */;
+				} else if (buf[c] == '#') {
+					break;
+				} else {
+					fprintf(stderr, "bad character\n");
+					return false;
+				}
+			}
+		}
+		l++;
+	}
+#endif
 	return true;
 }
 
@@ -644,3 +748,42 @@ int Game::possible_moves()
 	}
 	return _possible_moves;
 }
+
+
+int Game::layout(const std::string & layout_file_content )
+{
+	clear_layout();
+
+	if( layout_file_content.empty() ) {
+		return -1;
+	}
+
+	char first_char = layout_file_content[0];
+	int ok = 0;
+
+	if (first_char == 'K') {
+		ok = layout_kyodai(layout_file_content);
+	} else if (first_char == 'k') {
+		ok = layout_kmahjongg(layout_file_content);
+	} else {
+		ok = layout_young(layout_file_content);
+	}
+
+	if (!ok) {
+		return 0;
+	}
+	else if (_tiles.size() != _tileset->ntiles()) {
+		fprintf(stderr, "%d tiles (should be %d)\n", _tiles.size(), _tileset->ntiles());
+		return 0;
+	}
+	else if (!init_grid()) {
+		fprintf(stderr, "some tiles occupied the same space\n");
+		return 0;
+	}
+
+	for (int j = 0; j < _hooks.size(); j++) {
+		_hooks[j]->layout_hook(this);
+	}
+	return 1;
+}
+

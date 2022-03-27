@@ -38,7 +38,6 @@
 #include <cppdir.h>
 #include "FXRadioGroup.h"
 
-
 using namespace Tools;
 
 const int LEVEL_START = 0;
@@ -72,6 +71,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_DORWHITE,			MahjonggWindow::onChangeTilesetDorwhite),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_DOROTHYS,			MahjonggWindow::onChangeTilesetDorothys),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_REAL,				MahjonggWindow::onChangeTilesetReal),
+		FXMAPFUNCS(SEL_COMMAND,  		 MahjonggWindow::ID_LAYOUT_MIN,	MahjonggWindow::ID_LAYOUT_MAX,		MahjonggWindow::onChangeLayout),
 };
 
 
@@ -147,6 +147,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
 	radio_group_background_image = new FXRadioGroup();
 	radio_group_tileset 		 = new FXRadioGroup();
+	radio_group_layout 		 	 = new FXRadioGroup();
 
 	icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
 	setIcon( icon_xmahjongg );
@@ -173,8 +174,6 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     new FXMenuTitle(menubar,"&Background",NULL,background);
 
 
-
-
     FXMenuPane *tileset = new FXMenuPane(this);
     mc_tileset_thick    = new FXMenuRadio(tileset,"Thick",this,ID_TILESET_THICK);
     mc_tileset_thin     = new FXMenuRadio(tileset,"Thin",this,ID_TILESET_THIN);
@@ -196,6 +195,26 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
     new FXMenuTitle(menubar,"&Tileset",NULL,tileset);
 
+
+
+
+    selected_builtin_layout = "Default";
+    builtin_layouts = getBuildInLayoutData();
+
+    FXMenuPane *layouts = new FXMenuPane(this);
+
+    int id_layout = ID_LAYOUT_MIN;
+
+    for( auto & pair : builtin_layouts ) {
+    	BuiltInLayoutData & data = pair.second;
+    	data.mc = new FXMenuRadio(layouts,data.name.c_str(),this,id_layout);
+    	data.id = id_layout;
+    	radio_group_layout->add( data.mc );
+
+    	id_layout++;
+    }
+
+    new FXMenuTitle(menubar,"&Layout",NULL,layouts);
 
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(this,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
@@ -328,7 +347,19 @@ void MahjonggWindow::reloadBoard()
 	game->add_hook(tile_counter);
 	panel->set_tile_count(tile_counter);
 
+	int ok = 0;
 
+	if( !selected_builtin_layout.empty() )  {
+		if( !builtin_layouts[selected_builtin_layout].data.empty() ) {
+			ok = game->layout( builtin_layouts[selected_builtin_layout].data );
+		}
+	}
+
+	if( ok <= 0 ) {
+		game->layout_default();
+	}
+
+#if 0
 	// Lay out game.
 	if (!layout_name) {
 		game->layout_default();
@@ -346,7 +377,7 @@ void MahjonggWindow::reloadBoard()
 		else if (ok == 0)
 			fatal_error("layout %s corrupted", layout_name);
 	}
-
+#endif
 
 	int wid, hgt;
 	board->tile_layout_size(&wid, &hgt);
@@ -843,6 +874,8 @@ void MahjonggWindow::writeRegistry()
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_dorwhite",	mc_tileset_dorwhite->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_dorothys",	mc_tileset_dorothys->getCheck() );
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_real",		mc_tileset_real->getCheck() );
+
+	getApp()->reg().writeStringEntry("SETTINGS","selected_builtin_layout", selected_builtin_layout.c_str() );
 }
 
 void MahjonggWindow::readRegistry()
@@ -888,7 +921,7 @@ void MahjonggWindow::readRegistry()
 		}
 	}
 
-	last_file_open_path   = getApp()->reg().readStringEntry( "SETTING", "last_file_open_path", "" );
+	last_file_open_path     = getApp()->reg().readStringEntry( "SETTINGS", "last_file_open_path", "" );
 
 
 	if( getApp()->reg().readBoolEntry("SETTINGS","tileset_thick", true ) ) {
@@ -914,6 +947,13 @@ void MahjonggWindow::readRegistry()
 	}
 	else if( getApp()->reg().readBoolEntry("SETTINGS","tileset_real", false ) ) {
 		radio_group_tileset->setCheck( mc_tileset_real );
+	}
+
+
+	selected_builtin_layout = getApp()->reg().readStringEntry( "SETTINGS", "selected_builtin_layout", "Default" );
+
+	if( builtin_layouts[selected_builtin_layout].mc ) {
+		radio_group_layout->setCheck( builtin_layouts[selected_builtin_layout].mc );
 	}
 }
 
@@ -1010,6 +1050,31 @@ long MahjonggWindow::onChangeTilesetDorothys(FXObject* obj,FXSelector sel,void* 
 long MahjonggWindow::onChangeTilesetReal(FXObject* obj,FXSelector sel,void* ptr)
 {
 	radio_group_tileset->setCheck( mc_tileset_real);
+	reloadBoard();
+	return 1;
+}
+
+long MahjonggWindow::onChangeLayout(FXObject* obj,FXSelector sel,void* ptr)
+{
+	int id = FXSELID( sel );
+
+	DEBUG( format( "%s id: %d", __FUNCTION__, id ) );
+
+	BuiltInLayoutData *bd = 0;
+
+	for( auto & pair : builtin_layouts ) {
+		if( pair.second.id == id ) {
+			bd = &pair.second;
+			selected_builtin_layout = pair.first;
+			break;
+		}
+	}
+
+	if( !bd ) {
+		return 1;
+	}
+
+	radio_group_layout->setCheck( bd->mc );
 	reloadBoard();
 	return 1;
 }

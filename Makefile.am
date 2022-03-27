@@ -71,7 +71,9 @@ fox_mahjongg_SOURCES=\
 		src/FXPixelBufferObject.h \
 		src/FXPixelBufferObject.cc \
 		src/FXRadioGroup.h \
-		src/FXRadioGroup.cc
+		src/FXRadioGroup.cc \
+		src/builtin_layouts.h \
+		src/builtin_layouts.cc
 		  	 
 			  
 
@@ -185,6 +187,12 @@ generated/data_background_blue.cc: share/backgrounds/blue.gif
 	reswrap -o generated/data_background_blue.cc -i data_background_blue.h --suffix _gif --prefix background_ share/backgrounds/blue.gif
 	reswrap -o generated/data_background_blue.h -h --suffix _gif --prefix background_ share/backgrounds/blue.gif
 
+generated/data_builtin_layouts.h: generated/data_builtin_layouts.cc
+generated/data_builtin_layouts.cc: share/layouts/*
+	reswrap -ta -o generated/data_builtin_layouts.cc -i data_builtin_layouts.h --prefix builtin_layout_ share/layouts/*
+	reswrap -ta -o generated/data_builtin_layouts.h -h --prefix builtin_layout_ share/layouts/*
+
+
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \
 	-I$(top_srcdir)/cpputils/cpputilsshared/cpputilsformat \
@@ -281,7 +289,9 @@ generated_libgenerated_a_SOURCES=\
 	generated/data_background_green.h \
 	generated/data_background_green.cc \
 	generated/data_background_blue.h \
-	generated/data_background_blue.cc
+	generated/data_background_blue.cc \
+	generated/data_builtin_layouts.h \
+	generated/data_builtin_layouts.cc
 	
 BUILT_SOURCES=\
 	 $(generated_libgenerated_a_SOURCES)

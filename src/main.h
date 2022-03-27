@@ -20,7 +20,7 @@
 #include <string>
 #include <map>
 #include <set>
-
+#include "builtin_layouts.h"
 
 class Panel;
 class Gif_Stream;
@@ -88,6 +88,10 @@ private:
     FXMenuRadio *mc_tileset_real;
 
     FXRadioGroup *radio_group_tileset;
+    FXRadioGroup *radio_group_layout;
+
+    std::map<std::string,BuiltInLayoutData> builtin_layouts;
+    std::string selected_builtin_layout;
 
 protected:
 	MahjonggWindow();
@@ -118,6 +122,7 @@ public:
 	long onChangeTilesetDorwhite(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetDorothys(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetReal(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeLayout(FXObject* obj,FXSelector sel,void* ptr);
 
 	void detach() override;
 	void layout() override;
@@ -143,6 +148,10 @@ public:
 		ID_TILESET_DORWHITE,
 		ID_TILESET_DOROTHYS,
 		ID_TILESET_REAL,
+
+		ID_LAYOUT_MIN,
+		ID_LAYOUT_MAX = ID_LAYOUT_MIN + 50,
+
 		ID_LAST
 	};
 
