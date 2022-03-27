@@ -10,6 +10,7 @@
 
 #include <fx.h>
 #include <map>
+#include <string>
 
 struct BuiltInLayoutData
 {
