@@ -189,9 +189,13 @@ generated/data_background_blue.cc: share/backgrounds/blue.gif
 
 generated/data_builtin_layouts.h: generated/data_builtin_layouts.cc
 generated/data_builtin_layouts.cc: share/layouts/*
-	reswrap -ta -o generated/data_builtin_layouts.cc -i data_builtin_layouts.h --prefix builtin_layout_ share/layouts/*
-	reswrap -ta -o generated/data_builtin_layouts.h -h --prefix builtin_layout_ share/layouts/*
+	reswrap --ascii -o generated/data_builtin_layouts.cc -i data_builtin_layouts.h --prefix builtin_layout_ share/layouts/*
+	reswrap --ascii -o generated/data_builtin_layouts.h -h --prefix builtin_layout_ share/layouts/*
 
+generated/data_readme.h: generated/data_readme.cc
+generated/data_readme.cc: README.md
+	reswrap --ascii -o generated/data_readme.cc -i data_readme.h --prefix data_ README.md LICENSE
+	reswrap --ascii -o generated/data_readme.h -h --prefix data_  README.md LICENSE
 
 AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-I$(top_srcdir)/cpputils/cpputilsshared  \
@@ -291,7 +295,9 @@ generated_libgenerated_a_SOURCES=\
 	generated/data_background_blue.h \
 	generated/data_background_blue.cc \
 	generated/data_builtin_layouts.h \
-	generated/data_builtin_layouts.cc
+	generated/data_builtin_layouts.cc \
+	generated/data_readme.h \
+	generated/data_readme.cc
 	
 BUILT_SOURCES=\
 	 $(generated_libgenerated_a_SOURCES)

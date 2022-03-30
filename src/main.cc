@@ -37,6 +37,7 @@
 #include <string_utils.h>
 #include <cppdir.h>
 #include "FXRadioGroup.h"
+#include <data_readme.h>
 
 using namespace Tools;
 
@@ -56,6 +57,9 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 
 		FXMAPFUNC(SEL_TIMEOUT,           MahjonggWindow::ID_TIMER,  MahjonggWindow::onTimeout),
 		FXMAPFUNC(SEL_CLOSE,             0,                         MahjonggWindow::onClose),
+
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_ABOUT,   MahjonggWindow::onAbout),
+		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_LICENSE, MahjonggWindow::onLicense),
 
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_DEFAULT,     	MahjonggWindow::onChangeBackgroundDefault),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_BACKGROUND_GREEN, 	    	MahjonggWindow::onChangeBackgroundGreen),
@@ -154,8 +158,10 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
 	menubar=new FXMenuBar(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED);
     FXMenuPane *filemenu=new FXMenuPane(this);
+    new FXMenuCommand(filemenu,"&About",NULL,this,ID_ABOUT);
+    new FXMenuCommand(filemenu,"&License",NULL,this,ID_LICENSE);
     new FXMenuCommand(filemenu,"&Quit the application",NULL,getApp(),FXApp::ID_QUIT);
-    new FXMenuTitle(menubar,"&File",NULL,filemenu);
+    new FXMenuTitle(menubar,"&FOX Mahjongg",NULL,filemenu);
 
 
     FXMenuPane *background=new FXMenuPane(this);
@@ -1077,6 +1083,36 @@ long MahjonggWindow::onChangeLayout(FXObject* obj,FXSelector sel,void* ptr)
 	radio_group_layout->setCheck( bd->mc );
 	reloadBoard();
 	return 1;
+}
+
+
+long MahjonggWindow::onAbout(FXObject* obj,FXSelector sel,void* ptr)
+{
+	displayText( "About", data_README );
+	return 1;
+}
+
+long MahjonggWindow::onLicense(FXObject* obj,FXSelector sel,void* ptr)
+{
+	displayText( "License", data_LICENSE );
+	return 1;
+}
+
+
+void MahjonggWindow::displayText( const std::string & title, const char *text )
+{
+	FXDialogBox *dialog = new FXDialogBox( getApp(), "About", DECOR_ALL, getX() + 20 , getY() + 20, 800, 600 );
+	FXVerticalFrame *vf = new FXVerticalFrame( dialog, LAYOUT_FILL_X | LAYOUT_FILL_Y  );
+	FXText *text_field = new FXText( vf, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y );
+	FXFont *font = new FXFont( getApp(), "Courier", 10 );
+	text_field->setFont( font );
+	text_field->setText( text );
+
+	new FXHorizontalSeparator( vf );
+
+	new FXButton( vf, "&Close", 0, dialog, FXDialogBox::ID_ACCEPT );
+
+	dialog->execute();
 }
 
 void

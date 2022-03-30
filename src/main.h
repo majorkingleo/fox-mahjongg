@@ -124,6 +124,9 @@ public:
 	long onChangeTilesetReal(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeLayout(FXObject* obj,FXSelector sel,void* ptr);
 
+	long onAbout(FXObject* obj,FXSelector sel,void* ptr);
+	long onLicense(FXObject* obj,FXSelector sel,void* ptr);
+
 	void detach() override;
 	void layout() override;
 
@@ -135,11 +138,15 @@ public:
 	enum{
 		ID_CANVAS=FXMainWindow::ID_LAST,
 		ID_TIMER,
+		ID_ABOUT,
+		ID_LICENSE,
+
 		ID_BACKGROUND_DEFAULT,
 		ID_BACKGROUND_GREEN,
 		ID_BACKGROUND_BLUE,
 		ID_BACKGROUND_USER_IMAGE,
 		ID_BACKGROUND_USER_IMAGE_DIR,
+
 		ID_TILESET_THICK,
 		ID_TILESET_THIN,
 		ID_TILESET_SMALL,
@@ -220,6 +227,8 @@ private:
 
 	void reloadBoard();
 	void releaseBoard();
+
+	void displayText( const std::string & title, const char *text );
 };
 
 
