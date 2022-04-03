@@ -38,6 +38,10 @@
 #include <cppdir.h>
 #include "FXRadioGroup.h"
 #include <data_readme.h>
+#include <libintl.h>
+#include <locale.h>
+
+#define _(STRING) gettext(STRING)
 
 using namespace Tools;
 
@@ -158,18 +162,18 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
 	menubar=new FXMenuBar(this,LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED);
     FXMenuPane *filemenu=new FXMenuPane(this);
-    new FXMenuCommand(filemenu,"&About",NULL,this,ID_ABOUT);
-    new FXMenuCommand(filemenu,"&License",NULL,this,ID_LICENSE);
-    new FXMenuCommand(filemenu,"&Quit the application",NULL,getApp(),FXApp::ID_QUIT);
-    new FXMenuTitle(menubar,"&FOX Mahjongg",NULL,filemenu);
+    new FXMenuCommand(filemenu,_("&About"),NULL,this,ID_ABOUT);
+    new FXMenuCommand(filemenu,_("&License"),NULL,this,ID_LICENSE);
+    new FXMenuCommand(filemenu,_("&Quit the application"),NULL,getApp(),FXApp::ID_QUIT);
+    new FXMenuTitle(menubar,_("&FOX Mahjongg"),NULL,filemenu);
 
 
     FXMenuPane *background=new FXMenuPane(this);
-    mc_background_default        = new FXMenuRadio(background,"Default",this,ID_BACKGROUND_DEFAULT);
-    mc_background_green          = new FXMenuRadio(background,"Green",this,ID_BACKGROUND_GREEN);
-    mc_background_blue           = new FXMenuRadio(background,"Blue",this,ID_BACKGROUND_BLUE);
-    mc_background_user_image     = new FXMenuRadio(background,"User defined",this,ID_BACKGROUND_USER_IMAGE);
-    mc_background_user_image_dir = new FXMenuRadio(background,"User defined image directory",this,ID_BACKGROUND_USER_IMAGE_DIR);
+    mc_background_default        = new FXMenuRadio(background,_("Default"),this,ID_BACKGROUND_DEFAULT);
+    mc_background_green          = new FXMenuRadio(background,_("Green"),this,ID_BACKGROUND_GREEN);
+    mc_background_blue           = new FXMenuRadio(background,_("Blue"),this,ID_BACKGROUND_BLUE);
+    mc_background_user_image     = new FXMenuRadio(background,_("User defined"),this,ID_BACKGROUND_USER_IMAGE);
+    mc_background_user_image_dir = new FXMenuRadio(background,_("User defined image directory"),this,ID_BACKGROUND_USER_IMAGE_DIR);
 
     radio_group_background_image->add( mc_background_default );
     radio_group_background_image->add( mc_background_green );
@@ -177,18 +181,18 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     radio_group_background_image->add( mc_background_user_image );
     radio_group_background_image->add( mc_background_user_image_dir );
 
-    new FXMenuTitle(menubar,"&Background",NULL,background);
+    new FXMenuTitle(menubar,_("&Background"),NULL,background);
 
 
     FXMenuPane *tileset = new FXMenuPane(this);
-    mc_tileset_thick    = new FXMenuRadio(tileset,"Thick",this,ID_TILESET_THICK);
-    mc_tileset_thin     = new FXMenuRadio(tileset,"Thin",this,ID_TILESET_THIN);
-    mc_tileset_small    = new FXMenuRadio(tileset,"Small",this,ID_TILESET_SMALL);
-    mc_tileset_gnome    = new FXMenuRadio(tileset,"Gnome",this,ID_TILESET_GNOME);
-    mc_tileset_gnome2   = new FXMenuRadio(tileset,"Gnome2",this,ID_TILESET_GNOME2);
-    mc_tileset_dorwhite = new FXMenuRadio(tileset,"Dorwhite",this,ID_TILESET_DORWHITE);
-    mc_tileset_dorothys = new FXMenuRadio(tileset,"Dorothys",this,ID_TILESET_DOROTHYS);
-    mc_tileset_real 	= new FXMenuRadio(tileset,"Real",this,ID_TILESET_REAL);
+    mc_tileset_thick    = new FXMenuRadio(tileset,_("Thick"),this,ID_TILESET_THICK);
+    mc_tileset_thin     = new FXMenuRadio(tileset,_("Thin"),this,ID_TILESET_THIN);
+    mc_tileset_small    = new FXMenuRadio(tileset,_("Small"),this,ID_TILESET_SMALL);
+    mc_tileset_gnome    = new FXMenuRadio(tileset,_("Gnome"),this,ID_TILESET_GNOME);
+    mc_tileset_gnome2   = new FXMenuRadio(tileset,_("Gnome2"),this,ID_TILESET_GNOME2);
+    mc_tileset_dorwhite = new FXMenuRadio(tileset,_("Dorwhite"),this,ID_TILESET_DORWHITE);
+    mc_tileset_dorothys = new FXMenuRadio(tileset,_("Dorothys"),this,ID_TILESET_DOROTHYS);
+    mc_tileset_real 	= new FXMenuRadio(tileset,_("Real"),this,ID_TILESET_REAL);
 
     radio_group_tileset->add( mc_tileset_thick );
     radio_group_tileset->add( mc_tileset_thin );
@@ -220,7 +224,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     	id_layout++;
     }
 
-    new FXMenuTitle(menubar,"&Layout",NULL,layouts);
+    new FXMenuTitle(menubar,_("&Layout"),NULL,layouts);
 
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(this,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
@@ -1088,20 +1092,20 @@ long MahjonggWindow::onChangeLayout(FXObject* obj,FXSelector sel,void* ptr)
 
 long MahjonggWindow::onAbout(FXObject* obj,FXSelector sel,void* ptr)
 {
-	displayText( "About", data_README );
+	displayText( _("About"), data_README );
 	return 1;
 }
 
 long MahjonggWindow::onLicense(FXObject* obj,FXSelector sel,void* ptr)
 {
-	displayText( "License", data_LICENSE );
+	displayText( _("License"), data_LICENSE );
 	return 1;
 }
 
 
 void MahjonggWindow::displayText( const std::string & title, const char *text )
 {
-	FXDialogBox *dialog = new FXDialogBox( getApp(), "About", DECOR_ALL, getX() + 20 , getY() + 20, 800, 600 );
+	FXDialogBox *dialog = new FXDialogBox( getApp(), title.c_str(), DECOR_ALL, getX() + 20 , getY() + 20, 800, 600 );
 	FXVerticalFrame *vf = new FXVerticalFrame( dialog, LAYOUT_FILL_X | LAYOUT_FILL_Y  );
 	FXText *text_field = new FXText( vf, NULL, 0, LAYOUT_FILL_X | LAYOUT_FILL_Y );
 	FXFont *font = new FXFont( getApp(), "Courier", 10 );
@@ -1110,7 +1114,7 @@ void MahjonggWindow::displayText( const std::string & title, const char *text )
 
 	new FXHorizontalSeparator( vf );
 
-	new FXButton( vf, "&Close", 0, dialog, FXDialogBox::ID_ACCEPT );
+	new FXButton( vf, _("&Close"), 0, dialog, FXDialogBox::ID_ACCEPT );
 
 	dialog->execute();
 }
@@ -1138,6 +1142,11 @@ int main(int argc,char *argv[]){
 
 	Magick::InitializeMagick(*argv);
 
+	/* Setting the i18n environment */
+	setlocale (LC_ALL, "");
+	bindtextdomain ("FOX-Mahjongg", "/usr/share/locale/");
+	textdomain ("FOX-Mahjongg");
+
 	ColoredOutput colored_output;
 
     Arg::Arg arg( argc, argv );
@@ -1153,16 +1162,16 @@ int main(int argc,char *argv[]){
 
     Arg::FlagOption o_help( "h" );
     o_help.addName( "help" );
-    o_help.setDescription( "Show this page" );
+    o_help.setDescription( _("Show this page") );
     oc_info.addOptionR( &o_help );
 
     Arg::FlagOption o_version( "v" );
     o_version.addName( "version" );
-    o_version.setDescription( "Show replace version number" );
+    o_version.setDescription( _("Show FOX-Mahjongg version number") );
     oc_info.addOptionR( &o_version );
 
     Arg::FlagOption o_debug("debug");
-    o_debug.setDescription("print debugging messages");
+    o_debug.setDescription( _("print debugging messages") );
     o_debug.setRequired(false);
     arg.addOptionR( &o_debug );
 
@@ -1172,7 +1181,7 @@ int main(int argc,char *argv[]){
     {
         if( o_version.getState() )
         {
-            std::cout << format("%s version %s\n", argv[0], VERSION);
+            std::cout << format(_("%s version %s\n"), argv[0], VERSION);
             return 0;
         } else {
             usage(argv[0]);
