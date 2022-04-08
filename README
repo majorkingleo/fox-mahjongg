@@ -14,7 +14,8 @@ I'm using opensuse leap 15.4
 				 mingw64-libbz2-1 \
 				 mingw64-libpng16-16 \
 				 mingw64-libMagick++-Q16-7 \
-				 mingw64-libmagick++-devel
+				 mingw64-libmagick++-devel \
+				 mingw64-gettext-tools
 				 
 
 * cross compile the FOX library
