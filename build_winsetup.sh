@@ -16,5 +16,6 @@ if ! test -d dist ; then
 	( cd dist && ln -s ../fox-mahjongg.exe . )
 fi
 
+strip fox-mahjongg.exe
 ISCC="/home/martin/.wine/drive_c/Program Files (x86)/Inno Setup 6/ISCC.exe"
 wine "${ISCC}" FOX-Mahjongg.iss
