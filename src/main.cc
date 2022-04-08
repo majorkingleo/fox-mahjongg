@@ -38,10 +38,17 @@
 #include <cppdir.h>
 #include "FXRadioGroup.h"
 #include <data_readme.h>
-#include <libintl.h>
-#include <locale.h>
 
-#define _(STRING) gettext(STRING)
+#ifdef ENABLE_NLS
+#	include <libintl.h>
+#	include <locale.h>
+#endif
+
+#ifdef ENABLE_NLS
+#	define _(STRING) gettext(STRING)
+#else
+#	define _(STRING) (STRING)
+#endif
 
 using namespace Tools;
 
@@ -203,7 +210,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     radio_group_tileset->add( mc_tileset_dorothys );
     radio_group_tileset->add( mc_tileset_real );
 
-    new FXMenuTitle(menubar,"&Tileset",NULL,tileset);
+    new FXMenuTitle(menubar,_("&Tileset"),NULL,tileset);
 
 
 
@@ -1132,7 +1139,7 @@ fatal_error(const char *message, ...)
 
 static void usage( const std::string & prog )
 {
-    std::cerr << "usage: "
+    std::cerr << _("usage: ")
               << prog << " [-debug]\n";
 }
 
@@ -1144,8 +1151,13 @@ int main(int argc,char *argv[]){
 
 	/* Setting the i18n environment */
 	setlocale (LC_ALL, "");
-	bindtextdomain ("FOX-Mahjongg", "/usr/share/locale/");
-	textdomain ("FOX-Mahjongg");
+#if defined WIN32 || defined _WIN32
+	bindtextdomain ("fox-mahjongg", CppDir::exec_path );
+#else
+	bindtextdomain ("fox-mahjongg", LOCALEDIR );
+#endif
+
+	textdomain ("fox-mahjongg");
 
 	ColoredOutput colored_output;
 

@@ -6,10 +6,17 @@
  */
 #include "builtin_layouts.h"
 #include "data_builtin_layouts.h"
-#include <libintl.h>
-#include <locale.h>
 
-#define _(STRING) gettext(STRING)
+#ifdef ENABLE_NLS
+#	include <libintl.h>
+#	include <locale.h>
+#endif
+
+#ifdef ENABLE_NLS
+#	define _(STRING) gettext(STRING)
+#else
+#	define _(STRING) (STRING)
+#endif
 
 std::map<std::string,BuiltInLayoutData> getBuildInLayoutData()
 {

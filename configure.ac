@@ -45,7 +45,7 @@ AM_CONDITIONAL([MINGW], [test x$mingw = xtrue])
 
 
 AC_PROG_CC
-AC_CONFIG_FILES([
+AC_CONFIG_FILES([ po/Makefile.in
 Makefile
 ])
 AC_PROG_RANLIB
@@ -62,5 +62,8 @@ CXX_FLAGS_CHECK([-fopenmp])
 
 PKG_CHECK_MODULES([AUXLIBS], [fox17])
 PKG_CHECK_MODULES([LIBMAGICK], [Magick++])
+
+AM_GNU_GETTEXT([external])
+AM_CONDITIONAL([USE_NLS], [test "x${USE_NLS}" = "xyes"])
 
 AC_OUTPUT

@@ -207,7 +207,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	$(AUXLIBS_CFLAGS)  \
 	$(LIBMAGICK_CFLAGS) \
 	-std=c++11 \
-	-fopenmp
+	-fopenmp \
+	-DLOCALEDIR=\"$(localedir)\"
 
 noinst_LIBRARIES=tools/libtools.a \
 	cpputils/cpputilsshared/libcpputilsshared.a \
@@ -322,3 +323,16 @@ AM_CPPFLAGS += -DWIN32
 else
 AM_LDFLAGS += -lX11
 endif
+
+
+if USE_NLS
+	PO_SUBDIRS += po
+	fox_mahjongg_LDADD += @LTLIBINTL@
+	AM_CPPFLAGS += -DENABLE_NLS
+endif
+
+SUBDIRS = $(PO_SUBDIR)
+
+ACLOCAL_AMFLAGS = -I m4
+
+EXTRA_DIST = m4/ChangeLog
