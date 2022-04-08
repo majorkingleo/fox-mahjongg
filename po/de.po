@@ -20,7 +20,7 @@ msgstr ""
 
 #: src/main.cc:172
 msgid "&About"
-msgstr "&Über"
+msgstr "Ü&ber"
 
 #: src/main.cc:173
 msgid "&License"

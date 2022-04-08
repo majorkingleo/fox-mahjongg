@@ -1154,10 +1154,10 @@ int main(int argc,char *argv[]){
 	setlocale (LC_ALL, "");
 #if defined WIN32 || defined _WIN32
 	bindtextdomain ("fox-mahjongg", CppDir::exec_path.c_str() );
+	bind_textdomain_codeset("fox-mahjongg", "utf-8");
 #else
 	bindtextdomain ("fox-mahjongg", LOCALEDIR );
 #endif
-
 	textdomain ("fox-mahjongg");
 #endif
 
