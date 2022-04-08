@@ -77,7 +77,9 @@ Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libtiff-5.dll"; DestDi
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libxml2-2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libz.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "z:\home\martin\workspace\fox-mahjongg-win32\dist\libpcre-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "z:\home\martin\workspace\fox-mahjongg-win32\images\xmahjongg.ico"; DestDir: "{app}"; Flags: ignoreversion
+Source: "z:\home\martin\workspace\fox-mahjongg-win32\po\de.gmo"; DestDir: "{app}/de/LC_MESSAGES"; DestName: fox-mahjongg.mo; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

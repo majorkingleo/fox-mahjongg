@@ -326,9 +326,9 @@ endif
 
 
 if USE_NLS
-	PO_SUBDIRS += po
-	fox_mahjongg_LDADD += @LTLIBINTL@
-	AM_CPPFLAGS += -DENABLE_NLS
+PO_SUBDIR = po
+LIBS += $(LTLIBINTL)
+AM_CPPFLAGS += -DENABLE_NLS
 endif
 
 SUBDIRS = $(PO_SUBDIR)

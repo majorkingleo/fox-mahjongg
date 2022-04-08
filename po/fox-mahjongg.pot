@@ -1,224 +1,223 @@
-# German translations for fox-mahjongg package
-# German translation for fox-mahjongg.
-# Copyright (C) 2022 Free Software Foundation, Inc.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the fox-mahjongg package.
-# Martin Oberzalek <kingleo@gmx.at>, 2022.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: fox-mahjongg 0.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-08 22:00+0200\n"
-"PO-Revision-Date: 2022-04-08 19:52+0200\n"
-"Last-Translator: Martin Oberzalek <kingleo@gmx.at>\n"
-"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
-"Language: de\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: src/main.cc:172
 msgid "&About"
-msgstr "&Über"
+msgstr ""
 
 #: src/main.cc:173
 msgid "&License"
-msgstr "&Lizenz"
+msgstr ""
 
 #: src/main.cc:174
 msgid "&Quit the application"
-msgstr "&Beende das Programm"
+msgstr ""
 
 #: src/main.cc:175
 msgid "&FOX Mahjongg"
-msgstr "&FOX Mahjongg"
+msgstr ""
 
 #: src/main.cc:179 src/builtin_layouts.cc:31
 msgid "Default"
-msgstr "Standard"
+msgstr ""
 
 #: src/main.cc:180
 msgid "Green"
-msgstr "Grün"
+msgstr ""
 
 #: src/main.cc:181
 msgid "Blue"
-msgstr "Blau"
+msgstr ""
 
 #: src/main.cc:182
 msgid "User defined"
-msgstr "Benutzerdefiniert"
+msgstr ""
 
 #: src/main.cc:183
 msgid "User defined image directory"
-msgstr "Benutzerdefiniertes Verzeichnis"
+msgstr ""
 
 #: src/main.cc:191
 msgid "&Background"
-msgstr "&Hintergrundbild"
+msgstr ""
 
 #: src/main.cc:195
 msgid "Thick"
-msgstr "Dick"
+msgstr ""
 
 #: src/main.cc:196
 msgid "Thin"
-msgstr "Dünn"
+msgstr ""
 
 #: src/main.cc:197
 msgid "Small"
-msgstr "Klein"
+msgstr ""
 
 #: src/main.cc:198
 msgid "Gnome"
-msgstr "Gnome"
+msgstr ""
 
 #: src/main.cc:199
 msgid "Gnome2"
-msgstr "Gnome2"
+msgstr ""
 
 #: src/main.cc:200
 msgid "Dorwhite"
-msgstr "Dorwhite"
+msgstr ""
 
 #: src/main.cc:201
 msgid "Dorothys"
-msgstr "Dorothys"
+msgstr ""
 
 #: src/main.cc:202
 msgid "Real"
-msgstr "Real"
+msgstr ""
 
 #: src/main.cc:213
 msgid "&Tileset"
-msgstr "&Bausteinsatz"
+msgstr ""
 
 #: src/main.cc:234
 msgid "&Layout"
-msgstr "&Layout"
+msgstr ""
 
 #: src/main.cc:1102
 msgid "About"
-msgstr "Über"
+msgstr ""
 
 #: src/main.cc:1108
 msgid "License"
-msgstr "Lizenz"
+msgstr ""
 
 #: src/main.cc:1124
 msgid "&Close"
-msgstr "&Beenden"
+msgstr ""
 
 #: src/main.cc:1142
 msgid "usage: "
-msgstr "Anwendung: "
+msgstr ""
 
 #: src/main.cc:1179
 msgid "Show this page"
-msgstr "Zeige diese Seite"
+msgstr ""
 
 #: src/main.cc:1184
 msgid "Show FOX-Mahjongg version number"
-msgstr "Zeige FOX-Mahjongg Versionsnummer"
+msgstr ""
 
 #: src/main.cc:1188
 msgid "print debugging messages"
-msgstr "Zusätzliche Ausgabe zur Behebung von Fehlern"
+msgstr ""
 
 #: src/main.cc:1198
 #, c-format
 msgid "%s version %s\n"
-msgstr "%s Version %s\n"
+msgstr ""
 
 #: src/builtin_layouts.cc:25
 msgid "Arena"
-msgstr "Arena"
+msgstr ""
 
 #: src/builtin_layouts.cc:26
 msgid "Arrow"
-msgstr "Pfeil"
+msgstr ""
 
 #: src/builtin_layouts.cc:27
 msgid "Boar"
-msgstr "Wildschwein"
+msgstr ""
 
 #: src/builtin_layouts.cc:28
 msgid "Bridge"
-msgstr "Brücke"
+msgstr ""
 
 #: src/builtin_layouts.cc:29
 msgid "Ceremonial"
-msgstr "Zerminiell"
+msgstr ""
 
 #: src/builtin_layouts.cc:30
 msgid "Deepwell"
-msgstr "Brunnen"
+msgstr ""
 
 #: src/builtin_layouts.cc:32
 msgid "Dog"
-msgstr "Hund"
+msgstr ""
 
 #: src/builtin_layouts.cc:33
 msgid "Dragon"
-msgstr "Drachen"
+msgstr ""
 
 #: src/builtin_layouts.cc:34
 msgid "Farandole"
-msgstr "Farandole"
+msgstr ""
 
 #: src/builtin_layouts.cc:35
 msgid "Hare"
-msgstr "Hase"
+msgstr ""
 
 #: src/builtin_layouts.cc:36
 msgid "Horse"
-msgstr "Pferd"
+msgstr ""
 
 #: src/builtin_layouts.cc:37
 msgid "Hourglass"
-msgstr "Sanduhr"
+msgstr ""
 
 #: src/builtin_layouts.cc:38
 msgid "Monkey"
-msgstr "Affe"
+msgstr ""
 
 #: src/builtin_layouts.cc:39
 msgid "Ox"
-msgstr "Ochse"
+msgstr ""
 
 #: src/builtin_layouts.cc:40
 msgid "Papillon"
-msgstr "Schmetterling"
+msgstr ""
 
 #: src/builtin_layouts.cc:41
 msgid "Ram"
-msgstr "Widder"
+msgstr ""
 
 #: src/builtin_layouts.cc:42
 msgid "Rat"
-msgstr "Ratte"
+msgstr ""
 
 #: src/builtin_layouts.cc:43
 msgid "Rooster"
-msgstr "Hahn"
+msgstr ""
 
 #: src/builtin_layouts.cc:44
 msgid "Schoon"
-msgstr "Schuhe"
+msgstr ""
 
 #: src/builtin_layouts.cc:45
 msgid "Snake"
-msgstr "Schlange"
+msgstr ""
 
 #: src/builtin_layouts.cc:46
 msgid "Theater"
-msgstr "Theater"
+msgstr ""
 
 #: src/builtin_layouts.cc:47
 msgid "Tiger"
-msgstr "Tiger"
+msgstr ""
 
 #: src/builtin_layouts.cc:48
 msgid "Wedges"
-msgstr "Keile"
+msgstr ""

@@ -1149,15 +1149,17 @@ int main(int argc,char *argv[]){
 
 	Magick::InitializeMagick(*argv);
 
+#ifdef ENABLE_NLS
 	/* Setting the i18n environment */
 	setlocale (LC_ALL, "");
 #if defined WIN32 || defined _WIN32
-	bindtextdomain ("fox-mahjongg", CppDir::exec_path );
+	bindtextdomain ("fox-mahjongg", CppDir::exec_path.c_str() );
 #else
 	bindtextdomain ("fox-mahjongg", LOCALEDIR );
 #endif
 
 	textdomain ("fox-mahjongg");
+#endif
 
 	ColoredOutput colored_output;
 
