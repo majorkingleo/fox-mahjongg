@@ -87,6 +87,7 @@ FXDEFMAP(MahjonggWindow) MahjonggWindowMap[]={
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_DOROTHYS,			MahjonggWindow::onChangeTilesetDorothys),
 		FXMAPFUNC(SEL_COMMAND,           MahjonggWindow::ID_TILESET_REAL,				MahjonggWindow::onChangeTilesetReal),
 		FXMAPFUNCS(SEL_COMMAND,  		 MahjonggWindow::ID_LAYOUT_MIN,	MahjonggWindow::ID_LAYOUT_MAX,		MahjonggWindow::onChangeLayout),
+		FXMAPFUNCS(SEL_COMMAND,  		 MahjonggWindow::ID_ZOOM_100,	MahjonggWindow::ID_ZOOM_MAX,		MahjonggWindow::onChangeZoom),
 };
 
 
@@ -121,7 +122,9 @@ MahjonggWindow::MahjonggWindow()
   menubar(0),
   icon_xmahjongg(0),
   radio_group_background_image(0),
-  radio_group_tileset(0)
+  radio_group_tileset(0),
+  radio_group_zoom(0),
+  zoom_level(100)
 {}
 
 // Construct a MahjonggWindow
@@ -151,7 +154,9 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
   menubar(0),
   icon_xmahjongg(0),
   radio_group_background_image(0),
-  radio_group_tileset(0)
+  radio_group_tileset(0),
+  radio_group_zoom(0),
+  zoom_level(100)
 {
 	known_image_extensions.insert( "GIF" );
 	known_image_extensions.insert( "PNG" );
@@ -163,6 +168,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 	radio_group_background_image = new FXRadioGroup();
 	radio_group_tileset 		 = new FXRadioGroup();
 	radio_group_layout 		 	 = new FXRadioGroup();
+	radio_group_zoom 		 	 = new FXRadioGroup();
 
 	icon_xmahjongg = new FXGIFIcon( getApp(), xmahjongg_gif, 0, IMAGE_ALPHAGUESS );
 	setIcon( icon_xmahjongg );
@@ -232,6 +238,17 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
     }
 
     new FXMenuTitle(menubar,_("&Layout"),NULL,layouts);
+
+
+    FXMenuPane *zoom = new FXMenuPane(this);
+
+    for( int i = ID_ZOOM_100, zl = 100; i <= ID_ZOOM_MAX; i++, zl +=50 ) {
+    	std::string title = format( "%d%%", zl );
+    	FXMenuRadio *mc = new FXMenuRadio(zoom,title.c_str(),this, i );
+    	radio_group_zoom->add( mc, i );
+    }
+
+    new FXMenuTitle(menubar,_("&Zoom"),NULL,zoom);
 
 	// LEFT pane to contain the canvas
 	canvasFrame=new FXVerticalFrame(this,FRAME_SUNKEN|LAYOUT_FILL_X|LAYOUT_FILL_Y|LAYOUT_TOP|LAYOUT_LEFT,
@@ -893,6 +910,8 @@ void MahjonggWindow::writeRegistry()
 	getApp()->reg().writeBoolEntry("SETTINGS","tileset_real",		mc_tileset_real->getCheck() );
 
 	getApp()->reg().writeStringEntry("SETTINGS","selected_builtin_layout", selected_builtin_layout.c_str() );
+
+	getApp()->reg().writeUIntEntry("SETTINGS","zoom_level", zoom_level );
 }
 
 void MahjonggWindow::readRegistry()
@@ -972,6 +991,28 @@ void MahjonggWindow::readRegistry()
 	if( builtin_layouts[selected_builtin_layout].mc ) {
 		radio_group_layout->setCheck( builtin_layouts[selected_builtin_layout].mc );
 	}
+
+
+
+	zoom_level = getApp()->reg().readUIntEntry( "SETTINGS", "zoom_level", 100 );
+	FXMenuRadio *mc_zoom = 0;
+
+	unsigned zl = 100;
+
+	for( int i = ID_ZOOM_100; i < ID_ZOOM_MAX; i++, zl += 50 ) {
+		if( zl == zoom_level ) {
+			mc_zoom = radio_group_zoom->get( i );
+			break;
+		}
+	}
+
+	if( mc_zoom ) {
+		radio_group_zoom->setCheck( mc_zoom );
+	} else {
+		zoom_level = 100;
+		radio_group_zoom->setCheck( ID_ZOOM_100 );
+	}
+
 }
 
 bool MahjonggWindow::loadRandomImageFromPath( const std::string & image_dir )
@@ -1096,6 +1137,24 @@ long MahjonggWindow::onChangeLayout(FXObject* obj,FXSelector sel,void* ptr)
 	return 1;
 }
 
+long MahjonggWindow::onChangeZoom(FXObject* obj,FXSelector sel,void* ptr)
+{
+	int id = FXSELID( sel );
+
+	zoom_level = 100;
+
+	for( int i = ID_ZOOM_100; i < ID_ZOOM_MAX; i++, zoom_level += 50 ) {
+		if( i == id ) {
+			break;
+		}
+	}
+
+	DEBUG( format( "%s id: %d zoom: %d%%", __FUNCTION__, id, zoom_level ) );
+
+	radio_group_zoom->setCheck( radio_group_zoom->get(id) );
+	// reloadBoard();
+	return 1;
+}
 
 long MahjonggWindow::onAbout(FXObject* obj,FXSelector sel,void* ptr)
 {

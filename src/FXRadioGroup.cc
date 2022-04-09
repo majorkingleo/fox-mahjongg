@@ -42,7 +42,8 @@ void FXRadioGroup::SavePoint::commit()
 
 FXRadioGroup::FXRadioGroup()
 : elements(),
-  current_checked_element(0)
+  current_checked_element(0),
+  element_by_idx()
 {
 
 }

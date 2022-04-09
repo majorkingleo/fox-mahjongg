@@ -89,9 +89,12 @@ private:
 
     FXRadioGroup *radio_group_tileset;
     FXRadioGroup *radio_group_layout;
+    FXRadioGroup *radio_group_zoom;
 
     std::map<std::string,BuiltInLayoutData> builtin_layouts;
     std::string selected_builtin_layout;
+
+    unsigned zoom_level;
 
 protected:
 	MahjonggWindow();
@@ -123,6 +126,7 @@ public:
 	long onChangeTilesetDorothys(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeTilesetReal(FXObject* obj,FXSelector sel,void* ptr);
 	long onChangeLayout(FXObject* obj,FXSelector sel,void* ptr);
+	long onChangeZoom(FXObject* obj,FXSelector sel,void* ptr);
 
 	long onAbout(FXObject* obj,FXSelector sel,void* ptr);
 	long onLicense(FXObject* obj,FXSelector sel,void* ptr);
@@ -158,6 +162,9 @@ public:
 
 		ID_LAYOUT_MIN,
 		ID_LAYOUT_MAX = ID_LAYOUT_MIN + 50,
+
+		ID_ZOOM_100,
+		ID_ZOOM_MAX = ID_ZOOM_100 + 6,
 
 		ID_LAST
 	};

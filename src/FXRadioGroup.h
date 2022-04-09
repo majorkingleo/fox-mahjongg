@@ -10,6 +10,7 @@
 
 #include "fx.h"
 #include <vector>
+#include <map>
 
 class FXRadioGroup
 {
@@ -42,14 +43,34 @@ public:
 
 private:
 	std::vector<FXMenuRadio*> elements;
+	std::map<int,FXMenuRadio*> element_by_idx;
 	FXMenuRadio* current_checked_element;
 
 public:
 	FXRadioGroup();
 
 	void setCheck( FXMenuRadio *ele );
+
+	void setCheck( int idx ) {
+		FXMenuRadio* mc = get( idx );
+		if( mc ) {
+			setCheck( mc );
+		}
+	}
+
 	FXMenuRadio *getChecked() const;
-	void add( FXMenuRadio *ele ) { elements.push_back( ele ); }
+
+	void add( FXMenuRadio *ele, int idx = -1 ) {
+		elements.push_back( ele );
+
+		if( idx >= 0 ) {
+			element_by_idx[idx] = ele;
+		}
+	}
+
+	FXMenuRadio* get( int idx ) {
+		return element_by_idx[idx];
+	}
 
 	SavePoint* getSavePoint();
 };
