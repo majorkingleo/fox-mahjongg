@@ -14,6 +14,9 @@ if ! test -d dist ; then
 	mkdir dist
 	( cd dist && cp -u /usr/x86_64-w64-mingw32/sys-root/mingw/bin/*.dll dist )
 	( cd dist && ln -s ../fox-mahjongg.exe . )
+else
+# update dll
+	( cd dist && for i in *.dll ; do cp -u /usr/x86_64-w64-mingw32/sys-root/mingw/bin/$i . ; done )
 fi
 
 strip fox-mahjongg.exe
