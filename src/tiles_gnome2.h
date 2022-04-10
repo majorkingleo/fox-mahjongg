@@ -14,7 +14,7 @@
 class MahjonggWindow;
 class FXPixelBuffer;
 
-Tileset *load_tileset_gnome2( MahjonggWindow *root, FXPixelBuffer *pixelbuffer );
+Tileset *load_tileset_gnome2( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, double zoom_factor );
 
 
 

@@ -577,3 +577,13 @@ void FXPixelBuffer::clear()
 
 	owned_dc.clear();
 }
+
+void FXPixelBuffer::scaleImage( RefMImage image, double scale_factor )
+{
+	Magick::Geometry geo( image->columns() * scale_factor,
+						  image->rows() * scale_factor );
+
+	image->filterType(Magick::FilterTypes::LanczosFilter);
+	image->resize( geo );
+	image->unsharpmask( 0.25, 0.25, 8, 0.065 );
+}

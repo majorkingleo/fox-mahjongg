@@ -9,9 +9,9 @@
 #include "gmjts.hh"
 #include <iostream>
 
-Tileset *load_tileset_dorwhite( MahjonggWindow *root, FXPixelBuffer *pixelbuffer )
+Tileset *load_tileset_dorwhite( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, double zoom_factor )
 {
-	GnomeMjTileset *tileset = new GnomeMjTileset( root, pixelbuffer, tiles_dorwhite_gif, 10, 0 );
+	GnomeMjTileset *tileset = new GnomeMjTileset( root, pixelbuffer, tiles_dorwhite_gif, 10, 0, zoom_factor );
 
 	return tileset;
 }

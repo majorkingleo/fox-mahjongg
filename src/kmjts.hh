@@ -43,6 +43,7 @@ class KyodaiTileset: public Tileset {
   FXPixelBuffer::RefMImage _background_image;
 
   int _border;
+  double _zoom_factor;
   
   void initialize_images( const unsigned char *gif_data, const unsigned char* gif_data_background );
   void initialize();
@@ -55,7 +56,10 @@ class KyodaiTileset: public Tileset {
 				 FXPixelBuffer *pixelbuffer,
 				 const unsigned char* gif_data,
 				 const unsigned char* gif_data_background,
-				 int border = 4, int shadow = 1 );
+				 int border = 4,
+				 int shadow = 1,
+				 double zoom_factor = 100 );
+
   ~KyodaiTileset();
   
   KyodaiTileset( const KyodaiTileset & other ) = delete;

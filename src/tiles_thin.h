@@ -12,8 +12,9 @@
 #include "tileset.hh"
 
 class MahjonggWindow;
+class FXPixelBuffer;
 
-Tileset *load_tileset_thin( MahjonggWindow *root );
+Tileset *load_tileset_thin( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, double zoom_factor );
 
 
 

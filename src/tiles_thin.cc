@@ -117,7 +117,7 @@ const char *tiles_thin_name[] = {
 		"character-9",
 };
 
-Tileset *load_tileset_thin( MahjonggWindow *root )
+Tileset *load_tileset_thin( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, double zoom_factor )
 {
 	Xmj3Tileset::TILE_DATA data;
 
@@ -125,7 +125,7 @@ Tileset *load_tileset_thin( MahjonggWindow *root )
 		data.push_back( Xmj3Tileset::TileDataType( tiles_thin_name[i], tiles_thin[i] ));
 	}
 
-	Xmj3Tileset *tileset = new Xmj3Tileset( root, data );
+	Xmj3Tileset *tileset = new Xmj3Tileset( root, pixelbuffer, data, zoom_factor );
 
     int old_border = tileset->xborder();
 

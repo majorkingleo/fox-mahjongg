@@ -20,7 +20,8 @@ KyodaiTileset::KyodaiTileset(MahjonggWindow *root,
 							 const unsigned char *gif_data,
 							 const unsigned char* gif_data_background,
 							 int border,
-							 int shadow)
+							 int shadow,
+							 double zoom_factor )
   : Tileset("ivory"),
     _image_error(ieNone),
     _images(),
@@ -29,7 +30,8 @@ KyodaiTileset::KyodaiTileset(MahjonggWindow *root,
     _base_image(),
     _pixelbuffer( pixelbuffer ),
     _background_image(),
-    _border(border)
+    _border(border),
+    _zoom_factor( zoom_factor )
 {
 
   _shadow = shadow;
@@ -49,10 +51,16 @@ void KyodaiTileset::initialize_images(const unsigned char *gif_data,
 	Ref < FXImage > img = new FXGIFImage(_root->getApp(), gif_data, IMAGE_KEEP);
 	_base_image = _pixelbuffer->createImage(img);
 
+	_pixelbuffer->scaleImage( _base_image, _zoom_factor );
+
 	Ref < FXImage > img_bg = new FXGIFImage(_root->getApp(), gif_data_background, IMAGE_KEEP);
 	_background_image = _pixelbuffer->createImage(img_bg);
 
+	_pixelbuffer->scaleImage( _background_image, _zoom_factor );
+
 	_images.resize(NIMAGES);
+
+	_border *= _zoom_factor;
 }
 
 void KyodaiTileset::initialize()
@@ -210,7 +218,7 @@ FXPixelBuffer::RefMImage KyodaiTileset::createImage( const Tile *t, SwDrawable *
 
 		FXPixelBuffer::RefMImage mimage_fg = new Magick::Image( *_base_image );
 		mimage_fg->crop( Magick::Geometry( _width, _height, (pos%NACROSS)* _width, (pos/NACROSS)* _height ) );
-
+		DEBUG( format( "tile size: %dx%d", _width, _height ) );
 
 		if( draw_lit ) {
 			//mimage_fg->colorize( 50, Magick::ColorRGB( 0xec, 0xef, 0x4b ));

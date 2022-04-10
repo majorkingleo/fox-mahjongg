@@ -105,7 +105,7 @@ const char *tiles_small_name[] = {
 		"obscured",
 };
 
-Tileset *load_tileset_small( MahjonggWindow *root )
+Tileset *load_tileset_small( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, double zoom_factor )
 {
 	Xmj3Tileset::TILE_DATA data;
 
@@ -113,7 +113,7 @@ Tileset *load_tileset_small( MahjonggWindow *root )
 		data.push_back( Xmj3Tileset::TileDataType( tiles_small_name[i], tiles_small[i] ));
 	}
 
-	Xmj3Tileset *tileset = new Xmj3Tileset( root, data );
+	Xmj3Tileset *tileset = new Xmj3Tileset( root, pixelbuffer, data, zoom_factor );
 
     int old_border = tileset->xborder();
 

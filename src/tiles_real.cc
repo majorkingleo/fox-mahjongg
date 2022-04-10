@@ -9,14 +9,15 @@
 #include "kmjts.hh"
 #include <iostream>
 
-Tileset *load_tileset_real( MahjonggWindow *root, FXPixelBuffer *pixelbuffer )
+Tileset *load_tileset_real( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, double zoom_factor )
 {
 	KyodaiTileset *tileset = new KyodaiTileset( root,
 												pixelbuffer,
 												tiles_real_gif,
 												tiles_real_background_gif,
 												8,
-												1 );
+												1,
+												zoom_factor );
 
 	return tileset;
 }

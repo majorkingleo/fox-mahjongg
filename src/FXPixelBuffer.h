@@ -85,6 +85,8 @@ public:
 	FXImage *createImage( RefMImage mimage );
 	void updateImage( FXImage *image, RefMImage mimage );
 
+	void scaleImage( RefMImage image, double scale_factor );
+
 private:
 	void insertObjectAt( FXPixelBufferObject *ob, int idx );
 };

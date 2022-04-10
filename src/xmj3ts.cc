@@ -12,7 +12,10 @@ using namespace Tools;
 
 #define NPICTURES	(Tileset::IVORY_NPICTURES)
 
-Xmj3Tileset::Xmj3Tileset(MahjonggWindow *root, const TILE_DATA &tile_data)
+Xmj3Tileset::Xmj3Tileset(MahjonggWindow *root,
+						 FXPixelBuffer *pixelbuffer,
+						 const TILE_DATA &tile_data,
+						 double zoom_factor )
 : Tileset("ivory"),
   _image_error(ieNone),
   _face_ref(),
@@ -22,11 +25,16 @@ Xmj3Tileset::Xmj3Tileset(MahjonggWindow *root, const TILE_DATA &tile_data)
   _images(),
   _tile_data(tile_data),
   _root(root),
-  _objects_by_tilenumber()
+  _objects_by_tilenumber(),
+  _pixelbuffer(pixelbuffer),
+  _zoom_factor(zoom_factor)
 {
 	_xborder = 4;
 	_yborder = 4;
 	_shadow = 1;
+
+	_xborder *= zoom_factor;
+	_yborder *= zoom_factor;
 
 	initialize_images();
 	if (check()) {
@@ -213,12 +221,11 @@ void Xmj3Tileset::initialize_images()
 
 		std::string name = _tile_data[imagei].name;
 
-		FXImage *image = new FXGIFIcon(_root->getApp(), 0, 0, IMAGE_ALPHAGUESS | IMAGE_KEEP | IMAGE_SHMI | IMAGE_SHMP);
-		FXMemoryStream ms(FXStreamLoad, (FXuchar*) _tile_data[imagei].data);
-		if (!image->loadPixels(ms)) {
-			throw REPORT_EXCEPTION(format("Cannot load image %d", _tile_data[imagei].name));
-		}
+		FXImage *image = new FXGIFIcon(_root->getApp(), _tile_data[imagei].data, 0, IMAGE_ALPHAGUESS | IMAGE_KEEP );
 		image->create();
+		image->scale( image->getWidth() * _zoom_factor,
+					  image->getHeight() * _zoom_factor, 100 );
+
 		_images.push_back(image);
 
 		_root->registerNameByImage(image, name);

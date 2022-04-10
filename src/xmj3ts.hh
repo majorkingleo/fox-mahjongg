@@ -71,6 +71,8 @@ protected:
 
   MahjonggWindow *_root;
   std::map<int,FXPixelBufferObject*> _objects_by_tilenumber;
+  FXPixelBuffer *_pixelbuffer;
+  double _zoom_factor;
 
   void map_one_image(const char *, int, ImageType, Vector<short> &);
   void initialize_images();
@@ -80,7 +82,10 @@ protected:
   
  public:
   
-  Xmj3Tileset( MahjonggWindow *root, const TILE_DATA & tile_data );
+  Xmj3Tileset( MahjonggWindow *root,
+			   FXPixelBuffer *pixelbuffer,
+			   const TILE_DATA & tile_data,
+			   double zoom_factor );
   ~Xmj3Tileset();
   
   Xmj3Tileset( const Xmj3Tileset & other ) = delete;

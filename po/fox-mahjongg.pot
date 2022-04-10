@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: fox-mahjongg 0.3\n"
+"Project-Id-Version: fox-mahjongg 0.4\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-08 22:00+0200\n"
+"POT-Creation-Date: 2022-04-10 11:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,115 +17,119 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main.cc:172
+#: src/main.cc:178
 msgid "&About"
 msgstr ""
 
-#: src/main.cc:173
+#: src/main.cc:179
 msgid "&License"
 msgstr ""
 
-#: src/main.cc:174
+#: src/main.cc:180
 msgid "&Quit the application"
 msgstr ""
 
-#: src/main.cc:175
+#: src/main.cc:181
 msgid "&FOX Mahjongg"
 msgstr ""
 
-#: src/main.cc:179 src/builtin_layouts.cc:31
+#: src/main.cc:185 src/builtin_layouts.cc:31
 msgid "Default"
 msgstr ""
 
-#: src/main.cc:180
+#: src/main.cc:186
 msgid "Green"
 msgstr ""
 
-#: src/main.cc:181
+#: src/main.cc:187
 msgid "Blue"
 msgstr ""
 
-#: src/main.cc:182
+#: src/main.cc:188
 msgid "User defined"
 msgstr ""
 
-#: src/main.cc:183
+#: src/main.cc:189
 msgid "User defined image directory"
 msgstr ""
 
-#: src/main.cc:191
+#: src/main.cc:197
 msgid "&Background"
 msgstr ""
 
-#: src/main.cc:195
+#: src/main.cc:201
 msgid "Thick"
 msgstr ""
 
-#: src/main.cc:196
+#: src/main.cc:202
 msgid "Thin"
 msgstr ""
 
-#: src/main.cc:197
+#: src/main.cc:203
 msgid "Small"
 msgstr ""
 
-#: src/main.cc:198
+#: src/main.cc:204
 msgid "Gnome"
 msgstr ""
 
-#: src/main.cc:199
+#: src/main.cc:205
 msgid "Gnome2"
 msgstr ""
 
-#: src/main.cc:200
+#: src/main.cc:206
 msgid "Dorwhite"
 msgstr ""
 
-#: src/main.cc:201
+#: src/main.cc:207
 msgid "Dorothys"
 msgstr ""
 
-#: src/main.cc:202
+#: src/main.cc:208
 msgid "Real"
 msgstr ""
 
-#: src/main.cc:213
+#: src/main.cc:219
 msgid "&Tileset"
 msgstr ""
 
-#: src/main.cc:234
+#: src/main.cc:240
 msgid "&Layout"
 msgstr ""
 
-#: src/main.cc:1102
+#: src/main.cc:251
+msgid "&Zoom"
+msgstr ""
+
+#: src/main.cc:1166
 msgid "About"
 msgstr ""
 
-#: src/main.cc:1108
+#: src/main.cc:1172
 msgid "License"
 msgstr ""
 
-#: src/main.cc:1124
+#: src/main.cc:1188
 msgid "&Close"
 msgstr ""
 
-#: src/main.cc:1142
+#: src/main.cc:1206
 msgid "usage: "
 msgstr ""
 
-#: src/main.cc:1179
+#: src/main.cc:1243
 msgid "Show this page"
 msgstr ""
 
-#: src/main.cc:1184
+#: src/main.cc:1248
 msgid "Show FOX-Mahjongg version number"
 msgstr ""
 
-#: src/main.cc:1188
+#: src/main.cc:1252
 msgid "print debugging messages"
 msgstr ""
 
-#: src/main.cc:1198
+#: src/main.cc:1262
 #, c-format
 msgid "%s version %s\n"
 msgstr ""

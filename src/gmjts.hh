@@ -39,6 +39,7 @@ class GnomeMjTileset: public Tileset {
   FXPixelBuffer::RefMImage _base_image;
   FXPixelBuffer*  		   _pixelbuffer;
   int					   _border;
+  double				   _zoom_factor;
 
   void initialize_images( const unsigned char *gif_data );
   void check_images();
@@ -48,7 +49,13 @@ class GnomeMjTileset: public Tileset {
   
  public:
   
-  GnomeMjTileset( MahjonggWindow *root, FXPixelBuffer *pixelbuffer, const unsigned char* gif_data, int border = 4, int shadow = 1 );
+  GnomeMjTileset( MahjonggWindow *root,
+				  FXPixelBuffer *pixelbuffer,
+				  const unsigned char* gif_data,
+				  int border = 4,
+				  int shadow = 1,
+				  double zoom_factor = 1 );
+
   ~GnomeMjTileset();
   
   GnomeMjTileset( const GnomeMjTileset & other ) = delete;

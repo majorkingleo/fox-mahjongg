@@ -18,7 +18,8 @@ GnomeMjTileset::GnomeMjTileset(MahjonggWindow *root,
 							   FXPixelBuffer *pixelbuffer,
 							   const unsigned char *gif_data,
 							   int border,
-							   int shadow)
+							   int shadow,
+							   double zoom_factor )
 : Tileset("ivory"),
   _image_error(ieNone),
   _images(),
@@ -26,7 +27,8 @@ GnomeMjTileset::GnomeMjTileset(MahjonggWindow *root,
   _objects_by_tilenumber(),
   _base_image(),
   _pixelbuffer( pixelbuffer ),
-  _border(border)
+  _border(border),
+  _zoom_factor(zoom_factor)
 {
 	_shadow = shadow;
 
@@ -46,7 +48,11 @@ void GnomeMjTileset::initialize_images(const unsigned char *gif_data)
 	Ref<FXImage> img = new FXGIFImage(_root->getApp(), gif_data, IMAGE_KEEP);
 	_base_image = _pixelbuffer->createImage(img);
 
+	_pixelbuffer->scaleImage( _base_image, _zoom_factor );
+
 	_images.resize(NIMAGES);
+	_border *= _zoom_factor;
+
 	check_images();
 }
 

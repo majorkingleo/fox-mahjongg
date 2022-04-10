@@ -54,7 +54,7 @@ using namespace Tools;
 
 const int LEVEL_START = 0;
 const unsigned TIMEOUT_VALUE = 100 * 1000000; // 100ms
-
+const unsigned ZOOM_INC = 25;
 
 
 
@@ -242,7 +242,7 @@ MahjonggWindow::MahjonggWindow(FXApp *a)
 
     FXMenuPane *zoom = new FXMenuPane(this);
 
-    for( int i = ID_ZOOM_100, zl = 100; i <= ID_ZOOM_MAX; i++, zl +=50 ) {
+    for( int i = ID_ZOOM_100, zl = 100; i <= ID_ZOOM_MAX; i++, zl += ZOOM_INC ) {
     	std::string title = format( "%d%%", zl );
     	FXMenuRadio *mc = new FXMenuRadio(zoom,title.c_str(),this, i );
     	radio_group_zoom->add( mc, i );
@@ -544,23 +544,23 @@ Tileset* MahjonggWindow::load_tileset(const char *tileset_name, const char *conf
 	Tileset *tileset = 0;
 
 	if( mc_tileset_thick->getCheck() ) {
-		tileset = load_tileset_thick( this );
+		tileset = load_tileset_thick( this, canvas, zoom_level / 100.0 );
 	} else  if( mc_tileset_thin->getCheck() ) {
-		tileset = load_tileset_thin( this );
+		tileset = load_tileset_thin( this, canvas, zoom_level / 100.0 );
 	} else  if( mc_tileset_small->getCheck() ) {
-		tileset = load_tileset_small( this );
+		tileset = load_tileset_small( this, canvas, zoom_level / 100.0 );
 	} else  if( mc_tileset_gnome->getCheck() ) {
-		tileset = load_tileset_gnome( this, canvas );
+		tileset = load_tileset_gnome( this, canvas, zoom_level / 100.0 );
 	} else  if( mc_tileset_gnome2->getCheck() ) {
-		tileset = load_tileset_gnome2( this, canvas );
+		tileset = load_tileset_gnome2( this, canvas, zoom_level / 100.0 );
 	} else  if( mc_tileset_dorwhite->getCheck() ) {
-		tileset = load_tileset_dorwhite( this, canvas );
+		tileset = load_tileset_dorwhite( this, canvas, zoom_level / 100.0 );
 	} else  if( mc_tileset_dorothys->getCheck() ) {
-		tileset = load_tileset_dorothys( this, canvas );
+		tileset = load_tileset_dorothys( this, canvas, zoom_level / 100.0 );
 	} else  if( mc_tileset_real->getCheck() ) {
-		tileset = load_tileset_real( this, canvas );
+		tileset = load_tileset_real( this, canvas, zoom_level / 100.0 );
 	} else {
-		tileset = load_tileset_thick( this );
+		tileset = load_tileset_thick( this, canvas, zoom_level / 100.0 );
 	}
 	//tileset = load_tileset_thin( this );
 #if 0
@@ -999,7 +999,7 @@ void MahjonggWindow::readRegistry()
 
 	unsigned zl = 100;
 
-	for( int i = ID_ZOOM_100; i < ID_ZOOM_MAX; i++, zl += 50 ) {
+	for( int i = ID_ZOOM_100; i < ID_ZOOM_MAX; i++, zl += ZOOM_INC ) {
 		if( zl == zoom_level ) {
 			mc_zoom = radio_group_zoom->get( i );
 			break;
@@ -1141,18 +1141,23 @@ long MahjonggWindow::onChangeZoom(FXObject* obj,FXSelector sel,void* ptr)
 {
 	int id = FXSELID( sel );
 
-	zoom_level = 100;
+	int new_zoom_level = 100;
 
-	for( int i = ID_ZOOM_100; i < ID_ZOOM_MAX; i++, zoom_level += 50 ) {
+	for( int i = ID_ZOOM_100; i < ID_ZOOM_MAX; i++, new_zoom_level += ZOOM_INC ) {
 		if( i == id ) {
 			break;
 		}
 	}
 
-	DEBUG( format( "%s id: %d zoom: %d%%", __FUNCTION__, id, zoom_level ) );
+	DEBUG( format( "%s id: %d zoom: %d%%", __FUNCTION__, id, new_zoom_level ) );
 
 	radio_group_zoom->setCheck( radio_group_zoom->get(id) );
-	// reloadBoard();
+
+	if( new_zoom_level != zoom_level ) {
+		zoom_level = new_zoom_level;
+		reloadBoard();
+	}
+
 	return 1;
 }
 
