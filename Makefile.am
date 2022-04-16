@@ -204,7 +204,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/tools \
 	-DNOWAMAS \
 	-I$(top_srcdir)/liblcdf \
 	-I$(top_srcdir)/generated \
-	$(AUXLIBS_CFLAGS)  \
+	$(LIBFOX_CFLAGS)  \
 	$(LIBMAGICK_CFLAGS) \
 	-std=c++11 \
 	-fopenmp \
@@ -311,7 +311,7 @@ fox_mahjongg_LDADD = \
 	generated/libgenerated.a
 
 LIBS= \
-	$(AUXLIBS_LIBS) \
+	$(LIBFOX_LIBS) \
 	$(LIBMAGICK_LIBS)	
 	
 AM_LDFLAGS= -fopenmp	

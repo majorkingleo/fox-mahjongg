@@ -13,6 +13,9 @@
 #include <format.h>
 #include "FXPixelBuffer.h"
 
+// this has to be included on FOX-1.6
+#include <fxkeys.h>
+
 using namespace Tools;
 
 Panel::Panel(FXApp *app, FXPixelBuffer *window, MahjonggWindow *root )

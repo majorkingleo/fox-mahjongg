@@ -39,6 +39,10 @@
 #include "FXRadioGroup.h"
 #include <data_readme.h>
 
+// with FOX-1.6 this has to be included
+#include <FXPNGImage.h>
+#include <FXJPGImage.h>
+
 #ifdef ENABLE_NLS
 #	include <libintl.h>
 #	include <locale.h>
@@ -53,7 +57,13 @@
 using namespace Tools;
 
 const int LEVEL_START = 0;
+
+#if FOX_MAJOR >= 1 && FOX_MINOR >= 7
 const unsigned TIMEOUT_VALUE = 100 * 1000000; // 100ms
+#else
+const unsigned TIMEOUT_VALUE = 100; // 100ms
+#endif
+
 const unsigned ZOOM_INC = 25;
 
 
@@ -911,7 +921,7 @@ void MahjonggWindow::writeRegistry()
 
 	getApp()->reg().writeStringEntry("SETTINGS","selected_builtin_layout", selected_builtin_layout.c_str() );
 
-	getApp()->reg().writeUIntEntry("SETTINGS","zoom_level", zoom_level );
+	getApp()->reg().writeIntEntry("SETTINGS","zoom_level", zoom_level );
 }
 
 void MahjonggWindow::readRegistry()
@@ -994,7 +1004,7 @@ void MahjonggWindow::readRegistry()
 
 
 
-	zoom_level = getApp()->reg().readUIntEntry( "SETTINGS", "zoom_level", 100 );
+	zoom_level = getApp()->reg().readIntEntry( "SETTINGS", "zoom_level", 100 );
 	FXMenuRadio *mc_zoom = 0;
 
 	unsigned zl = 100;

@@ -1,5 +1,5 @@
 #include "theme.h"
-
+#include <fxdefs.h>
 #ifdef TOOLS_USE_GUI
 
 namespace Tools {
@@ -267,7 +267,15 @@ long ThemeTextField::onPaint(FXObject*,FXSelector,void* ptr)
   
   // Draw caret
   if(flags&FLAG_CARET){
+#if FOX_MAJOR == 1 && FOX_MINOR >= 7
 	  paintCursor(dc);
+#else
+	  int xx=coord(cursor)-1;
+	  dc.setForeground(cursorColor);
+	  dc.fillRectangle(xx,padtop+border,1,height-padbottom-padtop-(border<<1));
+	  dc.fillRectangle(xx-2,padtop+border,5,1);
+	  dc.fillRectangle(xx-2,height-border-padbottom-1,5,1);
+#endif
   }
   return 1;
 }

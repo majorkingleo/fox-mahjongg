@@ -10,6 +10,9 @@
 #include <cpp_util.h>
 #include <main.h>
 
+// this has to be included with FOX-1.6
+#include <FXElement.h>
+
 #if defined(_OPENMP)
 #include <omp.h>
 #endif
