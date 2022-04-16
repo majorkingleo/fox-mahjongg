@@ -16,6 +16,23 @@
 
 using namespace Tools;
 
+// this function became protected in Magick++7
+#if MagickLibVersion >= 0x700
+static double scaleQuantumToDouble(const Magick::Quantum quantum_)
+{
+#if (MAGICKCORE_QUANTUM_DEPTH < 32) && (MAGICKCORE_SIZEOF_FLOAT_T != MAGICKCORE_SIZEOF_DOUBLE || !defined(MAGICKCORE_HDRI_SUPPORT))
+  return(static_cast<double>(QuantumScale*quantum_));
+#else
+  return(QuantumScale*quantum_);
+#endif
+}
+
+Magick::Quantum scaleDoubleToQuantum(const double double_)
+{
+  return(static_cast<Magick::Quantum>(double_*QuantumRange));
+}
+#endif
+
 static unsigned long get_microtime()
 {
     struct timeval tv1;
@@ -137,15 +154,21 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 	  }
   }
 
+  // DEBUG( format( "duration repainting1: %0.3fms", (get_microtime() - start_time_function) / 1000.0 ) );
 
   for( auto it : floors ) {
+
+	  // DEBUG( format( "duration repainting11 start creating floor: %0.3fms", (get_microtime() - start_time_function) / 1000.0 ) );
+
 	  RefMImage target = it.second;
 
-	  DEBUG( format( "%s: floor %d size: %dx%d", __FUNCTION__, it.first, target->columns(), target->rows() ) );
+	  // DEBUG( format( "%s: floor %d size: %dx%d", __FUNCTION__, it.first, target->columns(), target->rows() ) );
 
 	  target->fillColor("white");
 	  target->draw( Magick::DrawableRectangle(0,0, target->columns(), target->rows() ) );
 	  target->transparent("white");
+
+	  // DEBUG( format( "duration repainting11 creating floor: %0.3fms", (get_microtime() - start_time_function) / 1000.0 ) );
 
 	  int floor = it.first;
 
@@ -156,7 +179,11 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 			  }
 		  }
 	  }
+
+	  // DEBUG( format( "duration repainting11 drawing objects: %0.3fms\n", (get_microtime() - start_time_function) / 1000.0 ) );
   }
+
+  // DEBUG( format( "duration repainting2: %0.3fms", (get_microtime() - start_time_function) / 1000.0 ) );
 
   unsigned long start_time = get_microtime();
 
@@ -170,6 +197,8 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 
 	  DEBUG( format( "%s: drawing floor: %d", __FUNCTION__, it.first ) );;
   }
+
+  // DEBUG( format( "duration repainting3: %0.3fms", (get_microtime() - start_time_function) / 1000.0 ) );
 
   DEBUG( format( "%s: window size: %dx%d", __FUNCTION__, getWidth(),getHeight() ) );
 
@@ -189,6 +218,8 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
   DEBUG( format( "duration flatten Images: %0.3fms", (get_microtime() - start_time) / 1000.0 ) );
 
   // flattenedImage.write("out.png");
+
+  // DEBUG( format( "duration repainting4: %0.3fms", (get_microtime() - start_time_function) / 1000.0 ) );
 
   if( !buffer ) {
 	  buffer = createImage( RefMImage(&flattenedImage,false) );
@@ -272,27 +303,41 @@ FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
 
     RefMImage mimage = new Magick::Image(Magick::Geometry(image->getWidth(), image->getHeight()), COLOR_TRANSPARENT);
 
+    unsigned long start_time = get_microtime();
+
     /* get pixelcache of ImageIn */
 #if MagickLibVersion >= 0x700
     mimage->type(Magick::TrueColorAlphaType);
     Magick::Quantum *pixelsOut = mimage->getPixels(0, 0, w, h);
 
-    for (int y = 0; y != h; ++y) {
-        for (int x = 0; x != w; ++x)
-        {
-            unsigned offset = mimage->channels() * ( w * y + x );
+#pragma omp parallel
+    {
+#pragma omp for
+    	for (int y = 0; y < h; ++y) {
+    		for (int x = 0; x < w; ++x)
+    		{
+    			unsigned offset = mimage->channels() * ( w * y + x );
 
-            FXColor xc = image->getPixel(x,y);
-            Magick::ColorRGB color(FXREDVAL(xc)/255.0,
-            		       FXGREENVAL(xc)/255.0,
-            		       FXBLUEVAL(xc)/255.0,
-            		       FXALPHAVAL(xc)/255.0 );
+    			FXColor xc = image->getPixel(x,y);
 
-            pixelsOut[offset + 0] = color.quantumRed();
-            pixelsOut[offset + 1] = color.quantumGreen();
-            pixelsOut[offset + 2] = color.quantumBlue();
-            pixelsOut[offset + 3] = color.quantumAlpha();
-        }
+    			/*
+    			Magick::ColorRGB color(FXREDVAL(xc)/255.0,
+    					FXGREENVAL(xc)/255.0,
+						FXBLUEVAL(xc)/255.0,
+						FXALPHAVAL(xc)/255.0 );
+
+    			pixelsOut[offset + 0] = color.quantumRed();
+    			pixelsOut[offset + 1] = color.quantumGreen();
+    			pixelsOut[offset + 2] = color.quantumBlue();
+    			pixelsOut[offset + 3] = color.quantumAlpha();
+    			*/
+
+    			pixelsOut[offset + 0] = scaleDoubleToQuantum(FXREDVAL(xc)/255.0);
+    			pixelsOut[offset + 1] = scaleDoubleToQuantum(FXGREENVAL(xc)/255.0);
+    			pixelsOut[offset + 2] = scaleDoubleToQuantum(FXBLUEVAL(xc)/255.0);
+    			pixelsOut[offset + 3] = scaleDoubleToQuantum(FXALPHAVAL(xc)/ 255.0 );
+    		}
+    	}
     }
 #else
     mimage->type(Magick::TrueColorMatteType);
@@ -330,6 +375,8 @@ FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
     }
 #endif
 
+    DEBUG( format( "duration creating Magick::Image from FXImage: %0.3fms", (get_microtime() - start_time) / 1000.0 ) );
+
     mimage->syncPixels();
 
     return mimage;
@@ -347,6 +394,8 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
     allocElms( pixels, w * h  );
     image->setData( pixels, IMAGE_KEEP | IMAGE_OWNED, w, h );
 
+    unsigned long start_time = get_microtime();
+
     /* get pixelcache of ImageIn */
 #if MagickLibVersion >= 0x700
 
@@ -354,21 +403,32 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
     mimage->modifyImage();
 
     Magick::Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
+#pragma omp parallel
+    {
+#pragma omp for
+    	for (int y = 0; y < h; ++y) {
+    		for (int x = 0; x < w; ++x)
+    		{
+    			unsigned offset = mimage->channels() * ( w * y + x );
+    			/*
+            		Magick::Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
+            		Magick::ColorRGB rgb( color );
 
-    for (int y = 0; y != h; ++y) {
-        for (int x = 0; x != w; ++x)
-        {
-            unsigned offset = mimage->channels() * ( w * y + x );
+            		FXColor xc = FXRGBA( rgb.red()*255.0,
+            					 	 	 rgb.green()*255.0,
+            					 	 	 rgb.blue()*255.0,
+            					 	 	 rgb.alpha()*255.0 );
+            		image->setPixel( x, y, xc );
+    			 */
 
-            Magick::Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
-            Magick::ColorRGB rgb( color );
+    			FXint red   = scaleQuantumToDouble(pixelsIn[offset + 0]) * 255;
+    			FXint green = scaleQuantumToDouble(pixelsIn[offset + 1]) * 255;
+    			FXint blue  = scaleQuantumToDouble(pixelsIn[offset + 2]) * 255;
+    			FXint alpha = scaleQuantumToDouble(pixelsIn[offset + 3]) * 255;
 
-            FXColor xc = FXRGBA( rgb.red()*255.0,
-            					 rgb.green()*255.0,
-            					 rgb.blue()*255.0,
-            					 rgb.alpha()*255.0 );
-            image->setPixel( x, y, xc );
-        }
+    			image->setPixel( x, y, FXRGBA(red,green,blue,alpha) );
+    		}
+    	}
     }
 #else
     mimage->type(Magick::TrueColorMatteType);
@@ -405,6 +465,9 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
     	}
     }
 #endif
+
+    DEBUG( format( "duration creating FXImage from Magick::Image: %0.3fms", (get_microtime() - start_time) / 1000.0 ) );
+
     image->render();
 
     return image;
@@ -498,6 +561,8 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
     	image->setData( pixels, IMAGE_KEEP | IMAGE_OWNED, w, h );
     }
 
+    unsigned long start_time = get_microtime();
+
     /* get pixelcache of ImageIn */
 #if MagickLibVersion >= 0x700
 
@@ -506,20 +571,31 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
 
     Magick::Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
 
-    for (int y = 0; y != h; ++y) {
-        for (int x = 0; x != w; ++x)
-        {
-            unsigned offset = mimage->channels() * ( w * y + x );
+#pragma omp parallel
+    {
+#pragma omp for
+    	for (int y = 0; y < h; ++y) {
+    		for (int x = 0; x < w; ++x)
+    		{
+    			unsigned offset = mimage->channels() * ( w * y + x );
 
-            Magick::Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
-            Magick::ColorRGB rgb( color );
+    			/*
+            		Magick::Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
+            		Magick::ColorRGB rgb( color );
 
-            FXColor xc = FXRGBA( rgb.red()*255.0,
-            					 rgb.green()*255.0,
-            					 rgb.blue()*255.0,
-            					 rgb.alpha()*255.0 );
-            image->setPixel( x, y, xc );
-        }
+            		FXColor xc = FXRGBA( rgb.red()*255.0,
+            					 	 	 rgb.green()*255.0,
+            					 	 	 rgb.blue()*255.0,
+            					 	 	 rgb.alpha()*255.0 );
+    			 */
+    			FXint red   = scaleQuantumToDouble(pixelsIn[offset + 0]) * 255;
+    			FXint green = scaleQuantumToDouble(pixelsIn[offset + 1]) * 255;
+    			FXint blue  = scaleQuantumToDouble(pixelsIn[offset + 2]) * 255;
+    			FXint alpha = scaleQuantumToDouble(pixelsIn[offset + 3]) * 255;
+
+    			image->setPixel( x, y, FXRGBA(red,green,blue,alpha) );
+    		}
+    	}
     }
 #else
     mimage->type(Magick::TrueColorMatteType);
@@ -530,8 +606,6 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
     if( !pixelsIn ) {
     	throw REPORT_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
     }
-
-    unsigned long start_time = get_microtime();
 
 #pragma omp parallel
     {
@@ -557,12 +631,9 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
     		}
     	}
     }
-
-
-
-    DEBUG( format( "duration converting Image to FXImage: %0.3fms", (get_microtime() - start_time) / 1000.0 ) );
-
 #endif
+    DEBUG( format( "duration converting Magick::Image to FXImage: %0.3fms", (get_microtime() - start_time) / 1000.0 ) );
+
     image->render();
 }
 
