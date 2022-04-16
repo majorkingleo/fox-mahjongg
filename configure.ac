@@ -61,7 +61,30 @@ CXX_FLAGS_CHECK([-std=c++11])
 CXX_FLAGS_CHECK([-fopenmp])
 
 PKG_CHECK_MODULES([AUXLIBS], [fox17])
-PKG_CHECK_MODULES([LIBMAGICK], [Magick++])
+
+AC_ARG_WITH([magick6],
+  [AS_HELP_STRING([--with-magick6],[use ImageMagick 6])],
+  [],
+  [with_magick6=no]
+)
+
+AC_ARG_WITH([magick7],
+  [AS_HELP_STRING([--with-magick7],[use ImageMagick 7])],
+  [],
+  [with_magick7=no]
+)
+
+AS_IF([test "x$with_magick6" != "xno"],
+    [PKG_CHECK_MODULES([LIBMAGICK], [Magick++-6.Q16],[MAGICK6="yes"],[MAGICK6="no"])]
+) 
+  
+AS_IF([test "x$with_magick7" != "xno"],
+    [PKG_CHECK_MODULES([LIBMAGICK], [Magick++-7.Q16HDRI],[MAGICK7="yes"],[MAGICK7="no"])]
+)   
+    
+AS_IF([test "x${MAGICK6}x${MAGICK7}" == "xx" ],
+    [PKG_CHECK_MODULES([LIBMAGICK], [Magick++])]
+) 
 
 AM_GNU_GETTEXT([external])
 AM_CONDITIONAL([USE_NLS], [test "x${USE_NLS}" = "xyes"])

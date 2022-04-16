@@ -175,7 +175,12 @@ long FXPixelBuffer::onPaint(FXObject* obj,FXSelector sel,void* ptr)
 
 
   Magick::Image flattenedImage( Magick::Geometry(getWidth(),getHeight()), Magick::Color("transparent") );
+
+#if MagickLibVersion >= 0x700
+  flattenedImage.type(Magick::TrueColorAlphaType);
+#else
   flattenedImage.type(Magick::TrueColorMatteType);
+#endif
 
   Magick::flattenImages(&flattenedImage, images.begin(), images.end());
 
@@ -269,9 +274,8 @@ FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
 
     /* get pixelcache of ImageIn */
 #if MagickLibVersion >= 0x700
-
-    mimage->type(TrueColorAlphaType);
-    Quantum *pixelsOut = mimage->getPixels(0, 0, w, h);
+    mimage->type(Magick::TrueColorAlphaType);
+    Magick::Quantum *pixelsOut = mimage->getPixels(0, 0, w, h);
 
     for (int y = 0; y != h; ++y) {
         for (int x = 0; x != w; ++x)
@@ -279,7 +283,7 @@ FXPixelBuffer::RefMImage FXPixelBuffer::createImage( FXImage *image )
             unsigned offset = mimage->channels() * ( w * y + x );
 
             FXColor xc = image->getPixel(x,y);
-            ColorRGB color(FXREDVAL(xc)/255.0,
+            Magick::ColorRGB color(FXREDVAL(xc)/255.0,
             		       FXGREENVAL(xc)/255.0,
             		       FXBLUEVAL(xc)/255.0,
             		       FXALPHAVAL(xc)/255.0 );
@@ -346,23 +350,23 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
     /* get pixelcache of ImageIn */
 #if MagickLibVersion >= 0x700
 
-    mimage->type(TrueColorAlphaType);
+    mimage->type(Magick::TrueColorAlphaType);
     mimage->modifyImage();
 
-    Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
+    Magick::Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
 
     for (int y = 0; y != h; ++y) {
         for (int x = 0; x != w; ++x)
         {
             unsigned offset = mimage->channels() * ( w * y + x );
 
-            Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
-            ColorRBG rbg( color );
+            Magick::Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
+            Magick::ColorRGB rgb( color );
 
-            FXColor xc = FXRGBA( rbg.red()*255.0,
-            					 rbg.green()*255.0,
-            					 rbg.blue()*255.0,
-            					 rbg.alpha()*255.0 );
+            FXColor xc = FXRGBA( rgb.red()*255.0,
+            					 rgb.green()*255.0,
+            					 rgb.blue()*255.0,
+            					 rgb.alpha()*255.0 );
             image->setPixel( x, y, xc );
         }
     }
@@ -497,23 +501,23 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
     /* get pixelcache of ImageIn */
 #if MagickLibVersion >= 0x700
 
-    mimage->type(TrueColorAlphaType);
+    mimage->type(Magick::TrueColorAlphaType);
     mimage->modifyImage();
 
-    Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
+    Magick::Quantum *pixelsIn = mimage->getPixels(0, 0, w, h);
 
     for (int y = 0; y != h; ++y) {
         for (int x = 0; x != w; ++x)
         {
             unsigned offset = mimage->channels() * ( w * y + x );
 
-            Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
-            ColorRBG rbg( color );
+            Magick::Color color(pixelsIn[offset + 0],pixelsIn[offset + 1] ,pixelsIn[offset + 2],pixelsIn[offset + 3]);
+            Magick::ColorRGB rgb( color );
 
-            FXColor xc = FXRGBA( rbg.red()*255.0,
-            					 rbg.green()*255.0,
-            					 rbg.blue()*255.0,
-            					 rbg.alpha()*255.0 );
+            FXColor xc = FXRGBA( rgb.red()*255.0,
+            					 rgb.green()*255.0,
+            					 rgb.blue()*255.0,
+            					 rgb.alpha()*255.0 );
             image->setPixel( x, y, xc );
         }
     }
@@ -582,8 +586,11 @@ void FXPixelBuffer::scaleImage( RefMImage image, double scale_factor )
 {
 	Magick::Geometry geo( image->columns() * scale_factor,
 						  image->rows() * scale_factor );
-
+#if MagickLibVersion >= 0x700
+	image->filterType(Magick::LanczosFilter);
+#else
 	image->filterType(Magick::FilterTypes::LanczosFilter);
+#endif
 	image->resize( geo );
 	image->unsharpmask( 0.25, 0.25, 8, 0.065 );
 }
