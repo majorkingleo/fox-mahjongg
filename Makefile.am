@@ -261,7 +261,6 @@ cpputils_cpputilsshared_cpputilsformat_libcpputilsformat_a_SOURCES= \
 
 liblcdf_liblcdf_a_SOURCES= \
     liblcdf/vector.hh \
-    liblcdf/vectorv.hh \
     liblcdf/vectorv.cc
     
 
@@ -335,4 +334,9 @@ SUBDIRS = $(PO_SUBDIR)
 
 ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST = m4/ChangeLog
+EXTRA_DIST = m4/ChangeLog \
+	images/button.gif \
+	images/digits.gif \
+	images/xmahjongg.gif \
+	images/xmahjongg.ico
+	
