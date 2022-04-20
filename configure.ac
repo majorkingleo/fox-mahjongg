@@ -82,7 +82,11 @@ AS_IF([test "x$with_fox17" != "xno"],
 )
     
 AS_IF([test "x${FOX16}x${FOX17}" == "xx" ],
-	PKG_CHECK_MODULES([LIBFOX], [fox])
+	PKG_CHECK_MODULES([LIBFOX], [fox], [],
+		[PKG_CHECK_MODULES([LIBFOX], [fox17], [],
+			[PKG_CHECK_MODULES([LIBFOX], fox16 )]
+		)]
+	)
 )
 
 
