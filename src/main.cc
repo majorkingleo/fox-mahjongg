@@ -677,6 +677,13 @@ FXImage* MahjonggWindow::load_background(const std::string & background_image )
 		img = new FXPNGImage(getApp(),nullptr,IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
 	} else if( ext == "JPG" || ext == "JPEG" ) {
 		img = new FXJPGImage(getApp(),nullptr,IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP);
+	} else if( ext.empty() ) {
+		img = getImageByName( background_image, false );
+
+		if( !img ) {
+			return 0;
+		}
+
 	} else {
 		return 0;
 	}
@@ -805,6 +812,7 @@ long MahjonggWindow::onChangeBackgroundDefault(FXObject* obj,FXSelector sel, voi
 	if( panel ) {
 		panel->set_background(getImageByName("background_default"));
 		radio_group_background_image->setCheck( mc_background_default );
+		background_image_name = "background_default";
 		save_point.commit();
 	}
 	return 1;
@@ -817,6 +825,7 @@ long MahjonggWindow::onChangeBackgroundGreen(FXObject* obj,FXSelector sel, void*
 	if( panel ) {
 		panel->set_background(getImageByName("background_green"));
 		radio_group_background_image->setCheck( mc_background_green );
+		background_image_name = "background_green";
 		save_point.commit();
 	}
 	return 1;
@@ -829,6 +838,7 @@ long MahjonggWindow::onChangeBackgroundBlue(FXObject* obj,FXSelector sel, void* 
 	if( panel ) {
 		panel->set_background(getImageByName("background_blue"));
 		radio_group_background_image->setCheck( mc_background_blue );
+		background_image_name = "background_blue";
 		save_point.commit();
 	}
 	return 1;
