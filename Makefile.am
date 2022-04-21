@@ -1,10 +1,13 @@
 bin_PROGRAMS=fox-mahjongg
 
 fox_mahjongg_SOURCES=\
+		tools_config.h\
 		src/colored_output.cc\
+		src/colored_output.h\
 		src/main.h\
 		src/main.cc\
 		src/OutDebug.cc\
+		src/OutDebug.h\
 		src/DetectLocale.cc \
 		src/DetectLocale.h \
 		src/read_file.h \
@@ -218,26 +221,54 @@ noinst_LIBRARIES=tools/libtools.a \
 
 tools_libtools_a_SOURCES= \
 	tools/arg.cpp \
+	tools/arg.h \
 	tools/database.cpp \
+	tools/database.h \
 	tools/db.cpp \
+	tools/db.h \
 	tools/dbi.cpp \
+	tools/dbi.h \
 	tools/debug.cpp \
+	tools/debug.h \
 	tools/mysql_db.cpp \
+	tools/mysql_db.h \
 	tools/odbc_db.cpp \
+	tools/odbc_db.h \
 	tools/oracle_db.cpp \
+	tools/oracle_db.h \
 	tools/pairs.cpp \
+	tools/pairs.h \
 	tools/theme.cpp \
-	tools/thread.cpp
+	tools/theme.h \
+	tools/thread.cpp \
+	tools/thread.h
 
 
 cpputils_cpputilsshared_libcpputilsshared_a_SOURCES= \
 		cpputils/cpputilsshared/backtrace.cc \
+		cpputils/cpputilsshared/backtrace.h \
 		cpputils/cpputilsshared/cppdir.cc \
+		cpputils/cpputilsshared/cppdir.h \
 		cpputils/cpputilsshared/leoini.cc \
+		cpputils/cpputilsshared/leoini.h \
 		cpputils/cpputilsshared/logtool2.cc \
+		cpputils/cpputilsshared/logtool2.h \
 		cpputils/cpputilsshared/string_utils.cc \
+		cpputils/cpputilsshared/string_utils.h \
 		cpputils/cpputilsshared/vec_utils.cc \
+		cpputils/cpputilsshared/vec_utils.h \
 		cpputils/cpputilsshared/xml.cc \
+		cpputils/cpputilsshared/xml.h \
+		cpputils/cpputilsshared/cpp_util.h \
+		cpputils/cpputilsshared/cpp_util_min_max.h \
+		cpputils/cpputilsshared/cpp_utils.h \
+		cpputils/cpputilsshared/cpputils.h \
+		cpputils/cpputilsshared/ref.h \
+		cpputils/cpputilsshared/jvector.h \
+		cpputils/cpputilsshared/zvector.h \
+		cpputils/cpputilsshared/range.h \
+		cpputils/cpputilsshared/report_exception.h \
+		cpputils/cpputilsshared/sql_exception.h \
 		cpputils/cpputilsshared/utf8.h \
 		cpputils/cpputilsshared/utf8/core.h \
 		cpputils/cpputilsshared/utf8/checked.h \
@@ -253,6 +284,7 @@ cpputils_cpputilsshared_cpputilsformat_libcpputilsformat_a_SOURCES= \
 	cpputils/cpputilsshared/cpputilsformat/format2.cc \
 	cpputils/cpputilsshared/cpputilsformat/format2.h \
 	cpputils/cpputilsshared/cpputilsformat/format1.h \
+	cpputils/cpputilsshared/cpputilsformat/format.h \
 	cpputils/cpputilsshared/cpputilsformat/cformat.h \
 	cpputils/cpputilsshared/cpputilsformat/wformat2.cc \
 	cpputils/cpputilsshared/cpputilsformat/wformat2.h \
@@ -335,8 +367,51 @@ SUBDIRS = $(PO_SUBDIR)
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = m4/ChangeLog \
-	images/button.gif \
+	images/buttons.gif \
 	images/digits.gif \
 	images/xmahjongg.gif \
-	images/xmahjongg.ico
+	images/xmahjongg.ico \
+	share/backgrounds/blue.gif \
+	share/backgrounds/green.gif \
+	share/backgrounds/default.gif \
+	share/tiles/dorothys.gif \
+	share/tiles/dorwhite.gif \
+	share/tiles/gnome2.gif \
+	share/tiles/gnome.gif \
+	share/tiles/real_background.gif \
+	share/tiles/real.gif \
+	share/tiles/small.gif \
+	share/tiles/thick.gif \
+	share/tiles/thin.gif \
+	share/layouts/arena \
+	share/layouts/arrow \
+	share/layouts/boar \
+	share/layouts/bridge \
+	share/layouts/ceremonial \
+	share/layouts/deepwell \
+	share/layouts/default \
+	share/layouts/dog \
+	share/layouts/dragon \
+	share/layouts/farandole \
+	share/layouts/hare \
+	share/layouts/horse \
+	share/layouts/hourglass \
+	share/layouts/monkey \
+	share/layouts/ox \
+	share/layouts/papillon \
+	share/layouts/ram \
+	share/layouts/rat \
+	share/layouts/rooster \
+	share/layouts/schoon \
+	share/layouts/snake \
+	share/layouts/theater \
+	share/layouts/tiger \
+	share/layouts/wedges \
+	README.md \
+	README \
+	LICENSE \
+	liblcdf/vector.cc
+	
+	
+	
 	
