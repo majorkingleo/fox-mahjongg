@@ -805,6 +805,7 @@ long MahjonggWindow::onChangeBackgroundDefault(FXObject* obj,FXSelector sel, voi
 	if( panel ) {
 		panel->set_background(getImageByName("background_default"));
 		radio_group_background_image->setCheck( mc_background_default );
+		background_image_name = "background_default";
 		save_point.commit();
 	}
 	return 1;
@@ -817,6 +818,7 @@ long MahjonggWindow::onChangeBackgroundGreen(FXObject* obj,FXSelector sel, void*
 	if( panel ) {
 		panel->set_background(getImageByName("background_green"));
 		radio_group_background_image->setCheck( mc_background_green );
+		background_image_name = "background_green";
 		save_point.commit();
 	}
 	return 1;
@@ -829,6 +831,7 @@ long MahjonggWindow::onChangeBackgroundBlue(FXObject* obj,FXSelector sel, void* 
 	if( panel ) {
 		panel->set_background(getImageByName("background_blue"));
 		radio_group_background_image->setCheck( mc_background_blue );
+		background_image_name = "background_blue";
 		save_point.commit();
 	}
 	return 1;
