@@ -19,7 +19,7 @@ I'm using opensuse leap 15.4
 				 
 
 * cross compile the FOX library
-  wget ftp://ftp.fox-toolkit.org/pub/fox-1.7.78.tar.gz
+  wget ftp://fox-toolkit.org/pub/fox-1.7.78.tar.gz
   tar xvfz fox-1.7.78.tar.gz
   cd fox-1.7.78
   ./configure --without-opengl \
