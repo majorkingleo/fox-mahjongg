@@ -8,7 +8,6 @@
 #include "thread.h"
 #include <errno.h>
 #include <string.h>
-#include <cpp_util.h>
 
 #ifdef TOOLS_USE_THREADS
 

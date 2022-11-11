@@ -7,8 +7,8 @@
 #include "FXPixelBuffer.h"
 #include "debug.h"
 #include <format.h>
-#include <cpp_util.h>
 #include <main.h>
+#include <stderr_exception.h>
 
 // this has to be included with FOX-1.6
 #include <FXElement.h>
@@ -440,7 +440,7 @@ FXImage *FXPixelBuffer::createImage( RefMImage mimage )
     Magick::PixelPacket *pixelsIn = mimage->getPixels(0, 0, w, h);
 
     if( !pixelsIn ) {
-    	throw REPORT_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
+    	throw STDERR_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
     }
 
 #pragma omp parallel
@@ -607,7 +607,7 @@ void FXPixelBuffer::updateImage( FXImage *image, RefMImage mimage )
     Magick::PixelPacket *pixelsIn = mimage->getPixels(0, 0, w, h);
 
     if( !pixelsIn ) {
-    	throw REPORT_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
+    	throw STDERR_EXCEPTION( format( "pixelsIn is null size: %dx%d", w, h ) );
     }
 
 #pragma omp parallel

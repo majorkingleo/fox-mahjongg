@@ -4,7 +4,6 @@
 #include <cstring>
 #include "debug.h"
 #include <format.h>
-#include <cpp_util.h>
 #include "main.h"
 #include <FXPixelBuffer.h>
 

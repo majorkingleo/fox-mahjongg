@@ -16,7 +16,6 @@
 #include <colored_output.h>
 #include <OutDebug.h>
 #include <arg.h>
-#include <cpp_util.h>
 #include "tiles_thick.h"
 #include "tiles_thin.h"
 #include "tiles_small.h"
@@ -38,6 +37,7 @@
 #include <cppdir.h>
 #include "FXRadioGroup.h"
 #include <data_readme.h>
+#include <stderr_exception.h>
 
 // with FOX-1.6 this has to be included
 #include <FXPNGImage.h>
@@ -732,7 +732,7 @@ FXImage *MahjonggWindow::getImageByName( const std::string & image_name, bool th
 			DEBUG( format( "cannot find image: %s", image_name ) );
 			return 0;
 		} else {
-			throw REPORT_EXCEPTION( format( "no Button named %s", image_name ) );
+			throw STDERR_EXCEPTION( format( "no Button named %s", image_name ) );
 		}
 	}
 

@@ -251,24 +251,13 @@ cpputils_cpputilsshared_libcpputilsshared_a_SOURCES= \
 		cpputils/cpputilsshared/cppdir.h \
 		cpputils/cpputilsshared/leoini.cc \
 		cpputils/cpputilsshared/leoini.h \
-		cpputils/cpputilsshared/logtool2.cc \
-		cpputils/cpputilsshared/logtool2.h \
 		cpputils/cpputilsshared/string_utils.cc \
 		cpputils/cpputilsshared/string_utils.h \
-		cpputils/cpputilsshared/vec_utils.cc \
-		cpputils/cpputilsshared/vec_utils.h \
 		cpputils/cpputilsshared/xml.cc \
 		cpputils/cpputilsshared/xml.h \
-		cpputils/cpputilsshared/cpp_util.h \
-		cpputils/cpputilsshared/cpp_util_min_max.h \
-		cpputils/cpputilsshared/cpp_utils.h \
-		cpputils/cpputilsshared/cpputils.h \
 		cpputils/cpputilsshared/ref.h \
-		cpputils/cpputilsshared/jvector.h \
-		cpputils/cpputilsshared/zvector.h \
 		cpputils/cpputilsshared/range.h \
-		cpputils/cpputilsshared/report_exception.h \
-		cpputils/cpputilsshared/sql_exception.h \
+		cpputils/cpputilsshared/stderr_exception.h \
 		cpputils/cpputilsshared/utf8.h \
 		cpputils/cpputilsshared/utf8/core.h \
 		cpputils/cpputilsshared/utf8/checked.h \

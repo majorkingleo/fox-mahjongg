@@ -1,11 +1,16 @@
 /**
- * @file
- * @todo describe file content
- * @author Copyright (c) 2019 Salomon Automation GmbH
+ * Classes for typesave versions of sprintf() that are returning a std::wstring
+ * @author Copyright (c) 2001 - 2022 Martin Oberzalek
+ *
+ * Examples:
+ *
+ *    std::wcout << wformat( L"Hello %s, I have $05d$ in my pocket", L"world", 5 ) << std::endl;
+ *    std::wcout << wformat( L"Do not try this with printf: %s", 10101 ) << std::endl;
+ *
  */
 
-#ifndef _wamas_WFORMAT2_H
-#define _wamas_WFORMAT2_H
+#ifndef _TOOLS_WFORMAT2_H
+#define _TOOLS_WFORMAT2_H
 
 #if __cplusplus - 0 >= 201103L
 
@@ -40,7 +45,7 @@ namespace Tools {
       bool _is_string;
 
     public:
-      BaseArg( bool is_int_, bool is_string_ )
+      BaseArg( bool is_int_ = false, bool is_string_ = false )
     : _is_int( is_int_ ),
       _is_string( is_string_ )
     {}
@@ -307,4 +312,4 @@ namespace Tools {
 } // /namespace Tools
 
 #endif
-#endif  /* _wamas_WFORMAT2_H */
+#endif  /* _TOOLS_WFORMAT2_H */
