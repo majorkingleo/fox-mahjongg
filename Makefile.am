@@ -255,6 +255,7 @@ cpputils_cpputilsshared_libcpputilsshared_a_SOURCES= \
 		cpputils/cpputilsshared/string_utils.h \
 		cpputils/cpputilsshared/xml.cc \
 		cpputils/cpputilsshared/xml.h \
+		cpputils/cpputilsshared/stderr_exception.h \
 		cpputils/cpputilsshared/ref.h \
 		cpputils/cpputilsshared/range.h \
 		cpputils/cpputilsshared/stderr_exception.h \
